@@ -1,0 +1,42 @@
+{
+  "name": "spotify-friend-activity-monitor",
+  "version": "4.0.0",
+  "description": "Advanced Spotify friend activity monitoring system with web dashboard and Docker support.",
+  "license": "Unlicense",
+  "author": "Enhanced by GitHub Copilot",
+  "main": "src/friend-activity-server.js",
+  "files": [
+    "src/",
+    "docker/",
+    "docs/",
+    "package.json",
+    "README.md",
+    ".env.example"
+  ],
+  "scripts": {
+    "start": "node src/friend-activity-server.js",
+    "dashboard": "node src/web-dashboard.js",
+    "lila-tracker": "node src/lila-tracker.js",
+    "cli": "node src/monitor-cli.js",
+    "docker:build": "docker build -f docker/Dockerfile -t spotify-friend-activity .",
+    "docker:up": "docker-compose -f docker/docker-compose.yml up -d",
+    "docker:down": "docker-compose -f docker/docker-compose.yml down",
+    "lint": "standard"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "otplib": "^12.0.1",
+    "puppeteer": "^24.15.0"
+  },
+  "devDependencies": {
+    "standard": "^17.1.2"
+  },
+  "keywords": [
+    "spotify",
+    "friend-activity",
+    "monitoring",
+    "puppeteer",
+    "docker",
+    "dashboard"
+  ]
+}
