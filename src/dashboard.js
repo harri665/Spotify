@@ -13,6 +13,22 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.get('/api/lila-activity', async (req, res) => {
     try {
         const logPath = path.join(__dirname, '..', 'lila-activity-log.json');
+        
+        // Check if file exists and is actually a file
+        try {
+            const stats = await fs.stat(logPath);
+            if (stats.isDirectory()) {
+                console.log('Warning: Log path is a directory, not a file');
+                return res.json([]);
+            }
+        } catch (statError) {
+            if (statError.code === 'ENOENT') {
+                // File doesn't exist yet, return empty array
+                return res.json([]);
+            }
+            throw statError;
+        }
+        
         const data = await fs.readFile(logPath, 'utf8');
         const activities = JSON.parse(data);
         
@@ -21,12 +37,8 @@ app.get('/api/lila-activity', async (req, res) => {
         
         res.json(activities);
     } catch (error) {
-        if (error.code === 'ENOENT') {
-            res.json([]); // Return empty array if file doesn't exist yet
-        } else {
-            console.error('Error reading activity log:', error);
-            res.status(500).json({ error: 'Failed to read activity log' });
-        }
+        console.error('Error reading activity log:', error.message);
+        res.status(500).json({ error: 'Failed to read activity log' });
     }
 });
 
