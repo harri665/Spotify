@@ -12,7 +12,7 @@ services:
       - CHECK_INTERVAL=${CHECK_INTERVAL:-30000}
       - NODE_ENV=production
     volumes:
-      - ./lila-activity-log.json:/app/lila-activity-log.json
+      - lila_shared_data:/app/shared
       - lila_logs:/app/logs
       - lila_data:/app/data
     command: ["node", "src/lila-tracker.js"]
@@ -32,7 +32,7 @@ services:
     ports:
       - "${DASHBOARD_PORT:-3001}:3000"
     volumes:
-      - ./lila-activity-log.json:/app/lila-activity-log.json
+      - lila_shared_data:/app/shared
       - lila_logs:/app/logs
       - lila_data:/app/data
     command: ["node", "src/dashboard.js"]
@@ -45,6 +45,8 @@ volumes:
   lila_logs:
     driver: local
   lila_data:
+    driver: local
+  lila_shared_data:
     driver: local
 
 networks:

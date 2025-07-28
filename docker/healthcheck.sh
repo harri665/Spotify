@@ -8,9 +8,10 @@ if ! pgrep -f "node" > /dev/null; then
 fi
 
 # Check if log file exists and is being written to (for tracker)
-if [ -f "/app/lila-activity-log.json" ]; then
+LOG_FILE="/app/shared/lila-activity-log.json"
+if [ -f "$LOG_FILE" ]; then
     # Check if file was modified in the last 10 minutes (600 seconds)
-    if [ $(find /app/lila-activity-log.json -mmin -10 | wc -l) -gt 0 ]; then
+    if [ $(find "$LOG_FILE" -mmin -10 | wc -l) -gt 0 ]; then
         echo "✅ Tracker is active - log file recently updated"
         exit 0
     fi

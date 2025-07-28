@@ -159,7 +159,9 @@ class LilaTracker {
 
     async saveActivity(activity) {
         try {
-            const filename = `lila-activity-log.json`;
+            // Use shared directory in Docker, current directory otherwise
+            const logDir = process.env.NODE_ENV === 'production' ? '/app/shared' : '.';
+            const filename = `${logDir}/lila-activity-log.json`;
             let log = [];
             
             try {

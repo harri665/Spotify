@@ -13,8 +13,8 @@ RUN npm install --only=production
 # Copy source code
 COPY src/ ./src/
 
-# Create logs directory
-RUN mkdir -p /app/logs /app/data
+# Create logs and shared directories
+RUN mkdir -p /app/logs /app/data /app/shared
 
 # Copy health check script
 COPY docker/healthcheck.sh /app/healthcheck.sh

@@ -107,8 +107,10 @@ The Portainer stack includes:
 The stack creates several volumes:
 
 - `lila_logs`: Application logs
-- `lila_data`: General data storage
-- `lila_activity_log`: The main activity log file
+- `lila_data`: General data storage  
+- `lila_shared_data`: Shared data between tracker and dashboard (contains the activity log file)
+
+**Important**: The activity log file is stored at `/app/shared/lila-activity-log.json` inside the containers and is shared between both services via the `lila_shared_data` volume.
 
 ## Environment Variables
 

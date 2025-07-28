@@ -12,7 +12,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 // API endpoint to get Lila's activity data
 app.get('/api/lila-activity', async (req, res) => {
     try {
-        const logPath = path.join(__dirname, '..', 'lila-activity-log.json');
+        // Use shared directory in Docker, parent directory otherwise
+        const logPath = process.env.NODE_ENV === 'production' 
+            ? '/app/shared/lila-activity-log.json'
+            : path.join(__dirname, '..', 'lila-activity-log.json');
         
         // Check if file exists and is actually a file
         try {

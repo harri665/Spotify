@@ -12,7 +12,8 @@ services:
     volumes:
       - lila_logs:/app/logs
       - lila_data:/app/data
-      - lila_activity_log:/app/lila-activity-log.json
+      # Mount data directory and let app create the file inside it
+      - lila_shared_data:/app/shared
     command: ["node", "src/lila-tracker.js"]
     networks:
       - lila-network
@@ -32,7 +33,8 @@ services:
     volumes:
       - lila_logs:/app/logs
       - lila_data:/app/data
-      - lila_activity_log:/app/lila-activity-log.json
+      # Mount same shared directory
+      - lila_shared_data:/app/shared
     command: ["node", "src/dashboard.js"]
     depends_on:
       - lila-tracker
@@ -46,7 +48,7 @@ volumes:
     driver: local
   lila_data:
     driver: local
-  lila_activity_log:
+  lila_shared_data:
     driver: local
 
 networks:

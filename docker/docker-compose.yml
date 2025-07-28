@@ -14,7 +14,7 @@ services:
     volumes:
       - lila_logs:/app/logs
       - lila_data:/app/data
-      - ./lila-activity-log.json:/app/lila-activity-log.json
+      - lila_shared_data:/app/shared
     command: ["node", "src/lila-tracker.js"]
     networks:
       - lila-network
@@ -34,7 +34,7 @@ services:
     volumes:
       - lila_logs:/app/logs
       - lila_data:/app/data
-      - ./lila-activity-log.json:/app/lila-activity-log.json
+      - lila_shared_data:/app/shared
     command: ["node", "src/dashboard.js"]
     depends_on:
       - lila-tracker
@@ -44,6 +44,7 @@ services:
 volumes:
   lila_logs:
   lila_data:
+  lila_shared_data:
 
 networks:
   lila-network:
