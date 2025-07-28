@@ -1,163 +1,199 @@
-# Spotify Friend Activity Monitor - Docker Stack
+# Docker Deployment Guide
 
-A containerized Spotify friend activity monitoring system that can be deployed as a Portainer stack from a Git repository.
+This guide covers deploying the 444lila Spotify Tracker using Docker and Docker Compose.
 
-## 🚀 Features
+## Prerequisites
 
-- **Real-time monitoring** of Spotify friend activity every 3 minutes
-- **Web dashboard** for viewing current and historical activity
-- **Persistent logging** with Docker volumes
-- **Environment-based configuration**
-- **Health checks** and auto-restart capabilities
-- **Traefik labels** for reverse proxy integration
+- Docker and Docker Compose installed
+- Your Spotify `sp_dc` cookie
 
-## 📋 Prerequisites
+## Getting Your Spotify Cookie
 
-- Docker and Docker Compose
-- Portainer installed and running
-- Valid Spotify `sp_dc` cookie
-
-## 🔧 Portainer Stack Deployment
-
-### 1. Get Your Spotify Cookie
-
-1. Open your browser and go to [https://open.spotify.com/](https://open.spotify.com/)
+1. Open [https://open.spotify.com/](https://open.spotify.com/) in your browser
 2. Log in to your Spotify account
 3. Open Developer Tools (F12)
-4. Go to **Application** → **Storage** → **Cookies** → `https://open.spotify.com`
+4. Go to Application → Cookies → https://open.spotify.com
 5. Find the `sp_dc` cookie and copy its value
 
-### 2. Deploy in Portainer
+## Local Docker Deployment
 
-1. In Portainer, go to **Stacks** → **Add Stack**
-2. Choose **Repository** as the build method
-3. Enter this repository URL: `https://github.com/yourusername/spotify-friend-activity`
-4. Set **Compose path** to: `docker-compose.yml`
-5. In **Environment variables**, add:
+### Method 1: Docker Compose (Recommended)
+
+1. **Clone and navigate to the project:**
+   ```bash
+   git clone <your-repo-url>
+   cd spotify-lila-tracker
    ```
-   SP_DC_COOKIE=your_sp_dc_cookie_value_here
-   CHECK_INTERVAL=180000
+
+2. **Set environment variables:**
+   ```bash
+   export SP_DC_COOKIE="your_spotify_cookie_here"
+   export CHECK_INTERVAL=30000
    ```
-6. Click **Deploy the stack**
 
-### 3. Access the Applications
+3. **Build and run:**
+   ```bash
+   docker-compose -f docker/docker-compose.yml up -d
+   ```
 
-After deployment:
-- **Friend Activity Server**: Runs in background, logs to console
-- **Web Dashboard**: Available at `http://your-server:3001`
+4. **Access the dashboard:**
+   Open `http://localhost:3001` in your browser
 
-## 📊 Services
+### Method 2: Manual Docker Build
 
-### spotify-friend-activity
-- **Port**: 3000 (internal use)
-- **Function**: Background monitoring service
-- **Logs**: Available in Portainer logs view
-- **Health Check**: Built-in Node.js health check
+1. **Build the image:**
+   ```bash
+   docker build -f docker/Dockerfile -t lila-tracker .
+   ```
 
-### web-dashboard
-- **Port**: 3001 (external access)
-- **Function**: Web interface for viewing friend activity
-- **URL**: `http://localhost:3001` or `http://your-server:3001`
+2. **Run the tracker:**
+   ```bash
+   docker run -d \
+     --name lila-tracker \
+     -e SP_DC_COOKIE="your_cookie_here" \
+     -v $(pwd)/lila-activity-log.json:/app/lila-activity-log.json \
+     lila-tracker
+   ```
 
-## 🔧 Configuration
+3. **Run the dashboard:**
+   ```bash
+   docker run -d \
+     --name lila-dashboard \
+     -p 3001:3000 \
+     -e SP_DC_COOKIE="your_cookie_here" \
+     -v $(pwd)/lila-activity-log.json:/app/lila-activity-log.json \
+     lila-tracker node src/dashboard.js
+   ```
 
-### Environment Variables
+## Portainer Stack Deployment
+
+### Using Portainer Web UI
+
+1. **Access Portainer** (usually at `http://localhost:9000`)
+
+2. **Create a new stack:**
+   - Go to Stacks → Add Stack
+   - Choose "Web editor"
+   - Name your stack (e.g., "lila-tracker")
+
+3. **Copy the stack configuration:**
+   Copy the contents of `docker/portainer-stack.yml`
+
+4. **Set environment variables:**
+   In the "Environment variables" section, add:
+   ```
+   SP_DC_COOKIE=your_spotify_cookie_here
+   CHECK_INTERVAL=30000
+   ```
+
+5. **Deploy the stack:**
+   Click "Deploy the stack"
+
+6. **Access the dashboard:**
+   Once deployed, access the dashboard at `http://your-server-ip:3001`
+
+### Stack Configuration
+
+The Portainer stack includes:
+
+- **lila-tracker**: Monitors 444lila's activity every 30 seconds
+- **lila-dashboard**: Web interface on port 3001
+- **Shared volumes**: For persistent data storage
+- **Health checks**: Automatic container monitoring
+- **Auto-restart**: Containers restart automatically if they fail
+
+## Volume Management
+
+The stack creates several volumes:
+
+- `lila_logs`: Application logs
+- `lila_data`: General data storage
+- `lila_activity_log`: The main activity log file
+
+## Environment Variables
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `SP_DC_COOKIE` | Your Spotify sp_dc cookie (required) | - |
-| `CHECK_INTERVAL` | Check interval in milliseconds | 180000 (3 minutes) |
+| `SP_DC_COOKIE` | Your Spotify sp_dc cookie | **Required** |
+| `CHECK_INTERVAL` | Check interval in milliseconds | 30000 (30 seconds) |
+| `PORT` | Dashboard port inside container | 3000 |
 | `NODE_ENV` | Node environment | production |
 
-### Volumes
+## Monitoring
 
-- `spotify-logs`: Persistent storage for activity logs
-- `spotify-data`: General data storage
+### Container Health
 
-## 📝 Logs and Data
-
-All friend activity is logged to persistent volumes:
-- Activity logs: `/app/logs/friend-activity-log.json`
-- Data storage: `/app/data/`
-
-Access logs through:
-1. Portainer container logs (real-time)
-2. Volume browser in Portainer
-3. Direct container access
-
-## 🔍 Monitoring
-
-### Health Checks
-Both services include health checks that verify:
-- Container is responsive
+Both containers include health checks that verify:
 - Node.js process is running
-- Basic application functionality
+- Log files are being updated
+- Dashboard API is responding
 
-### Logging
-- Console output available in Portainer logs
-- Structured JSON logs for friend activity
-- Error logging and debugging information
+### Logs
 
-## 🛠️ Troubleshooting
+View container logs:
+```bash
+# Tracker logs
+docker logs lila-tracker
+
+# Dashboard logs
+docker logs lila-dashboard
+```
+
+### Activity Data
+
+The activity log is stored in `lila-activity-log.json` and is shared between containers.
+
+## Troubleshooting
 
 ### Common Issues
 
-1. **"SP_DC_COOKIE is required" error**
-   - Ensure you've set the `SP_DC_COOKIE` environment variable
-   - Verify the cookie value is correct and not expired
+1. **Container won't start:**
+   - Check if `SP_DC_COOKIE` is set correctly
+   - Verify Docker has enough resources
 
-2. **Token refresh failures**
-   - Check if your `sp_dc` cookie is still valid
-   - Try getting a fresh cookie from your browser
+2. **No activity being logged:**
+   - Ensure 444lila is actively listening to music
+   - Check if the sp_dc cookie is still valid
 
-3. **No friend activity detected**
-   - Ensure your friends are actively listening to music
-   - Check if Spotify's privacy settings allow friend activity
+3. **Dashboard not accessible:**
+   - Verify port 3001 is not blocked by firewall
+   - Check if the dashboard container is running
 
-### Getting Fresh Cookies
-Spotify cookies expire periodically. To update:
-1. Get a new `sp_dc` cookie from your browser
-2. Update the stack environment variables in Portainer
-3. Restart the stack
+### Getting Fresh Logs
 
-## 🔄 Updates
+```bash
+# Follow tracker logs in real-time
+docker logs -f lila-tracker
+
+# Check last 50 lines of dashboard logs
+docker logs --tail 50 lila-dashboard
+```
+
+## Updating
 
 To update the application:
-1. In Portainer, go to your stack
-2. Click **Editor** tab
-3. Pull latest changes or update environment variables
-4. Click **Update the stack**
 
-## 🏷️ Traefik Integration
+1. **Pull latest changes:**
+   ```bash
+   git pull origin main
+   ```
 
-The stack includes Traefik labels for reverse proxy:
-- Main service: `spotify.localhost`
-- Dashboard: `dashboard.spotify.localhost`
+2. **Rebuild and restart:**
+   ```bash
+   docker-compose -f docker/docker-compose.yml down
+   docker-compose -f docker/docker-compose.yml up -d --build
+   ```
 
-Configure Traefik to use these labels for domain routing.
+## Security Notes
 
-## 📱 API Endpoints
-
-The web dashboard exposes several endpoints:
-- `GET /` - Main dashboard interface
-- `GET /api/activity` - Current friend activity (JSON)
-- `GET /api/history` - Historical activity logs (JSON)
-
-## 🔒 Security Notes
-
-- The `sp_dc` cookie provides access to your Spotify account
-- Store it securely and don't share it
+- Store your `sp_dc` cookie securely
 - Consider using Docker secrets for production deployments
-- The application runs as a non-root user in containers
+- Regularly update the base Node.js image
+- Monitor container logs for any authentication issues
 
-## 🐛 Support
+## Performance
 
-For issues and support:
-1. Check Portainer container logs
-2. Verify environment variables are set correctly
-3. Ensure your Spotify cookie is valid
-4. Review the application README for additional troubleshooting
-
-## 📄 License
-
-This project is unlicensed and free to use.
+- The tracker uses minimal resources (< 100MB RAM)
+- Dashboard serves static files efficiently
+- Health checks run every 30 seconds
+- Logs rotate automatically to prevent disk space issues

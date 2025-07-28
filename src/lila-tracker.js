@@ -9,8 +9,10 @@ class LilaTracker {
         this.tokenExpiry = 0;
         this.browser = null;
         this.page = null;
-        this.spDcCookie = 'AQBbWMvOJE6ogmn-_L67o1gWzCOSaJGuYrYCxiedBP5-60GtsxHxK7oI-V5w-DzFcR1sW5BcI9gxWV0rSUV2VNB6rhlqkPbD_BGjDM-APb49SFUeDP9sL1qLHlCvfciPUlrD2d7yLNyyYMcbyE6_sv34emaRyZf4';
+        // Use environment variable or fallback to hardcoded cookie
+        this.spDcCookie = process.env.SP_DC_COOKIE || 'AQBbWMvOJE6ogmn-_L67o1gWzCOSaJGuYrYCxiedBP5-60GtsxHxK7oI-V5w-DzFcR1sW5BcI9gxWV0rSUV2VNB6rhlqkPbD_BGjDM-APb49SFUeDP9sL1qLHlCvfciPUlrD2d7yLNyyYMcbyE6_sv34emaRyZf4';
         this.lastActivity = null;
+        this.checkInterval = parseInt(process.env.CHECK_INTERVAL) || 30000; // 30 seconds default
     }
 
     async init() {
@@ -157,7 +159,7 @@ class LilaTracker {
 
     async saveActivity(activity) {
         try {
-            const filename = `${this.targetUser}-activity-log.json`;
+            const filename = `lila-activity-log.json`;
             let log = [];
             
             try {
@@ -167,8 +169,12 @@ class LilaTracker {
                 // File doesn't exist, start fresh
             }
             
+            // Add Spotify URL for the track
+            const spotifyUrl = `https://open.spotify.com/search/${encodeURIComponent(activity.song + ' ' + activity.artist)}`;
+            
             log.push({
                 ...activity,
+                spotifyUrl: spotifyUrl,
                 loggedAt: new Date().toISOString()
             });
             
@@ -188,21 +194,28 @@ class LilaTracker {
 }
 
 async function main() {
+    // Check if SP_DC_COOKIE is provided
+    if (!process.env.SP_DC_COOKIE && process.env.NODE_ENV === 'production') {
+        console.error('❌ SP_DC_COOKIE environment variable is required in production');
+        console.log('ℹ️  Get your cookie from https://open.spotify.com → DevTools → Cookies → sp_dc');
+        process.exit(1);
+    }
+
     const tracker = new LilaTracker();
     
     try {
         await tracker.init();
         
         console.log(`🎯 Starting ${tracker.targetUser} activity tracker...`);
-        console.log('🔄 Checking every 30 seconds for new songs...\n');
+        console.log(`🔄 Checking every ${tracker.checkInterval / 1000} seconds for new songs...\n`);
         
         // Initial check
         await tracker.trackLila();
         
-        // Set up periodic checking every 30 seconds
+        // Set up periodic checking using configured interval
         const interval = setInterval(async () => {
             await tracker.trackLila();
-        }, 30000);
+        }, tracker.checkInterval);
         
         // Handle graceful shutdown
         process.on('SIGINT', async () => {

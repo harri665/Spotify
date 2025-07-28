@@ -1,34 +1,27 @@
 version: '3.8'
 
 services:
-  spotify-monitor:
-    build:
-      context: ..
-      dockerfile: docker/Dockerfile
-    container_name: spotify-friend-activity
+  lila-tracker:
+    image: lila-tracker:latest
+    container_name: lila-tracker
     restart: unless-stopped
     environment:
       - SP_DC_COOKIE=${SP_DC_COOKIE}
-      - CHECK_INTERVAL=${CHECK_INTERVAL:-180000}
+      - CHECK_INTERVAL=${CHECK_INTERVAL:-30000}
       - NODE_ENV=production
     volumes:
-      - spotify_logs:/app/logs
-      - spotify_data:/app/data
+      - lila_logs:/app/logs
+      - lila_data:/app/data
+      - lila_activity_log:/app/lila-activity-log.json
+    command: ["node", "src/lila-tracker.js"]
     networks:
-      - spotify_net
-    healthcheck:
-      test: ["CMD", "node", "-e", "process.exit(0)"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+      - lila-network
     labels:
-      - "traefik.enable=false"
+      - "com.centurylinklabs.watchtower.enable=true"
 
-  spotify-dashboard:
-    build:
-      context: ..
-      dockerfile: docker/Dockerfile
-    container_name: spotify-web-dashboard
+  lila-dashboard:
+    image: lila-tracker:latest
+    container_name: lila-dashboard
     restart: unless-stopped
     environment:
       - SP_DC_COOKIE=${SP_DC_COOKIE}
@@ -37,27 +30,25 @@ services:
     ports:
       - "3001:3000"
     volumes:
-      - spotify_logs:/app/logs
-      - spotify_data:/app/data
-    networks:
-      - spotify_net
-    command: ["node", "src/web-dashboard.js"]
+      - lila_logs:/app/logs
+      - lila_data:/app/data
+      - lila_activity_log:/app/lila-activity-log.json
+    command: ["node", "src/dashboard.js"]
     depends_on:
-      - spotify-monitor
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000", "||", "exit", "1"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+      - lila-tracker
+    networks:
+      - lila-network
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.spotify-dashboard.rule=Host(`spotify.yourdomain.com`)"
-      - "traefik.http.services.spotify-dashboard.loadbalancer.server.port=3000"
+      - "com.centurylinklabs.watchtower.enable=true"
 
 volumes:
-  spotify_logs:
-  spotify_data:
+  lila_logs:
+    driver: local
+  lila_data:
+    driver: local
+  lila_activity_log:
+    driver: local
 
 networks:
-  spotify_net:
+  lila-network:
     driver: bridge

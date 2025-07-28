@@ -3,7 +3,7 @@ version: '3.8'
 services:
   lila-tracker:
     build:
-      context: .
+      context: ..
       dockerfile: docker/Dockerfile
     container_name: lila-tracker
     restart: unless-stopped
@@ -12,16 +12,16 @@ services:
       - CHECK_INTERVAL=${CHECK_INTERVAL:-30000}
       - NODE_ENV=production
     volumes:
-      - ./lila-activity-log.json:/app/lila-activity-log.json
       - lila_logs:/app/logs
       - lila_data:/app/data
+      - ./lila-activity-log.json:/app/lila-activity-log.json
     command: ["node", "src/lila-tracker.js"]
     networks:
       - lila-network
 
   lila-dashboard:
     build:
-      context: .
+      context: ..
       dockerfile: docker/Dockerfile
     container_name: lila-dashboard
     restart: unless-stopped
@@ -30,11 +30,11 @@ services:
       - PORT=3000
       - NODE_ENV=production
     ports:
-      - "${DASHBOARD_PORT:-3001}:3000"
+      - "3001:3000"
     volumes:
-      - ./lila-activity-log.json:/app/lila-activity-log.json
       - lila_logs:/app/logs
       - lila_data:/app/data
+      - ./lila-activity-log.json:/app/lila-activity-log.json
     command: ["node", "src/dashboard.js"]
     depends_on:
       - lila-tracker
@@ -43,9 +43,7 @@ services:
 
 volumes:
   lila_logs:
-    driver: local
   lila_data:
-    driver: local
 
 networks:
   lila-network:

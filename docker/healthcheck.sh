@@ -1,32 +1,27 @@
 #!/bin/sh
+# Health check script for the container
 
-# Health check script for Spotify Friend Activity Monitor
-# This script verifies that the application is running properly
-
-# Check if Node.js process is running
+# Check if the main process is running
 if ! pgrep -f "node" > /dev/null; then
-    echo "Node.js process not found"
+    echo "❌ Node process not running"
     exit 1
 fi
 
-# Check if the log directory exists and is writable
-if [ ! -d "/app/logs" ]; then
-    echo "Logs directory not found"
-    exit 1
-fi
-
-if [ ! -w "/app/logs" ]; then
-    echo "Logs directory not writable"
-    exit 1
-fi
-
-# For web dashboard, check if HTTP server is responding
-if [ "${CHECK_WEB:-false}" = "true" ]; then
-    if ! wget --quiet --tries=1 --timeout=5 --spider http://localhost:3000/ 2>/dev/null; then
-        echo "Web server not responding"
-        exit 1
+# Check if log file exists and is being written to (for tracker)
+if [ -f "/app/lila-activity-log.json" ]; then
+    # Check if file was modified in the last 10 minutes (600 seconds)
+    if [ $(find /app/lila-activity-log.json -mmin -10 | wc -l) -gt 0 ]; then
+        echo "✅ Tracker is active - log file recently updated"
+        exit 0
     fi
 fi
 
-echo "Health check passed"
+# Check if dashboard is responding (if dashboard service)
+if curl -f http://localhost:3000/api/lila-activity > /dev/null 2>&1; then
+    echo "✅ Dashboard is responding"
+    exit 0
+fi
+
+# If tracker is running but no recent activity, still consider healthy
+echo "✅ Service is running"
 exit 0

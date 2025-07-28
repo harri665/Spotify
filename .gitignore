@@ -11,11 +11,12 @@ yarn-error.log*
 .env.test.local
 .env.production.local
 
-# Logs
+# Activity logs (sensitive data)
 logs/
 *.log
 friend-activity-log.json
 444lila-activity-log.json
+lila-activity-log.json
 
 # Runtime data
 pids
@@ -43,11 +44,27 @@ jspm_packages/
 # Yarn Integrity file
 .yarn-integrity
 
-# dotenv environment variables file
-.env
+# Docker
+.dockerignore
 
-# parcel-bundler cache (https://parceljs.org/)
-.cache
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Temporary files
+tmp/
+temp/
 .parcel-cache
 
 # next.js build output

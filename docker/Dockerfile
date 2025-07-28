@@ -1,54 +1,34 @@
-# Use Node.js LTS version
+# Use Node.js official image
 FROM node:18-alpine
 
-# Install dependencies for Puppeteer
-RUN apk add --no-cache \
-    chromium \
-    nss \
-    freetype \
-    freetype-dev \
-    harfbuzz \
-    ca-certificates \
-    ttf-freefont \
-    wget
-
-# Set Puppeteer to use the installed Chromium
-ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
-
-# Create app directory
+# Set working directory
 WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
 
 # Install dependencies
-RUN npm install --production
+RUN npm install --only=production
 
-# Copy source files
+# Copy source code
 COPY src/ ./src/
 
-# Copy health check script
-COPY docker/healthcheck.sh ./
+# Create logs directory
+RUN mkdir -p /app/logs /app/data
 
-# Make health check script executable
+# Copy health check script
+COPY docker/healthcheck.sh /app/healthcheck.sh
 RUN chmod +x /app/healthcheck.sh
 
-# Create directory for logs
-RUN mkdir -p /app/logs
+# Install curl for health check
+RUN apk add --no-cache curl
 
-# Expose port for web dashboard
+# Expose port for dashboard
 EXPOSE 3000
 
-# Create a non-root user
-RUN addgroup -g 1001 -S nodejs
-RUN adduser -S nodejs -u 1001
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD /app/healthcheck.sh
 
-# Change ownership of app directory
-RUN chown -R nodejs:nodejs /app
-
-# Switch to non-root user
-USER nodejs
-
-# Start the application
-CMD ["node", "src/friend-activity-server.js"]
+# Default command (can be overridden)
+CMD ["node", "src/lila-tracker.js"]
