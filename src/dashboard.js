@@ -2,13 +2,74 @@
 const express = require('express');
 const fs = require('fs').promises;
 const path = require('path');
+const crypto = require('crypto');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Dashboard password (you can change this)
+const DASHBOARD_PASSWORD = process.env.DASHBOARD_PASSWORD || 'lila2025';
+
+// Session store (in production, use Redis or database)
+const sessions = new Map();
+
 // Middleware
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
+
+// Authentication middleware
+const requireAuth = (req, res, next) => {
+    const sessionId = req.headers['x-session-id'];
+    
+    if (!sessionId || !sessions.has(sessionId)) {
+        return res.status(401).json({ error: 'Authentication required' });
+    }
+    
+    const session = sessions.get(sessionId);
+    if (Date.now() > session.expiresAt) {
+        sessions.delete(sessionId);
+        return res.status(401).json({ error: 'Session expired' });
+    }
+    
+    // Extend session
+    session.expiresAt = Date.now() + (24 * 60 * 60 * 1000); // 24 hours
+    next();
+};
+
+// Authentication endpoints
+app.post('/api/auth/login', (req, res) => {
+    const { password } = req.body;
+    
+    if (password !== DASHBOARD_PASSWORD) {
+        return res.status(401).json({ error: 'Invalid password' });
+    }
+    
+    // Generate session
+    const sessionId = crypto.randomUUID();
+    const expiresAt = Date.now() + (24 * 60 * 60 * 1000); // 24 hours
+    
+    sessions.set(sessionId, {
+        createdAt: Date.now(),
+        expiresAt: expiresAt
+    });
+    
+    res.json({ 
+        sessionId: sessionId,
+        expiresAt: expiresAt
+    });
+});
+
+app.post('/api/auth/logout', (req, res) => {
+    const sessionId = req.headers['x-session-id'];
+    if (sessionId) {
+        sessions.delete(sessionId);
+    }
+    res.json({ success: true });
+});
+
+app.get('/api/auth/verify', requireAuth, (req, res) => {
+    res.json({ authenticated: true });
+});
 
 // Song mood/type classification based on song title and artist
 const classifySongType = (song, artist, album) => {
@@ -53,7 +114,7 @@ const classifySongType = (song, artist, album) => {
 };
 
 // API endpoint to get Lila's activity data with enhanced analytics
-app.get('/api/lila-activity', async (req, res) => {
+app.get('/api/lila-activity', requireAuth, async (req, res) => {
     try {
         // Use shared directory in Docker, parent directory otherwise
         const logPath = process.env.NODE_ENV === 'production' 
@@ -96,7 +157,7 @@ app.get('/api/lila-activity', async (req, res) => {
 });
 
 // API endpoint for analytics data
-app.get('/api/analytics', async (req, res) => {
+app.get('/api/analytics', requireAuth, async (req, res) => {
     try {
         const logPath = process.env.NODE_ENV === 'production' 
             ? '/app/shared/lila-activity-log.json'
@@ -180,6 +241,265 @@ const generateAnalytics = (activities) => {
         sessions: sessions
     };
 };
+
+// Diary endpoints
+app.get('/api/diary', requireAuth, async (req, res) => {
+    try {
+        const diaryPath = process.env.NODE_ENV === 'production' 
+            ? '/app/shared/diary-entries.json'
+            : path.join(__dirname, '..', 'diary-entries.json');
+        
+        try {
+            const data = await fs.readFile(diaryPath, 'utf8');
+            const entries = JSON.parse(data);
+            
+            // Sort by date (newest first)
+            entries.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            
+            res.json(entries);
+        } catch (error) {
+            if (error.code === 'ENOENT') {
+                res.json([]);
+            } else {
+                throw error;
+            }
+        }
+    } catch (error) {
+        console.error('Error reading diary entries:', error.message);
+        res.status(500).json({ error: 'Failed to read diary entries' });
+    }
+});
+
+app.post('/api/diary', requireAuth, async (req, res) => {
+    try {
+        const { title, content, mood, tags } = req.body;
+        
+        if (!title || !content) {
+            return res.status(400).json({ error: 'Title and content are required' });
+        }
+        
+        const diaryPath = process.env.NODE_ENV === 'production' 
+            ? '/app/shared/diary-entries.json'
+            : path.join(__dirname, '..', 'diary-entries.json');
+        
+        // Read existing entries
+        let entries = [];
+        try {
+            const data = await fs.readFile(diaryPath, 'utf8');
+            entries = JSON.parse(data);
+        } catch (error) {
+            if (error.code !== 'ENOENT') {
+                throw error;
+            }
+        }
+        
+        // Create new entry
+        const newEntry = {
+            id: crypto.randomUUID(),
+            title: title.trim(),
+            content: content.trim(),
+            mood: mood || 'neutral',
+            tags: tags || [],
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+        };
+        
+        entries.unshift(newEntry);
+        
+        // Save entries
+        await fs.writeFile(diaryPath, JSON.stringify(entries, null, 2));
+        
+        res.json(newEntry);
+    } catch (error) {
+        console.error('Error creating diary entry:', error.message);
+        res.status(500).json({ error: 'Failed to create diary entry' });
+    }
+});
+
+app.put('/api/diary/:id', requireAuth, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { title, content, mood, tags } = req.body;
+        
+        const diaryPath = process.env.NODE_ENV === 'production' 
+            ? '/app/shared/diary-entries.json'
+            : path.join(__dirname, '..', 'diary-entries.json');
+        
+        const data = await fs.readFile(diaryPath, 'utf8');
+        const entries = JSON.parse(data);
+        
+        const entryIndex = entries.findIndex(entry => entry.id === id);
+        if (entryIndex === -1) {
+            return res.status(404).json({ error: 'Entry not found' });
+        }
+        
+        // Update entry
+        entries[entryIndex] = {
+            ...entries[entryIndex],
+            title: title?.trim() || entries[entryIndex].title,
+            content: content?.trim() || entries[entryIndex].content,
+            mood: mood || entries[entryIndex].mood,
+            tags: tags || entries[entryIndex].tags,
+            updatedAt: new Date().toISOString()
+        };
+        
+        await fs.writeFile(diaryPath, JSON.stringify(entries, null, 2));
+        
+        res.json(entries[entryIndex]);
+    } catch (error) {
+        console.error('Error updating diary entry:', error.message);
+        res.status(500).json({ error: 'Failed to update diary entry' });
+    }
+});
+
+app.delete('/api/diary/:id', requireAuth, async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        const diaryPath = process.env.NODE_ENV === 'production' 
+            ? '/app/shared/diary-entries.json'
+            : path.join(__dirname, '..', 'diary-entries.json');
+        
+        const data = await fs.readFile(diaryPath, 'utf8');
+        const entries = JSON.parse(data);
+        
+        const filteredEntries = entries.filter(entry => entry.id !== id);
+        
+        if (filteredEntries.length === entries.length) {
+            return res.status(404).json({ error: 'Entry not found' });
+        }
+        
+        await fs.writeFile(diaryPath, JSON.stringify(filteredEntries, null, 2));
+        
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error deleting diary entry:', error.message);
+        res.status(500).json({ error: 'Failed to delete diary entry' });
+    }
+});
+
+// Raw JSON editing endpoints
+app.get('/api/raw/activity', requireAuth, async (req, res) => {
+    try {
+        const logPath = process.env.NODE_ENV === 'production' 
+            ? '/app/shared/lila-activity-log.json'
+            : path.join(__dirname, '..', 'lila-activity-log.json');
+        
+        try {
+            const data = await fs.readFile(logPath, 'utf8');
+            res.json({ content: data, path: logPath });
+        } catch (error) {
+            if (error.code === 'ENOENT') {
+                res.json({ content: '[]', path: logPath });
+            } else {
+                throw error;
+            }
+        }
+    } catch (error) {
+        console.error('Error reading raw activity data:', error.message);
+        res.status(500).json({ error: 'Failed to read raw activity data' });
+    }
+});
+
+app.get('/api/raw/diary', requireAuth, async (req, res) => {
+    try {
+        const diaryPath = process.env.NODE_ENV === 'production' 
+            ? '/app/shared/diary-entries.json'
+            : path.join(__dirname, '..', 'diary-entries.json');
+        
+        try {
+            const data = await fs.readFile(diaryPath, 'utf8');
+            res.json({ content: data, path: diaryPath });
+        } catch (error) {
+            if (error.code === 'ENOENT') {
+                res.json({ content: '[]', path: diaryPath });
+            } else {
+                throw error;
+            }
+        }
+    } catch (error) {
+        console.error('Error reading raw diary data:', error.message);
+        res.status(500).json({ error: 'Failed to read raw diary data' });
+    }
+});
+
+app.put('/api/raw/activity', requireAuth, async (req, res) => {
+    try {
+        const { content } = req.body;
+        
+        if (!content) {
+            return res.status(400).json({ error: 'Content is required' });
+        }
+        
+        // Validate JSON
+        try {
+            JSON.parse(content);
+        } catch (parseError) {
+            return res.status(400).json({ error: 'Invalid JSON format', details: parseError.message });
+        }
+        
+        const logPath = process.env.NODE_ENV === 'production' 
+            ? '/app/shared/lila-activity-log.json'
+            : path.join(__dirname, '..', 'lila-activity-log.json');
+        
+        // Create backup before overwriting
+        const backupPath = logPath + '.backup.' + Date.now();
+        try {
+            await fs.copyFile(logPath, backupPath);
+        } catch (error) {
+            // Backup failed, but continue if original file doesn't exist
+            if (error.code !== 'ENOENT') {
+                console.warn('Failed to create backup:', error.message);
+            }
+        }
+        
+        await fs.writeFile(logPath, content);
+        
+        res.json({ success: true, message: 'Activity data updated successfully' });
+    } catch (error) {
+        console.error('Error updating raw activity data:', error.message);
+        res.status(500).json({ error: 'Failed to update raw activity data' });
+    }
+});
+
+app.put('/api/raw/diary', requireAuth, async (req, res) => {
+    try {
+        const { content } = req.body;
+        
+        if (!content) {
+            return res.status(400).json({ error: 'Content is required' });
+        }
+        
+        // Validate JSON
+        try {
+            JSON.parse(content);
+        } catch (parseError) {
+            return res.status(400).json({ error: 'Invalid JSON format', details: parseError.message });
+        }
+        
+        const diaryPath = process.env.NODE_ENV === 'production' 
+            ? '/app/shared/diary-entries.json'
+            : path.join(__dirname, '..', 'diary-entries.json');
+        
+        // Create backup before overwriting
+        const backupPath = diaryPath + '.backup.' + Date.now();
+        try {
+            await fs.copyFile(diaryPath, backupPath);
+        } catch (error) {
+            // Backup failed, but continue if original file doesn't exist
+            if (error.code !== 'ENOENT') {
+                console.warn('Failed to create backup:', error.message);
+            }
+        }
+        
+        await fs.writeFile(diaryPath, content);
+        
+        res.json({ success: true, message: 'Diary data updated successfully' });
+    } catch (error) {
+        console.error('Error updating raw diary data:', error.message);
+        res.status(500).json({ error: 'Failed to update raw diary data' });
+    }
+});
 
 // Generate listening sessions with mood classification
 const generateListeningSessions = (activities) => {

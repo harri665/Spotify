@@ -1,14 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+                  <li class="nav-item" data-tab="diary">
+                    <i class="fas fa-book"></i> Diary
+                </li>
+                <li class="nav-item" data-tab="json-editor">
+                    <i class="fas fa-code"></i> JSON Editor
+                </li>
+                <li class="nav-item" data-tab="analytics">`eta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>444lila Spotify Analytics Dashboard</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-    <div class="dashboard">
+    <!-- Login Screen -->
+    <div id="login-screen" class="login-screen">
+        <div class="login-container">
+            <div class="login-header">
+                <h1><i class="fas fa-music"></i> 444lila Dashboard</h1>
+                <p>Enter password to access your private music analytics</p>
+            </div>
+            <form id="login-form" class="login-form">
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="password-input" placeholder="Enter password" required>
+                </div>
+                <button type="submit" class="login-btn">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </button>
+                <div id="login-error" class="login-error" style="display: none;"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Dashboard (hidden initially) -->
+    <div id="main-dashboard" class="dashboard" style="display: none;">
         <!-- Sidebar Navigation -->
         <nav class="sidebar">
             <div class="sidebar-header">
@@ -21,6 +48,9 @@
                 </li>
                 <li class="nav-item" data-tab="sessions">
                     <i class="fas fa-play-circle"></i> Sessions
+                </li>
+                <li class="nav-item" data-tab="diary">
+                    <i class="fas fa-book"></i> Diary
                 </li>
                 <li class="nav-item" data-tab="analytics">
                     <i class="fas fa-chart-bar"></i> Analytics
@@ -35,6 +65,9 @@
             <div class="sidebar-footer">
                 <button class="refresh-btn" onclick="refreshData()">
                     <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Logout
                 </button>
             </div>
         </nav>
@@ -93,6 +126,69 @@
                         <div class="loading">
                             <i class="fas fa-spinner fa-spin"></i>
                             <p>Loading recent songs...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Diary Tab -->
+                <div id="diary-tab" class="tab-pane">
+                    <div class="content-header">
+                        <h2><i class="fas fa-book"></i> Personal Diary</h2>
+                        <button class="new-entry-btn" onclick="showNewEntryModal()">
+                            <i class="fas fa-plus"></i> New Entry
+                        </button>
+                    </div>
+                    <div class="diary-container" id="diary-container">
+                        <div class="loading">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <p>Loading diary entries...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- JSON Editor Tab -->
+                <div id="json-editor-tab" class="tab-pane">
+                    <div class="content-header">
+                        <h2><i class="fas fa-code"></i> Raw JSON Editor</h2>
+                        <div class="json-editor-controls">
+                            <select id="json-file-selector" onchange="loadJsonFile()">
+                                <option value="activity">Activity Log</option>
+                                <option value="diary">Diary Entries</option>
+                            </select>
+                            <button class="json-action-btn format-btn" onclick="formatJson()" title="Format JSON">
+                                <i class="fas fa-align-left"></i> Format
+                            </button>
+                            <button class="json-action-btn validate-btn" onclick="validateJson()" title="Validate JSON">
+                                <i class="fas fa-check-circle"></i> Validate
+                            </button>
+                            <button class="json-action-btn save-btn" onclick="saveJsonFile()" title="Save Changes">
+                                <i class="fas fa-save"></i> Save
+                            </button>
+                        </div>
+                    </div>
+                    <div class="json-editor-container">
+                        <div class="json-editor-info">
+                            <div class="json-file-info">
+                                <span id="json-file-path">Loading...</span>
+                                <span id="json-file-size"></span>
+                            </div>
+                            <div class="json-editor-status" id="json-editor-status">
+                                <i class="fas fa-circle text-success"></i> Ready
+                            </div>
+                        </div>
+                        <div class="json-editor-wrapper">
+                            <textarea id="json-editor" class="json-editor" placeholder="Loading JSON data..."></textarea>
+                            <div class="json-editor-line-numbers" id="json-line-numbers"></div>
+                        </div>
+                        <div class="json-editor-footer">
+                            <div class="json-stats">
+                                <span id="json-lines">Lines: 0</span>
+                                <span id="json-chars">Characters: 0</span>
+                                <span id="json-cursor">Ln 1, Col 1</span>
+                            </div>
+                            <div class="json-help">
+                                <span><i class="fas fa-info-circle"></i> Ctrl+S to save, Ctrl+F to format</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -164,7 +260,53 @@
         </main>
     </div>
 
-    <!-- Modals -->
+    <!-- Diary Modal -->
+    <div id="diary-modal" class="modal">
+        <div class="modal-content diary-modal-content">
+            <span class="close" onclick="closeDiaryModal()">&times;</span>
+            <div class="diary-modal-header">
+                <h2 id="diary-modal-title">New Diary Entry</h2>
+            </div>
+            <form id="diary-form" class="diary-form">
+                <input type="hidden" id="diary-entry-id">
+                <div class="form-group">
+                    <label for="diary-title">Title</label>
+                    <input type="text" id="diary-title" placeholder="What's on your mind?" required>
+                </div>
+                <div class="form-group">
+                    <label for="diary-mood">Mood</label>
+                    <select id="diary-mood">
+                        <option value="happy">😊 Happy</option>
+                        <option value="sad">😢 Sad</option>
+                        <option value="excited">🤩 Excited</option>
+                        <option value="angry">😡 Angry</option>
+                        <option value="peaceful">😌 Peaceful</option>
+                        <option value="anxious">😰 Anxious</option>
+                        <option value="love">❤️ In Love</option>
+                        <option value="grateful">🙏 Grateful</option>
+                        <option value="confused">😕 Confused</option>
+                        <option value="neutral">😐 Neutral</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="diary-content">Write your thoughts...</label>
+                    <textarea id="diary-content" rows="10" placeholder="Dear diary..." required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="diary-tags">Tags (optional)</label>
+                    <input type="text" id="diary-tags" placeholder="music, thoughts, feelings (comma separated)">
+                </div>
+                <div class="diary-form-actions">
+                    <button type="button" onclick="closeDiaryModal()" class="btn-secondary">Cancel</button>
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-save"></i> Save Entry
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Song Modal -->
     <div id="song-modal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>

@@ -3,16 +3,160 @@ class SpotifyDashboard {
     constructor() {
         this.activities = [];
         this.analytics = {};
+        this.diaryEntries = [];
         this.currentTab = 'recent';
         this.filteredActivities = [];
+        this.sessionId = localStorage.getItem('sessionId');
+        this.isAuthenticated = false;
         
         this.init();
     }
 
     async init() {
-        this.setupEventListeners();
-        await this.loadData();
-        this.startAutoRefresh();
+        // Check authentication first
+        if (this.sessionId) {
+            const isValid = await this.verifySession();
+            if (isValid) {
+                this.showDashboard();
+                this.setupEventListeners();
+                await this.loadData();
+                this.startAutoRefresh();
+            } else {
+                this.showLogin();
+            }
+        } else {
+            this.showLogin();
+        }
+        
+        this.setupLoginHandlers();
+    }
+
+    showLogin() {
+        document.getElementById('login-screen').style.display = 'flex';
+        document.getElementById('main-dashboard').style.display = 'none';
+        this.isAuthenticated = false;
+    }
+
+    showDashboard() {
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('main-dashboard').style.display = 'flex';
+        this.isAuthenticated = true;
+    }
+
+    setupLoginHandlers() {
+        const loginForm = document.getElementById('login-form');
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await this.handleLogin();
+        });
+    }
+
+    async handleLogin() {
+        const passwordInput = document.getElementById('password-input');
+        const loginBtn = document.querySelector('.login-btn');
+        const errorDiv = document.getElementById('login-error');
+        
+        const password = passwordInput.value;
+        
+        if (!password) {
+            this.showLoginError('Please enter a password');
+            return;
+        }
+        
+        // Show loading state
+        loginBtn.disabled = true;
+        loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
+        errorDiv.style.display = 'none';
+        
+        try {
+            const response = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ password })
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok) {
+                this.sessionId = data.sessionId;
+                localStorage.setItem('sessionId', this.sessionId);
+                this.showDashboard();
+                this.setupEventListeners();
+                await this.loadData();
+                this.startAutoRefresh();
+            } else {
+                this.showLoginError(data.error || 'Login failed');
+            }
+        } catch (error) {
+            console.error('Login error:', error);
+            this.showLoginError('Connection error. Please try again.');
+        } finally {
+            loginBtn.disabled = false;
+            loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login';
+        }
+    }
+
+    showLoginError(message) {
+        const errorDiv = document.getElementById('login-error');
+        errorDiv.textContent = message;
+        errorDiv.style.display = 'block';
+    }
+
+    async verifySession() {
+        try {
+            const response = await fetch('/api/auth/verify', {
+                headers: {
+                    'X-Session-ID': this.sessionId
+                }
+            });
+            return response.ok;
+        } catch (error) {
+            console.error('Session verification error:', error);
+            return false;
+        }
+    }
+
+    async logout() {
+        try {
+            await fetch('/api/auth/logout', {
+                method: 'POST',
+                headers: {
+                    'X-Session-ID': this.sessionId
+                }
+            });
+        } catch (error) {
+            console.error('Logout error:', error);
+        } finally {
+            localStorage.removeItem('sessionId');
+            this.sessionId = null;
+            this.showLogin();
+        }
+    }
+
+    // Add session ID to all API requests
+    async authenticatedFetch(url, options = {}) {
+        if (!this.sessionId) {
+            throw new Error('No session ID');
+        }
+        
+        const headers = {
+            'X-Session-ID': this.sessionId,
+            ...options.headers
+        };
+        
+        const response = await fetch(url, {
+            ...options,
+            headers
+        });
+        
+        if (response.status === 401) {
+            this.logout();
+            throw new Error('Authentication failed');
+        }
+        
+        return response;
     }
 
     setupEventListeners() {
@@ -37,6 +181,21 @@ class SpotifyDashboard {
                 modal.style.display = 'none';
             }
         });
+
+        // Diary form
+        const diaryForm = document.getElementById('diary-form');
+        diaryForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await this.saveDiaryEntry();
+        });
+
+        // Diary modal
+        const diaryModal = document.getElementById('diary-modal');
+        window.addEventListener('click', (e) => {
+            if (e.target === diaryModal) {
+                this.closeDiaryModal();
+            }
+        });
     }
 
     switchTab(tabName) {
@@ -59,6 +218,12 @@ class SpotifyDashboard {
             case 'recent':
                 this.renderRecentSongs();
                 break;
+            case 'sessions':
+                this.renderSessions();
+                break;
+            case 'diary':
+                this.renderDiary();
+                break;
             case 'analytics':
                 this.renderAnalytics();
                 break;
@@ -68,6 +233,11 @@ class SpotifyDashboard {
             case 'patterns':
                 this.renderListeningPatterns();
                 break;
+            case 'json-editor':
+                if (!this.jsonEditor) {
+                    this.initJsonEditor();
+                }
+                break;
         }
     }
 
@@ -75,19 +245,26 @@ class SpotifyDashboard {
         try {
             // Load activities and analytics in parallel
             const [activitiesResponse, analyticsResponse] = await Promise.all([
-                fetch('/api/lila-activity'),
-                fetch('/api/analytics')
+                this.authenticatedFetch('/api/lila-activity'),
+                this.authenticatedFetch('/api/analytics')
             ]);
 
             this.activities = await activitiesResponse.json();
             this.analytics = await analyticsResponse.json();
             this.filteredActivities = [...this.activities];
 
+            // Load diary entries if on diary tab
+            if (this.currentTab === 'diary') {
+                await this.loadDiaryEntries();
+            }
+
             this.updateQuickStats();
             this.renderCurrentTab();
         } catch (error) {
             console.error('Error loading data:', error);
-            this.showError('Failed to load data');
+            if (error.message !== 'Authentication failed') {
+                this.showError('Failed to load data');
+            }
         }
     }
 
@@ -112,6 +289,9 @@ class SpotifyDashboard {
                 break;
             case 'sessions':
                 this.renderSessions();
+                break;
+            case 'diary':
+                this.renderDiary();
                 break;
             case 'analytics':
                 this.renderAnalytics();
@@ -339,6 +519,208 @@ class SpotifyDashboard {
 
     formatSessionMood(mood) {
         return mood.charAt(0).toUpperCase() + mood.slice(1);
+    }
+
+    // Diary Methods
+    async loadDiaryEntries() {
+        try {
+            const response = await this.authenticatedFetch('/api/diary');
+            this.diaryEntries = await response.json();
+        } catch (error) {
+            console.error('Error loading diary entries:', error);
+            if (error.message !== 'Authentication failed') {
+                this.showError('Failed to load diary entries');
+            }
+        }
+    }
+
+    async renderDiary() {
+        const container = document.getElementById('diary-container');
+        
+        // Load diary entries if not loaded
+        if (this.diaryEntries.length === 0) {
+            await this.loadDiaryEntries();
+        }
+        
+        if (this.diaryEntries.length === 0) {
+            container.innerHTML = `
+                <div class="loading">
+                    <i class="fas fa-book-open"></i>
+                    <p>No diary entries yet. Start writing your thoughts!</p>
+                </div>
+            `;
+            return;
+        }
+
+        const entriesHTML = this.diaryEntries.map(entry => {
+            const createdDate = new Date(entry.createdAt);
+            const formattedDate = createdDate.toLocaleDateString();
+            const formattedTime = createdDate.toLocaleTimeString();
+            
+            const preview = entry.content.length > 200 ? 
+                entry.content.substring(0, 200) + '...' : entry.content;
+            
+            const tagsHTML = entry.tags && entry.tags.length > 0 ? 
+                entry.tags.map(tag => `<span class="diary-tag">${tag.trim()}</span>`).join('') : '';
+            
+            return `
+                <div class="diary-entry" onclick="dashboard.viewDiaryEntry('${entry.id}')">
+                    <div class="diary-entry-header">
+                        <div>
+                            <div class="diary-entry-title">${this.escapeHtml(entry.title)}</div>
+                            <div class="diary-entry-meta">
+                                <span><i class="fas fa-calendar"></i> ${formattedDate}</span>
+                                <span><i class="fas fa-clock"></i> ${formattedTime}</span>
+                                <span class="diary-entry-mood diary-mood-${entry.mood}">
+                                    ${this.getDiaryMoodIcon(entry.mood)} ${this.formatMoodName(entry.mood)}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="diary-entry-actions">
+                            <button class="diary-action-btn" onclick="event.stopPropagation(); dashboard.editDiaryEntry('${entry.id}')" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="diary-action-btn delete" onclick="event.stopPropagation(); dashboard.deleteDiaryEntry('${entry.id}')" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="diary-entry-content preview">${this.escapeHtml(preview)}</div>
+                    ${tagsHTML ? `<div class="diary-entry-tags">${tagsHTML}</div>` : ''}
+                </div>
+            `;
+        }).join('');
+
+        container.innerHTML = entriesHTML;
+    }
+
+    async showNewEntryModal() {
+        this.resetDiaryForm();
+        document.getElementById('diary-modal-title').textContent = 'New Diary Entry';
+        document.getElementById('diary-modal').style.display = 'block';
+    }
+
+    async editDiaryEntry(entryId) {
+        const entry = this.diaryEntries.find(e => e.id === entryId);
+        if (!entry) return;
+
+        // Fill form with existing data
+        document.getElementById('diary-entry-id').value = entry.id;
+        document.getElementById('diary-title').value = entry.title;
+        document.getElementById('diary-content').value = entry.content;
+        document.getElementById('diary-mood').value = entry.mood;
+        document.getElementById('diary-tags').value = entry.tags ? entry.tags.join(', ') : '';
+        
+        document.getElementById('diary-modal-title').textContent = 'Edit Diary Entry';
+        document.getElementById('diary-modal').style.display = 'block';
+    }
+
+    async viewDiaryEntry(entryId) {
+        const entry = this.diaryEntries.find(e => e.id === entryId);
+        if (!entry) return;
+
+        // You could implement a read-only view modal here
+        // For now, just open in edit mode
+        this.editDiaryEntry(entryId);
+    }
+
+    async deleteDiaryEntry(entryId) {
+        if (!confirm('Are you sure you want to delete this diary entry? This action cannot be undone.')) {
+            return;
+        }
+
+        try {
+            const response = await this.authenticatedFetch(`/api/diary/${entryId}`, {
+                method: 'DELETE'
+            });
+
+            if (response.ok) {
+                await this.loadDiaryEntries();
+                this.renderDiary();
+            } else {
+                throw new Error('Failed to delete entry');
+            }
+        } catch (error) {
+            console.error('Error deleting diary entry:', error);
+            this.showError('Failed to delete diary entry');
+        }
+    }
+
+    async saveDiaryEntry() {
+        const entryId = document.getElementById('diary-entry-id').value;
+        const title = document.getElementById('diary-title').value.trim();
+        const content = document.getElementById('diary-content').value.trim();
+        const mood = document.getElementById('diary-mood').value;
+        const tagsInput = document.getElementById('diary-tags').value.trim();
+        
+        if (!title || !content) {
+            this.showError('Title and content are required');
+            return;
+        }
+
+        const tags = tagsInput ? tagsInput.split(',').map(tag => tag.trim()).filter(tag => tag) : [];
+
+        const entryData = { title, content, mood, tags };
+
+        try {
+            let response;
+            if (entryId) {
+                // Update existing entry
+                response = await this.authenticatedFetch(`/api/diary/${entryId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(entryData)
+                });
+            } else {
+                // Create new entry
+                response = await this.authenticatedFetch('/api/diary', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(entryData)
+                });
+            }
+
+            if (response.ok) {
+                this.closeDiaryModal();
+                await this.loadDiaryEntries();
+                this.renderDiary();
+            } else {
+                const error = await response.json();
+                throw new Error(error.error || 'Failed to save entry');
+            }
+        } catch (error) {
+            console.error('Error saving diary entry:', error);
+            this.showError('Failed to save diary entry');
+        }
+    }
+
+    resetDiaryForm() {
+        document.getElementById('diary-entry-id').value = '';
+        document.getElementById('diary-title').value = '';
+        document.getElementById('diary-content').value = '';
+        document.getElementById('diary-mood').value = 'neutral';
+        document.getElementById('diary-tags').value = '';
+    }
+
+    closeDiaryModal() {
+        document.getElementById('diary-modal').style.display = 'none';
+        this.resetDiaryForm();
+    }
+
+    getDiaryMoodIcon(mood) {
+        const icons = {
+            happy: '😊',
+            sad: '😢',
+            excited: '🤩',
+            angry: '😡',
+            peaceful: '😌',
+            anxious: '😰',
+            love: '❤️',
+            grateful: '🙏',
+            confused: '😕',
+            neutral: '😐'
+        };
+        return icons[mood] || icons.neutral;
     }
 
     renderAnalytics() {
@@ -581,6 +963,239 @@ class SpotifyDashboard {
             this.loadData();
         }, 30000);
     }
+
+    // JSON Editor functionality
+    async initJsonEditor() {
+        const fileSelect = document.getElementById('json-file-select');
+        const loadBtn = document.getElementById('json-load-btn');
+        const saveBtn = document.getElementById('json-save-btn');
+        const formatBtn = document.getElementById('json-format-btn');
+        const validateBtn = document.getElementById('json-validate-btn');
+        const editor = document.getElementById('json-editor');
+
+        if (!editor) return; // JSON editor not available
+
+        this.jsonEditor = {
+            currentFile: 'activity',
+            originalContent: '',
+            isModified: false
+        };
+
+        // File selection
+        fileSelect.addEventListener('change', (e) => {
+            this.jsonEditor.currentFile = e.target.value;
+            this.loadJsonFile();
+        });
+
+        // Button events
+        loadBtn.addEventListener('click', () => this.loadJsonFile());
+        saveBtn.addEventListener('click', () => this.saveJsonFile());
+        formatBtn.addEventListener('click', () => this.formatJson());
+        validateBtn.addEventListener('click', () => this.validateJson());
+
+        // Editor events
+        editor.addEventListener('input', () => this.onJsonContentChange());
+        editor.addEventListener('scroll', () => this.updateJsonLineNumbers());
+
+        // Load initial file
+        await this.loadJsonFile();
+    }
+
+    async loadJsonFile() {
+        try {
+            const response = await this.authenticatedFetch(`/api/raw/${this.jsonEditor.currentFile}`);
+
+            if (!response.ok) {
+                throw new Error(`Failed to load ${this.jsonEditor.currentFile} data`);
+            }
+
+            const data = await response.json();
+            this.jsonEditor.originalContent = JSON.stringify(data, null, 2);
+            
+            const editor = document.getElementById('json-editor');
+            editor.value = this.jsonEditor.originalContent;
+            
+            this.jsonEditor.isModified = false;
+            this.updateJsonUI();
+            this.updateJsonLineNumbers();
+            this.updateJsonStats();
+
+            this.showJsonSuccess(`Loaded ${this.jsonEditor.currentFile} data successfully`);
+        } catch (error) {
+            console.error('Error loading file:', error);
+            this.showJsonError(`Failed to load ${this.jsonEditor.currentFile} data: ${error.message}`);
+        }
+    }
+
+    async saveJsonFile() {
+        try {
+            const editor = document.getElementById('json-editor');
+            const content = editor.value;
+
+            // Validate JSON before saving
+            JSON.parse(content);
+
+            const response = await this.authenticatedFetch(`/api/raw/${this.jsonEditor.currentFile}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ data: JSON.parse(content) })
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.error || 'Failed to save file');
+            }
+
+            this.jsonEditor.originalContent = content;
+            this.jsonEditor.isModified = false;
+            this.updateJsonUI();
+
+            this.showJsonSuccess(`Saved ${this.jsonEditor.currentFile} data successfully`);
+        } catch (error) {
+            console.error('Error saving file:', error);
+            if (error instanceof SyntaxError) {
+                this.showJsonError('Invalid JSON format. Please fix syntax errors before saving.');
+            } else {
+                this.showJsonError(`Failed to save ${this.jsonEditor.currentFile} data: ${error.message}`);
+            }
+        }
+    }
+
+    formatJson() {
+        try {
+            const editor = document.getElementById('json-editor');
+            const parsed = JSON.parse(editor.value);
+            editor.value = JSON.stringify(parsed, null, 2);
+            
+            this.onJsonContentChange();
+            this.updateJsonLineNumbers();
+            this.updateJsonStats();
+            
+            this.showJsonSuccess('JSON formatted successfully');
+        } catch (error) {
+            this.showJsonError('Invalid JSON format. Cannot format.');
+        }
+    }
+
+    validateJson() {
+        try {
+            const editor = document.getElementById('json-editor');
+            JSON.parse(editor.value);
+            
+            const status = document.getElementById('json-status');
+            status.className = 'json-editor-status text-success';
+            status.innerHTML = '✓ Valid JSON';
+            
+            this.showJsonSuccess('JSON is valid');
+        } catch (error) {
+            const status = document.getElementById('json-status');
+            status.className = 'json-editor-status text-danger';
+            status.innerHTML = '✗ Invalid JSON';
+            
+            this.showJsonError(`JSON Error: ${error.message}`);
+        }
+    }
+
+    onJsonContentChange() {
+        const editor = document.getElementById('json-editor');
+        this.jsonEditor.isModified = editor.value !== this.jsonEditor.originalContent;
+        this.updateJsonUI();
+        this.updateJsonStats();
+        
+        // Auto-validate
+        try {
+            JSON.parse(editor.value);
+            const status = document.getElementById('json-status');
+            status.className = 'json-editor-status text-success';
+            status.innerHTML = '✓ Valid JSON';
+        } catch (error) {
+            const status = document.getElementById('json-status');
+            status.className = 'json-editor-status text-warning';
+            status.innerHTML = '⚠ Syntax Error';
+        }
+    }
+
+    updateJsonUI() {
+        const saveBtn = document.getElementById('json-save-btn');
+        const fileName = document.getElementById('json-file-name');
+        
+        if (saveBtn) {
+            saveBtn.disabled = !this.jsonEditor.isModified;
+            saveBtn.textContent = this.jsonEditor.isModified ? '💾 Save Changes' : '💾 Saved';
+        }
+        
+        if (fileName) {
+            fileName.textContent = `${this.jsonEditor.currentFile}.json${this.jsonEditor.isModified ? ' (modified)' : ''}`;
+        }
+    }
+
+    updateJsonLineNumbers() {
+        const editor = document.getElementById('json-editor');
+        const lineNumbers = document.getElementById('json-line-numbers');
+        
+        if (!editor || !lineNumbers) return;
+        
+        const lines = editor.value.split('\n').length;
+        const numbers = Array.from({ length: lines }, (_, i) => i + 1).join('\n');
+        lineNumbers.textContent = numbers;
+        
+        // Sync scroll
+        lineNumbers.scrollTop = editor.scrollTop;
+    }
+
+    updateJsonStats() {
+        const editor = document.getElementById('json-editor');
+        if (!editor) return;
+        
+        const content = editor.value;
+        const lines = content.split('\n').length;
+        const chars = content.length;
+        const size = new Blob([content]).size;
+        
+        const linesSpan = document.getElementById('json-lines');
+        const charsSpan = document.getElementById('json-chars');
+        const sizeSpan = document.getElementById('json-size');
+        
+        if (linesSpan) linesSpan.textContent = lines;
+        if (charsSpan) charsSpan.textContent = chars;
+        if (sizeSpan) sizeSpan.textContent = this.formatBytes(size);
+    }
+
+    formatBytes(bytes) {
+        if (bytes === 0) return '0 B';
+        const k = 1024;
+        const sizes = ['B', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    showJsonError(message) {
+        this.showJsonPopup(message, 'error');
+    }
+
+    showJsonSuccess(message) {
+        this.showJsonPopup(message, 'success');
+    }
+
+    showJsonPopup(message, type) {
+        // Remove existing popups
+        document.querySelectorAll('.json-error-popup, .json-success-popup').forEach(popup => {
+            popup.remove();
+        });
+
+        const popup = document.createElement('div');
+        popup.className = type === 'error' ? 'json-error-popup' : 'json-success-popup';
+        popup.textContent = message;
+        
+        document.body.appendChild(popup);
+        
+        // Auto remove after 4 seconds
+        setTimeout(() => {
+            popup.remove();
+        }, 4000);
+    }
 }
 
 // Global functions for inline event handlers
@@ -594,6 +1209,18 @@ window.refreshData = function() {
 
 window.toggleSessionExpansion = function(sessionId) {
     dashboard.toggleSessionExpansion(sessionId);
+};
+
+window.logout = function() {
+    dashboard.logout();
+};
+
+window.showNewEntryModal = function() {
+    dashboard.showNewEntryModal();
+};
+
+window.closeDiaryModal = function() {
+    dashboard.closeDiaryModal();
 };
 
 // Initialize dashboard when DOM is loaded
