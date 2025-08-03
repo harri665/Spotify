@@ -143,14 +143,13 @@
                     </div>
                 </div>
 
-                <!-- JSON Editor Tab -->
                 <div id="json-editor-tab" class="tab-pane">
                     <div class="content-header">
-                        <h2><i class="fas fa-code"></i> Raw JSON Editor</h2>
+                        <h2><i class="fas fa-code"></i> JSON Content Editor</h2>
                         <div class="json-editor-controls">
                             <select id="json-file-select">
-                                <option value="activity">Activity Log</option>
-                                <option value="diary">Diary Entries</option>
+                                <option value="activity">Activity Data (Song History)</option>
+                                <option value="diary">Diary Data (Personal Entries)</option>
                             </select>
                             <button id="json-load-btn" class="json-action-btn" title="Reload JSON">
                                 <i class="fas fa-sync"></i> Load
@@ -169,7 +168,7 @@
                     <div class="json-editor-container">
                         <div class="json-editor-info">
                             <div class="json-file-info">
-                                <span id="json-file-name">Loading...</span>
+                                <span id="json-file-name">Loading content...</span>
                                 <span id="json-size"></span>
                             </div>
                             <div id="json-status" class="json-editor-status text-success">
@@ -178,7 +177,7 @@
                         </div>
                         <div class="json-editor-wrapper">
                             <div id="json-line-numbers" class="json-editor-line-numbers"></div>
-                            <textarea id="json-editor" class="json-editor" placeholder="Loading JSON data..."></textarea>
+                            <textarea id="json-editor" class="json-editor" placeholder="Loading JSON content...&#10;&#10;This editor allows you to directly modify:&#10;• Activity log entries (song history, timestamps, metadata)&#10;• Diary entries (personal notes, moods, tags)&#10;&#10;Changes are automatically backed up before saving."></textarea>
                         </div>
                         <div class="json-editor-footer">
                             <div class="json-stats">
@@ -187,7 +186,7 @@
                                 <span>Size: <span id="json-size">0 B</span></span>
                             </div>
                             <div class="json-help">
-                                <span><i class="fas fa-info-circle"></i> Ctrl+S to save, Ctrl+F to format</span>
+                                <span><i class="fas fa-info-circle"></i> Editing structured JSON content - changes are applied to the live data</span>
                             </div>
                         </div>
                     </div>

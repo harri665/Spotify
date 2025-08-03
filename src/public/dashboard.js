@@ -996,6 +996,29 @@ class SpotifyDashboard {
         // Editor events
         editor.addEventListener('input', () => this.onJsonContentChange());
         editor.addEventListener('scroll', () => this.updateJsonLineNumbers());
+        
+        // Keyboard shortcuts
+        editor.addEventListener('keydown', (e) => {
+            // Ctrl+S to save
+            if (e.ctrlKey && e.key === 's') {
+                e.preventDefault();
+                this.saveJsonFile();
+            }
+            // Ctrl+Shift+F to format
+            if (e.ctrlKey && e.shiftKey && e.key === 'F') {
+                e.preventDefault();
+                this.formatJson();
+            }
+            // Tab key for indentation
+            if (e.key === 'Tab') {
+                e.preventDefault();
+                const start = editor.selectionStart;
+                const end = editor.selectionEnd;
+                editor.value = editor.value.substring(0, start) + '  ' + editor.value.substring(end);
+                editor.selectionStart = editor.selectionEnd = start + 2;
+                this.onJsonContentChange();
+            }
+        });
 
         // Load initial file
         await this.loadJsonFile();
@@ -1010,6 +1033,7 @@ class SpotifyDashboard {
             }
 
             const data = await response.json();
+            // Format the JSON content for editing (pretty-printed)
             this.jsonEditor.originalContent = JSON.stringify(data, null, 2);
             
             const editor = document.getElementById('json-editor');
@@ -1020,7 +1044,7 @@ class SpotifyDashboard {
             this.updateJsonLineNumbers();
             this.updateJsonStats();
 
-            this.showJsonSuccess(`Loaded ${this.jsonEditor.currentFile} data successfully`);
+            this.showJsonSuccess(`Loaded ${this.jsonEditor.currentFile} content successfully`);
         } catch (error) {
             console.error('Error loading file:', error);
             this.showJsonError(`Failed to load ${this.jsonEditor.currentFile} data: ${error.message}`);
@@ -1033,14 +1057,14 @@ class SpotifyDashboard {
             const content = editor.value;
 
             // Validate JSON before saving
-            JSON.parse(content);
+            const parsedData = JSON.parse(content);
 
             const response = await this.authenticatedFetch(`/api/raw/${this.jsonEditor.currentFile}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ data: JSON.parse(content) })
+                body: JSON.stringify({ data: parsedData })
             });
 
             if (!response.ok) {
@@ -1052,7 +1076,13 @@ class SpotifyDashboard {
             this.jsonEditor.isModified = false;
             this.updateJsonUI();
 
-            this.showJsonSuccess(`Saved ${this.jsonEditor.currentFile} data successfully`);
+            this.showJsonSuccess(`Saved ${this.jsonEditor.currentFile} content successfully`);
+            
+            // Refresh the dashboard data if we edited the activity log
+            if (this.jsonEditor.currentFile === 'activity') {
+                await this.loadData();
+                this.renderRecentSongs();
+            }
         } catch (error) {
             console.error('Error saving file:', error);
             if (error instanceof SyntaxError) {
@@ -1127,7 +1157,12 @@ class SpotifyDashboard {
         }
         
         if (fileName) {
-            fileName.textContent = `${this.jsonEditor.currentFile}.json${this.jsonEditor.isModified ? ' (modified)' : ''}`;
+            const fileNames = {
+                'activity': 'Activity Data (Song History)',
+                'diary': 'Diary Data (Personal Entries)'
+            };
+            const displayName = fileNames[this.jsonEditor.currentFile] || this.jsonEditor.currentFile;
+            fileName.textContent = `${displayName}${this.jsonEditor.isModified ? ' (modified)' : ''}`;
         }
     }
 

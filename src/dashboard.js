@@ -385,12 +385,26 @@ app.get('/api/raw/activity', requireAuth, async (req, res) => {
             ? '/app/shared/lila-activity-log.json'
             : path.join(__dirname, '..', 'lila-activity-log.json');
         
+        const rawContent = req.query.raw === 'true'; // Query param to get raw content
+        
         try {
             const data = await fs.readFile(logPath, 'utf8');
-            res.json({ content: data, path: logPath });
+            
+            if (rawContent) {
+                // Return raw file content as string
+                res.json({ content: data, path: logPath, type: 'raw' });
+            } else {
+                // Return parsed JSON content for editing
+                const parsed = JSON.parse(data || '[]');
+                res.json(parsed);
+            }
         } catch (error) {
             if (error.code === 'ENOENT') {
-                res.json({ content: '[]', path: logPath });
+                if (rawContent) {
+                    res.json({ content: '[]', path: logPath, type: 'raw' });
+                } else {
+                    res.json([]);
+                }
             } else {
                 throw error;
             }
@@ -407,12 +421,26 @@ app.get('/api/raw/diary', requireAuth, async (req, res) => {
             ? '/app/shared/diary-entries.json'
             : path.join(__dirname, '..', 'diary-entries.json');
         
+        const rawContent = req.query.raw === 'true'; // Query param to get raw content
+        
         try {
             const data = await fs.readFile(diaryPath, 'utf8');
-            res.json({ content: data, path: diaryPath });
+            
+            if (rawContent) {
+                // Return raw file content as string
+                res.json({ content: data, path: diaryPath, type: 'raw' });
+            } else {
+                // Return parsed JSON content for editing
+                const parsed = JSON.parse(data || '[]');
+                res.json(parsed);
+            }
         } catch (error) {
             if (error.code === 'ENOENT') {
-                res.json({ content: '[]', path: diaryPath });
+                if (rawContent) {
+                    res.json({ content: '[]', path: diaryPath, type: 'raw' });
+                } else {
+                    res.json([]);
+                }
             } else {
                 throw error;
             }
@@ -425,18 +453,14 @@ app.get('/api/raw/diary', requireAuth, async (req, res) => {
 
 app.put('/api/raw/activity', requireAuth, async (req, res) => {
     try {
-        const { content } = req.body;
+        const { data } = req.body; // Expect structured data instead of raw content
         
-        if (!content) {
-            return res.status(400).json({ error: 'Content is required' });
+        if (!data) {
+            return res.status(400).json({ error: 'Data is required' });
         }
         
-        // Validate JSON
-        try {
-            JSON.parse(content);
-        } catch (parseError) {
-            return res.status(400).json({ error: 'Invalid JSON format', details: parseError.message });
-        }
+        // Convert to JSON string
+        const content = JSON.stringify(data, null, 2);
         
         const logPath = process.env.NODE_ENV === 'production' 
             ? '/app/shared/lila-activity-log.json'
@@ -464,18 +488,15 @@ app.put('/api/raw/activity', requireAuth, async (req, res) => {
 
 app.put('/api/raw/diary', requireAuth, async (req, res) => {
     try {
-        const { content } = req.body;
+        const { data } = req.body; // Expect structured data instead of raw content
         
-        if (!content) {
-            return res.status(400).json({ error: 'Content is required' });
+        if (!data) {
+            return res.status(400).json({ error: 'Data is required' });
         }
         
-        // Validate JSON
-        try {
-            JSON.parse(content);
-        } catch (parseError) {
-            return res.status(400).json({ error: 'Invalid JSON format', details: parseError.message });
-        }
+        // Convert to JSON string
+        const content = JSON.stringify(data, null, 2);
+        
         
         const diaryPath = process.env.NODE_ENV === 'production' 
             ? '/app/shared/diary-entries.json'
