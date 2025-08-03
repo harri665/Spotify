@@ -1,13 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-                  <li class="nav-item" data-tab="diary">
-                    <i class="fas fa-book"></i> Diary
-                </li>
-                <li class="nav-item" data-tab="json-editor">
-                    <i class="fas fa-code"></i> JSON Editor
-                </li>
-                <li class="nav-item" data-tab="analytics">`eta charset="UTF-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>444lila Spotify Analytics Dashboard</title>
     <link rel="stylesheet" href="styles.css">
@@ -51,6 +45,9 @@
                 </li>
                 <li class="nav-item" data-tab="diary">
                     <i class="fas fa-book"></i> Diary
+                </li>
+                <li class="nav-item" data-tab="json-editor">
+                    <i class="fas fa-code"></i> JSON Editor
                 </li>
                 <li class="nav-item" data-tab="analytics">
                     <i class="fas fa-chart-bar"></i> Analytics
@@ -151,17 +148,20 @@
                     <div class="content-header">
                         <h2><i class="fas fa-code"></i> Raw JSON Editor</h2>
                         <div class="json-editor-controls">
-                            <select id="json-file-selector" onchange="loadJsonFile()">
+                            <select id="json-file-select">
                                 <option value="activity">Activity Log</option>
                                 <option value="diary">Diary Entries</option>
                             </select>
-                            <button class="json-action-btn format-btn" onclick="formatJson()" title="Format JSON">
+                            <button id="json-load-btn" class="json-action-btn" title="Reload JSON">
+                                <i class="fas fa-sync"></i> Load
+                            </button>
+                            <button id="json-format-btn" class="json-action-btn format-btn" title="Format JSON">
                                 <i class="fas fa-align-left"></i> Format
                             </button>
-                            <button class="json-action-btn validate-btn" onclick="validateJson()" title="Validate JSON">
+                            <button id="json-validate-btn" class="json-action-btn validate-btn" title="Validate JSON">
                                 <i class="fas fa-check-circle"></i> Validate
                             </button>
-                            <button class="json-action-btn save-btn" onclick="saveJsonFile()" title="Save Changes">
+                            <button id="json-save-btn" class="json-action-btn save-btn" title="Save Changes">
                                 <i class="fas fa-save"></i> Save
                             </button>
                         </div>
@@ -169,22 +169,22 @@
                     <div class="json-editor-container">
                         <div class="json-editor-info">
                             <div class="json-file-info">
-                                <span id="json-file-path">Loading...</span>
-                                <span id="json-file-size"></span>
+                                <span id="json-file-name">Loading...</span>
+                                <span id="json-size"></span>
                             </div>
-                            <div class="json-editor-status" id="json-editor-status">
-                                <i class="fas fa-circle text-success"></i> Ready
+                            <div id="json-status" class="json-editor-status text-success">
+                                ✓ Ready
                             </div>
                         </div>
                         <div class="json-editor-wrapper">
+                            <div id="json-line-numbers" class="json-editor-line-numbers"></div>
                             <textarea id="json-editor" class="json-editor" placeholder="Loading JSON data..."></textarea>
-                            <div class="json-editor-line-numbers" id="json-line-numbers"></div>
                         </div>
                         <div class="json-editor-footer">
                             <div class="json-stats">
-                                <span id="json-lines">Lines: 0</span>
-                                <span id="json-chars">Characters: 0</span>
-                                <span id="json-cursor">Ln 1, Col 1</span>
+                                <span>Lines: <span id="json-lines">0</span></span>
+                                <span>Characters: <span id="json-chars">0</span></span>
+                                <span>Size: <span id="json-size">0 B</span></span>
                             </div>
                             <div class="json-help">
                                 <span><i class="fas fa-info-circle"></i> Ctrl+S to save, Ctrl+F to format</span>
