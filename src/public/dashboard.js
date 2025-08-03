@@ -110,6 +110,9 @@ class SpotifyDashboard {
             case 'recent':
                 this.renderRecentSongs();
                 break;
+            case 'sessions':
+                this.renderSessions();
+                break;
             case 'analytics':
                 this.renderAnalytics();
                 break;
@@ -164,6 +167,178 @@ class SpotifyDashboard {
         }).join('');
 
         container.innerHTML = songsHTML;
+    }
+
+    renderSessions() {
+        const container = document.getElementById('sessions-container');
+        const sessions = this.analytics.sessions || [];
+        
+        // Update session count
+        document.getElementById('session-count').textContent = 
+            `${sessions.length} Session${sessions.length !== 1 ? 's' : ''}`;
+        
+        if (sessions.length === 0) {
+            container.innerHTML = `
+                <div class="loading">
+                    <i class="fas fa-music"></i>
+                    <p>No listening sessions found</p>
+                </div>
+            `;
+            return;
+        }
+
+        const sessionsHTML = sessions.map(session => {
+            const startTime = new Date(session.startTime);
+            const endTime = new Date(session.endTime);
+            const duration = this.formatDuration(session.duration || 0);
+            const timeRange = `${startTime.toLocaleTimeString()} - ${endTime.toLocaleTimeString()}`;
+            const dateStr = startTime.toLocaleDateString();
+            
+            const songsHTML = session.songs.map(song => `
+                <div class="session-song">
+                    <img src="${song.imageUrl || this.getPlaceholderImage()}" 
+                         alt="Album cover" 
+                         class="session-song-cover"
+                         onerror="this.src='${this.getPlaceholderImage()}'">
+                    <div class="session-song-info">
+                        <div class="session-song-title">${this.escapeHtml(song.song)}</div>
+                        <div class="session-song-artist">${this.escapeHtml(song.artist)}</div>
+                    </div>
+                    <div class="session-song-mood mood-${song.mood || 'neutral'}"></div>
+                </div>
+            `).join('');
+            
+            return `
+                <div class="session-card" onclick="dashboard.toggleSession('${session.id}')">
+                    <div class="session-header">
+                        <div class="session-info">
+                            <h3>
+                                ${this.getSessionIcon(session.sessionMood)}
+                                ${this.formatSessionTitle(session.sessionMood)} Session
+                            </h3>
+                            <div class="session-meta">
+                                <span><i class="fas fa-calendar"></i> ${dateStr}</span>
+                                <span><i class="fas fa-clock"></i> ${timeRange}</span>
+                                <span class="session-duration">
+                                    <i class="fas fa-hourglass-half"></i> ${duration}
+                                </span>
+                                <span><i class="fas fa-music"></i> ${session.songs.length} songs</span>
+                            </div>
+                        </div>
+                        <div class="session-mood-indicator session-mood-${session.sessionMood}">
+                            ${this.getSessionMoodIcon(session.sessionMood)}
+                            ${this.formatSessionMood(session.sessionMood)}
+                        </div>
+                    </div>
+                    <div class="session-songs session-expandable" id="session-${session.id}">
+                        ${songsHTML}
+                    </div>
+                    ${session.songs.length > 6 ? `
+                        <div class="session-toggle">
+                            <button class="session-toggle-btn" onclick="event.stopPropagation(); dashboard.toggleSessionExpansion('${session.id}')">
+                                <i class="fas fa-chevron-down"></i>
+                                <span>Show all ${session.songs.length} songs</span>
+                            </button>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }).join('');
+
+        container.innerHTML = sessionsHTML;
+
+        // Initially collapse sessions with many songs
+        sessions.forEach(session => {
+            if (session.songs.length > 6) {
+                const element = document.getElementById(`session-${session.id}`);
+                if (element) {
+                    element.style.maxHeight = '200px';
+                }
+            }
+        });
+    }
+
+    toggleSession(sessionId) {
+        // Handle session card click - could expand/collapse or show details
+        console.log('Session clicked:', sessionId);
+    }
+
+    toggleSessionExpansion(sessionId) {
+        const element = document.getElementById(`session-${sessionId}`);
+        const button = element.parentElement.querySelector('.session-toggle-btn');
+        
+        if (element.classList.contains('expanded')) {
+            element.classList.remove('expanded');
+            element.style.maxHeight = '200px';
+            button.innerHTML = '<i class="fas fa-chevron-down"></i><span>Show all songs</span>';
+        } else {
+            element.classList.add('expanded');
+            element.style.maxHeight = 'none';
+            button.innerHTML = '<i class="fas fa-chevron-up"></i><span>Show less</span>';
+        }
+    }
+
+    formatDuration(milliseconds) {
+        const minutes = Math.floor(milliseconds / 60000);
+        const hours = Math.floor(minutes / 60);
+        
+        if (hours > 0) {
+            const remainingMinutes = minutes % 60;
+            return `${hours}h ${remainingMinutes}m`;
+        }
+        return `${minutes}m`;
+    }
+
+    getSessionIcon(mood) {
+        const icons = {
+            intense: '🔥',
+            mixed: '🎭',
+            chill: '😌',
+            energetic: '⚡',
+            sad: '💙',
+            love: '💕',
+            breakup: '💔',
+            nostalgic: '🌅',
+            confident: '👑',
+            neutral: '🎵'
+        };
+        return icons[mood] || icons.neutral;
+    }
+
+    getSessionMoodIcon(mood) {
+        const icons = {
+            intense: '🌶️',
+            mixed: '🎨',
+            chill: '🧊',
+            energetic: '⚡',
+            sad: '💧',
+            love: '💖',
+            breakup: '🖤',
+            nostalgic: '📸',
+            confident: '💎',
+            neutral: '➖'
+        };
+        return icons[mood] || icons.neutral;
+    }
+
+    formatSessionTitle(mood) {
+        const titles = {
+            intense: 'Emotional',
+            mixed: 'Mixed Vibes',
+            chill: 'Relaxing',
+            energetic: 'High Energy',
+            sad: 'Melancholy',
+            love: 'Romantic',
+            breakup: 'Heartbreak',
+            nostalgic: 'Nostalgic',
+            confident: 'Confidence Boost',
+            neutral: 'Casual Listening'
+        };
+        return titles[mood] || titles.neutral;
+    }
+
+    formatSessionMood(mood) {
+        return mood.charAt(0).toUpperCase() + mood.slice(1);
     }
 
     renderAnalytics() {
@@ -415,6 +590,10 @@ window.filterByMood = function() {
 
 window.refreshData = function() {
     dashboard.refreshData();
+};
+
+window.toggleSessionExpansion = function(sessionId) {
+    dashboard.toggleSessionExpansion(sessionId);
 };
 
 // Initialize dashboard when DOM is loaded

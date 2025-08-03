@@ -159,6 +159,9 @@ const generateAnalytics = (activities) => {
         .slice(0, 10)
         .map(([artist, count]) => ({ artist, count }));
     
+    // Generate listening sessions
+    const sessions = generateListeningSessions(activities);
+    
     return {
         totalSongs: activities.length,
         uniqueArtists: Object.keys(artistCounts).length,
@@ -173,8 +176,117 @@ const generateAnalytics = (activities) => {
             artist: a.artist,
             timestamp: a.loggedAt,
             mood: classifySongType(a.song, a.artist, a.album)
-        }))
+        })),
+        sessions: sessions
     };
+};
+
+// Generate listening sessions with mood classification
+const generateListeningSessions = (activities) => {
+    if (activities.length === 0) return [];
+    
+    const sessions = [];
+    let currentSession = null;
+    const SESSION_GAP_MINUTES = 30; // If gap > 30 minutes, start new session
+    
+    // Sort activities by timestamp (oldest first for session building)
+    const sortedActivities = [...activities].sort((a, b) => 
+        new Date(a.loggedAt) - new Date(b.loggedAt)
+    );
+    
+    sortedActivities.forEach((activity, index) => {
+        const mood = classifySongType(activity.song, activity.artist, activity.album);
+        const timestamp = new Date(activity.loggedAt);
+        
+        // Check if we should start a new session
+        if (!currentSession || 
+            (timestamp - new Date(currentSession.endTime)) > SESSION_GAP_MINUTES * 60 * 1000) {
+            
+            // Finalize previous session
+            if (currentSession) {
+                currentSession.sessionMood = determineSessionMood(currentSession.songs);
+                sessions.push(currentSession);
+            }
+            
+            // Start new session
+            currentSession = {
+                id: `session-${timestamp.getTime()}`,
+                startTime: activity.loggedAt,
+                endTime: activity.loggedAt,
+                songs: [{ ...activity, mood }],
+                duration: 0
+            };
+        } else {
+            // Add to current session
+            currentSession.songs.push({ ...activity, mood });
+            currentSession.endTime = activity.loggedAt;
+            currentSession.duration = new Date(currentSession.endTime) - new Date(currentSession.startTime);
+        }
+    });
+    
+    // Finalize last session
+    if (currentSession) {
+        currentSession.sessionMood = determineSessionMood(currentSession.songs);
+        sessions.push(currentSession);
+    }
+    
+    // Return sessions sorted by start time (newest first)
+    return sessions.sort((a, b) => new Date(b.startTime) - new Date(a.startTime));
+};
+
+// Determine the overall mood of a listening session
+const determineSessionMood = (songs) => {
+    if (songs.length === 0) return 'neutral';
+    
+    // Count mood occurrences
+    const moodCounts = {};
+    songs.forEach(song => {
+        const mood = song.mood || 'neutral';
+        moodCounts[mood] = (moodCounts[mood] || 0) + 1;
+    });
+    
+    // Find the most common mood
+    const sortedMoods = Object.entries(moodCounts)
+        .sort(([,a], [,b]) => b - a);
+    
+    const dominantMood = sortedMoods[0][0];
+    const dominantCount = sortedMoods[0][1];
+    const totalSongs = songs.length;
+    
+    // If a mood represents more than 40% of the session, use it
+    if (dominantCount / totalSongs >= 0.4) {
+        return dominantMood;
+    }
+    
+    // If no clear dominant mood, check for emotional patterns
+    const emotionalWeight = {
+        'sad': 2,
+        'breakup': 2,
+        'angry': 2,
+        'love': 1.5,
+        'nostalgic': 1.5,
+        'energetic': 1,
+        'confident': 1,
+        'chill': 0.5,
+        'melodic': 0.5,
+        'experimental': 0.5,
+        'neutral': 0
+    };
+    
+    let weightedScore = 0;
+    let totalWeight = 0;
+    
+    Object.entries(moodCounts).forEach(([mood, count]) => {
+        const weight = emotionalWeight[mood] || 0;
+        weightedScore += weight * count;
+        totalWeight += count;
+    });
+    
+    const averageWeight = weightedScore / totalWeight;
+    
+    if (averageWeight >= 1.5) return 'intense'; // Emotional session
+    if (averageWeight >= 1) return 'mixed'; // Mixed emotional session
+    return 'chill'; // Relaxed session
 };
 
 // Serve the main dashboard page
