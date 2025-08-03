@@ -245,7 +245,7 @@ class SpotifyDashboard {
         try {
             // Load activities and analytics in parallel
             const [activitiesResponse, analyticsResponse] = await Promise.all([
-                this.authenticatedFetch('/api/lila-activity'),
+                this.authenticatedFetch('/api/spotify-activity'),
                 this.authenticatedFetch('/api/analytics')
             ]);
 

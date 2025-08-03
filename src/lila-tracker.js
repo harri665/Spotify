@@ -1,10 +1,10 @@
-// 444lila Specific Tracker - Enhanced Friend Activity Monitor
+// Spotify Activity Tracker - Enhanced Friend Activity Monitor
 const puppeteer = require('puppeteer');
 const fs = require('fs').promises;
 
-class LilaTracker {
+class SpotifyTracker {
     constructor() {
-        this.targetUser = '444lila';
+        this.targetUser = 'spotify_user';
         this.currentToken = null;
         this.tokenExpiry = 0;
         this.browser = null;
@@ -148,7 +148,7 @@ class LilaTracker {
         }
     }
 
-    async trackLila() {
+    async trackUser() {
         if (!this.currentToken || Date.now() > this.tokenExpiry) {
             const success = await this.getToken();
             if (!success) {
@@ -168,10 +168,10 @@ class LilaTracker {
 
             if (response.ok) {
                 const data = await response.json();
-                const lilaActivity = data.friends?.find(friend => friend.user.name === this.targetUser);
-                
-                if (lilaActivity) {
-                    return this.processLilaActivity(lilaActivity);
+                const userActivity = data.friends?.find(friend => friend.user.name === this.targetUser);
+
+                if (userActivity) {
+                    return this.processUserActivity(userActivity);
                 } else {
                     console.log(`😴 ${this.targetUser} is not currently listening to music`);
                     return null;
@@ -181,12 +181,12 @@ class LilaTracker {
                 return null;
             }
         } catch (error) {
-            console.error('❌ Error tracking Lila:', error.message);
+            console.error('❌ Error tracking user:', error.message);
             return null;
         }
     }
 
-    processLilaActivity(activity) {
+    processUserActivity(activity) {
         const track = activity.track;
         const timestamp = new Date(activity.timestamp);
         
@@ -224,7 +224,7 @@ class LilaTracker {
         try {
             // Use shared directory in Docker, current directory otherwise
             const logDir = process.env.NODE_ENV === 'production' ? '/app/shared' : '.';
-            const filename = `${logDir}/lila-activity-log.json`;
+            const filename = `${logDir}/spotify-activity-log.json`;
             let log = [];
             
             try {
@@ -259,7 +259,7 @@ class LilaTracker {
 }
 
 async function main() {
-    const tracker = new LilaTracker();
+    const tracker = new SpotifyTracker();
     
     try {
         await tracker.init();
@@ -288,11 +288,11 @@ async function main() {
         console.log('');
         
         // Initial check
-        await tracker.trackLila();
+        await tracker.trackUser();
         
         // Set up periodic checking using configured interval
         const interval = setInterval(async () => {
-            await tracker.trackLila();
+            await tracker.trackUser();
         }, tracker.checkInterval);
         
         // Handle graceful shutdown
