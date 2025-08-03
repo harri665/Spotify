@@ -1,10 +1,10 @@
-# Spotify Activity Tracker
+# 444lila Spotify Tracker
 
-A simple, focused Spotify activity tracker that monitors what you're listening to and displays it in a beautiful web dashboard with Docker and Portainer support.
+A simple, focused Spotify activity tracker that monitors what 444lila is listening to and displays it in a beautiful web dashboard with Docker and Portainer support.
 
 ## Features
 
-- 🎵 Real-time tracking of Spotify activity
+- 🎵 Real-time tracking of 444lila's Spotify activity
 - 📊 Beautiful web dashboard showing listening history
 - 🕐 Timestamps for when each song was played
 - 🎶 Direct links to songs on Spotify
@@ -145,7 +145,7 @@ The Portainer stack includes:
 
 ## How It Works
 
-1. **lila-tracker.js** - Monitors Spotify activity every 30 seconds
+1. **lila-tracker.js** - Monitors 444lila's Spotify activity every 30 seconds
 2. **dashboard.js** - Serves web interface showing listening history  
 3. **lila-activity-log.json** - Stores all tracked activity data
 4. **Docker containers** - Isolated, scalable deployment
@@ -198,7 +198,7 @@ docker logs -f lila-tracker
    - Verify container is running: `docker ps`
 
 3. **No activity logged**
-   - Ensure you're actively listening
+   - Ensure 444lila is actively listening
    - Check container logs for authentication issues
 
 4. **"Failed to launch browser process"**
@@ -233,4 +233,4 @@ docker logs -f lila-tracker
 
 ---
 
-**🎵 Created for tracking your music taste with enterprise-grade deployment! 🎵**
+**🎵 Created for tracking 444lila's music taste with enterprise-grade deployment! 🎵**

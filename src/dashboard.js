@@ -1,4 +1,4 @@
-// Modern Web Dashboard for Spotify Activity with Analytics
+// Modern Web Dashboard for Lila's Spotify Activity with Analytics
 const express = require('express');
 const fs = require('fs').promises;
 const path = require('path');
@@ -8,7 +8,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Dashboard password (you can change this)
-const DASHBOARD_PASSWORD = process.env.DASHBOARD_PASSWORD || 'spotify2025';
+const DASHBOARD_PASSWORD = process.env.DASHBOARD_PASSWORD || 'lila2025';
 
 // Session store (in production, use Redis or database)
 const sessions = new Map();
@@ -113,13 +113,13 @@ const classifySongType = (song, artist, album) => {
     return 'neutral';
 };
 
-// API endpoint to get Spotify activity data with enhanced analytics
-app.get('/api/spotify-activity', requireAuth, async (req, res) => {
+// API endpoint to get Lila's activity data with enhanced analytics
+app.get('/api/lila-activity', requireAuth, async (req, res) => {
     try {
         // Use shared directory in Docker, parent directory otherwise
         const logPath = process.env.NODE_ENV === 'production' 
-            ? '/app/shared/spotify-activity-log.json'
-            : path.join(__dirname, '..', 'spotify-activity-log.json');
+            ? '/app/shared/lila-activity-log.json'
+            : path.join(__dirname, '..', 'lila-activity-log.json');
         
         // Check if file exists and is actually a file
         try {
@@ -160,8 +160,8 @@ app.get('/api/spotify-activity', requireAuth, async (req, res) => {
 app.get('/api/analytics', requireAuth, async (req, res) => {
     try {
         const logPath = process.env.NODE_ENV === 'production' 
-            ? '/app/shared/spotify-activity-log.json'
-            : path.join(__dirname, '..', 'spotify-activity-log.json');
+            ? '/app/shared/lila-activity-log.json'
+            : path.join(__dirname, '..', 'lila-activity-log.json');
         
         try {
             await fs.stat(logPath);
@@ -382,8 +382,8 @@ app.delete('/api/diary/:id', requireAuth, async (req, res) => {
 app.get('/api/raw/activity', requireAuth, async (req, res) => {
     try {
         const logPath = process.env.NODE_ENV === 'production' 
-            ? '/app/shared/spotify-activity-log.json'
-            : path.join(__dirname, '..', 'spotify-activity-log.json');
+            ? '/app/shared/lila-activity-log.json'
+            : path.join(__dirname, '..', 'lila-activity-log.json');
         
         try {
             const data = await fs.readFile(logPath, 'utf8');
@@ -439,8 +439,8 @@ app.put('/api/raw/activity', requireAuth, async (req, res) => {
         }
         
         const logPath = process.env.NODE_ENV === 'production' 
-            ? '/app/shared/spotify-activity-log.json'
-            : path.join(__dirname, '..', 'spotify-activity-log.json');
+            ? '/app/shared/lila-activity-log.json'
+            : path.join(__dirname, '..', 'lila-activity-log.json');
         
         // Create backup before overwriting
         const backupPath = logPath + '.backup.' + Date.now();
@@ -615,10 +615,10 @@ app.get('/', (req, res) => {
 });
 
 app.listen(PORT, () => {
-    console.log(`🎵 Spotify Tracker Dashboard running at http://localhost:${PORT}`);
+    console.log(`🎵 Lila Tracker Dashboard running at http://localhost:${PORT}`);
     console.log('📊 Enhanced dashboard with mood analysis and analytics tools!');
     console.log('🔍 Available endpoints:');
     console.log('  - GET / (Dashboard)');
-    console.log('  - GET /api/spotify-activity (Enhanced activity data)');
+    console.log('  - GET /api/lila-activity (Enhanced activity data)');
     console.log('  - GET /api/analytics (Analytics data)');
 });
