@@ -11,6 +11,9 @@ services:
       - SP_DC_COOKIE=${SP_DC_COOKIE}
       - CHECK_INTERVAL=${CHECK_INTERVAL:-30000}
       - NODE_ENV=production
+      - API_PORT=58429
+    expose:
+      - "58429"
     volumes:
       - lila_shared_data:/app/shared
       - lila_logs:/app/logs
@@ -29,8 +32,9 @@ services:
       - SP_DC_COOKIE=${SP_DC_COOKIE}
       - PORT=3000
       - NODE_ENV=production
+      - TRACKER_API_URL=http://lila-tracker:58429
     ports:
-      - "${DASHBOARD_PORT:-3001}:3000"
+      - "${DASHBOARD_PORT:-47293}:3000"
     volumes:
       - lila_shared_data:/app/shared
       - lila_logs:/app/logs
