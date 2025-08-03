@@ -9,8 +9,7 @@ class LilaTracker {
         this.tokenExpiry = 0;
         this.browser = null;
         this.page = null;
-        // Use environment variable or fallback to hardcoded cookie
-        this.spDcCookie = process.env.SP_DC_COOKIE || 'AQBbWMvOJE6ogmn-_L67o1gWzCOSaJGuYrYCxiedBP5-60GtsxHxK7oI-V5w-DzFcR1sW5BcI9gxWV0rSUV2VNB6rhlqkPbD_BGjDM-APb49SFUeDP9sL1qLHlCvfciPUlrD2d7yLNyyYMcbyE6_sv34emaRyZf4';
+        this.spDcCookie = null; // Will be extracted automatically
         this.lastActivity = null;
         this.checkInterval = parseInt(process.env.CHECK_INTERVAL) || 30000; // 30 seconds default
     }
@@ -18,20 +17,84 @@ class LilaTracker {
     async init() {
         console.log(`🎯 Initializing ${this.targetUser} tracker...`);
         
-        this.browser = await puppeteer.launch({
+        // Configure Puppeteer for Docker environment
+        const puppeteerConfig = {
             headless: true,
             args: [
                 '--no-sandbox',
                 '--disable-setuid-sandbox',
                 '--disable-web-security',
-                '--disable-features=VizDisplayCompositor'
+                '--disable-features=VizDisplayCompositor',
+                '--disable-background-timer-throttling',
+                '--disable-backgrounding-occluded-windows',
+                '--disable-renderer-backgrounding',
+                '--disable-dev-shm-usage',
+                '--no-first-run',
+                '--no-default-browser-check',
+                '--disable-gpu'
             ]
-        });
+        };
+
+        // Use system Chromium in Docker/production
+        if (process.env.NODE_ENV === 'production' && process.env.PUPPETEER_EXECUTABLE_PATH) {
+            puppeteerConfig.executablePath = process.env.PUPPETEER_EXECUTABLE_PATH;
+            console.log('🐳 Using system Chromium for Docker environment');
+        }
+
+        this.browser = await puppeteer.launch(puppeteerConfig);
 
         this.page = await this.browser.newPage();
         await this.page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36');
         
         console.log('✅ Browser initialized');
+    }
+
+    async extractSpotifyCookie() {
+        console.log('🔄 Attempting to extract Spotify session cookie...');
+        
+        try {
+            // Check if manually provided first
+            if (process.env.SP_DC_COOKIE) {
+                this.spDcCookie = process.env.SP_DC_COOKIE;
+                console.log('✅ Using provided SP_DC_COOKIE from environment');
+                return true;
+            }
+
+            // Create a page for cookie extraction
+            const cookiePage = await this.browser.newPage();
+            await cookiePage.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36');
+            
+            // Navigate to Spotify
+            console.log('🌐 Navigating to Spotify web player...');
+            await cookiePage.goto('https://open.spotify.com/', { 
+                waitUntil: 'networkidle2',
+                timeout: 30000 
+            });
+
+            // Wait a moment for the page to load
+            await new Promise(resolve => setTimeout(resolve, 3000));
+
+            // Extract cookies
+            const cookies = await cookiePage.cookies();
+            const spDcCookie = cookies.find(cookie => cookie.name === 'sp_dc');
+
+            if (spDcCookie && spDcCookie.value && spDcCookie.value.length > 50) {
+                this.spDcCookie = spDcCookie.value;
+                console.log('✅ Successfully extracted sp_dc cookie automatically');
+                await cookiePage.close();
+                return true;
+            } else {
+                console.log('❌ No valid sp_dc cookie found');
+                console.log('ℹ️  This usually means you need to log in to Spotify first');
+                console.log('ℹ️  Please visit https://open.spotify.com and log in');
+                console.log('ℹ️  Or set SP_DC_COOKIE environment variable manually');
+                await cookiePage.close();
+                return false;
+            }
+        } catch (error) {
+            console.error('❌ Error extracting cookie:', error.message);
+            return false;
+        }
     }
 
     async getToken() {
@@ -196,20 +259,33 @@ class LilaTracker {
 }
 
 async function main() {
-    // Check if SP_DC_COOKIE is provided
-    if (!process.env.SP_DC_COOKIE && process.env.NODE_ENV === 'production') {
-        console.error('❌ SP_DC_COOKIE environment variable is required in production');
-        console.log('ℹ️  Get your cookie from https://open.spotify.com → DevTools → Cookies → sp_dc');
-        process.exit(1);
-    }
-
     const tracker = new LilaTracker();
     
     try {
         await tracker.init();
         
+        // Automatically extract Spotify cookie
+        const cookieSuccess = await tracker.extractSpotifyCookie();
+        if (!cookieSuccess) {
+            console.log('⏸️  Cannot proceed without valid Spotify session cookie');
+            if (process.env.NODE_ENV === 'production') {
+                console.log('⏸️  Container will sleep to avoid restart loop');
+                // Sleep indefinitely to prevent restart loop
+                while (true) {
+                    await new Promise(resolve => setTimeout(resolve, 60000));
+                    console.log('⏸️  Still waiting for valid Spotify session...');
+                }
+            } else {
+                console.log('💡 For development: Set SP_DC_COOKIE environment variable');
+                await tracker.cleanup();
+                return;
+            }
+        }
+        
         console.log(`🎯 Starting ${tracker.targetUser} activity tracker...`);
-        console.log(`🔄 Checking every ${tracker.checkInterval / 1000} seconds for new songs...\n`);
+        console.log(`🔄 Checking every ${tracker.checkInterval / 1000} seconds for new songs...`);
+        console.log(`🔑 Using cookie: ${tracker.spDcCookie.substring(0, 20)}...`);
+        console.log('');
         
         // Initial check
         await tracker.trackLila();
@@ -227,11 +303,19 @@ async function main() {
             process.exit(0);
         });
         
-        console.log('✅ Tracker running! Press Ctrl+C to stop.');
+        process.on('SIGTERM', async () => {
+            console.log('\n🛑 Received SIGTERM, shutting down tracker...');
+            clearInterval(interval);
+            await tracker.cleanup();
+            process.exit(0);
+        });
+        
+        console.log('✅ Tracker running! Use SIGINT or SIGTERM to stop.');
         
     } catch (error) {
         console.error('❌ Error starting tracker:', error.message);
         await tracker.cleanup();
+        process.exit(1);
     }
 }
 

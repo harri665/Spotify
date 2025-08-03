@@ -1,14 +1,19 @@
 version: '3.8'
 
+# OPTIONAL: Set environment variables in Portainer:
+# SP_DC_COOKIE=your_spotify_cookie_here (optional - will auto-extract if not provided)
+# CHECK_INTERVAL=30000 (optional, default: 30 seconds)
+
 services:
   lila-tracker:
     image: lila-tracker:latest
     container_name: lila-tracker
     restart: unless-stopped
     environment:
-      - SP_DC_COOKIE=${SP_DC_COOKIE}
+      - SP_DC_COOKIE=${SP_DC_COOKIE:-}
       - CHECK_INTERVAL=${CHECK_INTERVAL:-30000}
       - NODE_ENV=production
+      - PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
     volumes:
       - lila_logs:/app/logs
       - lila_data:/app/data
@@ -25,7 +30,7 @@ services:
     container_name: lila-dashboard
     restart: unless-stopped
     environment:
-      - SP_DC_COOKIE=${SP_DC_COOKIE}
+      - SP_DC_COOKIE=${SP_DC_COOKIE:-}
       - PORT=3000
       - NODE_ENV=production
     ports:

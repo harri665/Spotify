@@ -1,6 +1,21 @@
 # Use Node.js official image
 FROM node:18-alpine
 
+# Install Chromium and necessary dependencies for Puppeteer
+RUN apk add --no-cache \
+    chromium \
+    nss \
+    freetype \
+    freetype-dev \
+    harfbuzz \
+    ca-certificates \
+    ttf-freefont \
+    curl
+
+# Tell Puppeteer to skip installing Chromium. We'll be using the installed package.
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+
 # Set working directory
 WORKDIR /app
 
@@ -19,9 +34,6 @@ RUN mkdir -p /app/logs /app/data /app/shared
 # Copy health check script
 COPY docker/healthcheck.sh /app/healthcheck.sh
 RUN chmod +x /app/healthcheck.sh
-
-# Install curl for health check
-RUN apk add --no-cache curl
 
 # Expose port for dashboard
 EXPOSE 3000

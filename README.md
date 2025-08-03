@@ -13,19 +13,20 @@ A simple, focused Spotify activity tracker that monitors what 444lila is listeni
 - 🐳 Docker support with health checks
 - 📦 Portainer stack ready for easy deployment
 - 📈 Persistent data storage with volume mounting
+- 🤖 **Automatic Spotify session detection (no manual cookie needed!)**
 
 ## Quick Start
 
 ### Prerequisites
 
 - Node.js (v14 or higher) **OR** Docker
-- Valid Spotify session (sp_dc cookie)
+- **No manual configuration needed!** The app automatically detects Spotify sessions
 
-### Getting Your Spotify Cookie
+### Automatic Setup
 
-1. Open [https://open.spotify.com/](https://open.spotify.com/) and log in
-2. Open Developer Tools (F12) → Application → Cookies → `https://open.spotify.com`
-3. Copy the value of the `sp_dc` cookie
+The tracker now **automatically extracts Spotify session cookies**, so you don't need to manually configure anything! Just deploy and it works.
+
+> **Note:** If automatic detection fails, you can still manually set the `SP_DC_COOKIE` environment variable as a fallback.
 
 ## Local Development
 
@@ -93,15 +94,14 @@ docker run -d \
 3. **Copy stack configuration:**
    Copy contents from `docker/portainer-stack.yml`
 
-4. **Set environment variables:**
-   ```
-   SP_DC_COOKIE=your_spotify_cookie_here
-   CHECK_INTERVAL=30000
-   ```
-
-5. **Deploy and access:**
+4. **Deploy the stack:**
+   - **No environment variables needed!** The app auto-detects Spotify sessions
+   - Optionally set `CHECK_INTERVAL=30000` to customize check frequency
    - Click "Deploy the stack"
-   - Access dashboard at `http://your-server:3001`
+
+5. **Access dashboard:**
+   - Dashboard available at `http://your-server:3001`
+   - The tracker will automatically handle Spotify authentication
 
 ### Stack Services
 
@@ -131,7 +131,7 @@ The Portainer stack includes:
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `SP_DC_COOKIE` | Your Spotify sp_dc cookie | **Required** |
+| `SP_DC_COOKIE` | Your Spotify sp_dc cookie (optional - auto-extracted) | Auto-detected |
 | `CHECK_INTERVAL` | Check interval in milliseconds | 30000 |
 | `PORT` | Dashboard port | 3000 |
 | `DASHBOARD_PORT` | External dashboard port | 3001 |
@@ -188,9 +188,10 @@ docker logs -f lila-tracker
 
 ### Common Issues
 
-1. **"SP_DC_COOKIE is required"**
-   - Set the environment variable correctly
-   - Ensure cookie is not expired
+1. **"Cannot proceed without valid Spotify session cookie"**
+   - The automatic cookie extraction failed
+   - **Solution**: Manually set `SP_DC_COOKIE` environment variable
+   - Or ensure someone is logged into Spotify on the server
 
 2. **Dashboard not accessible**
    - Check if port 3001 is available
@@ -198,7 +199,11 @@ docker logs -f lila-tracker
 
 3. **No activity logged**
    - Ensure 444lila is actively listening
-   - Check if sp_dc cookie is still valid
+   - Check container logs for authentication issues
+
+4. **"Failed to launch browser process"**
+   - Docker container missing Chrome/Chromium
+   - **Solution**: Rebuild Docker image (fixed in latest version)
 
 ### Getting Help
 
