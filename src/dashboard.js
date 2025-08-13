@@ -72,32 +72,62 @@ app.get('/api/auth/verify', requireAuth, (req, res) => {
     res.json({ authenticated: true });
 });
 
-// Cache for Spotify audio features to avoid repeated API calls
+// Cache for Spotify access tokens and audio features to avoid repeated API calls
 const audioFeaturesCache = new Map();
+let spotifyAccessToken = null;
+let tokenExpiry = 0;
+const TOKEN_CACHE_TIME = 3600000; // 1 hour
+let lastTokenAttempt = 0;
+const TOKEN_RETRY_DELAY = 300000; // 5 minutes between failed attempts
 
-// Get Spotify access token using sp_dc cookie
+// Get Spotify access token using sp_dc cookie with caching
 const getSpotifyAccessToken = async () => {
     try {
+        // Return cached token if still valid
+        if (spotifyAccessToken && Date.now() < tokenExpiry) {
+            return spotifyAccessToken;
+        }
+
+        // Don't retry too frequently if we recently failed
+        if (Date.now() - lastTokenAttempt < TOKEN_RETRY_DELAY && !spotifyAccessToken) {
+            return null;
+        }
+
+        lastTokenAttempt = Date.now();
+
         const spDc = process.env.SP_DC_COOKIE;
         if (!spDc) {
             console.warn('SP_DC_COOKIE not found, using fallback classification');
             return null;
         }
 
+        // Try the web player access token endpoint
         const response = await fetch('https://open.spotify.com/get_access_token?reason=transport&productType=web_player', {
             headers: {
                 'Cookie': `sp_dc=${spDc}`,
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                'Accept': 'application/json',
+                'Accept-Language': 'en-US,en;q=0.9',
+                'Referer': 'https://open.spotify.com/',
+                'Origin': 'https://open.spotify.com'
             }
         });
 
         if (!response.ok) {
-            console.warn('Failed to get Spotify access token');
+            console.warn(`Failed to get Spotify access token: ${response.status} ${response.statusText}`);
             return null;
         }
 
         const data = await response.json();
-        return data.accessToken;
+        if (data.accessToken) {
+            console.log('✅ Successfully obtained Spotify access token');
+            spotifyAccessToken = data.accessToken;
+            tokenExpiry = Date.now() + TOKEN_CACHE_TIME;
+            return spotifyAccessToken;
+        } else {
+            console.warn('No access token in response, likely expired sp_dc cookie');
+            return null;
+        }
     } catch (error) {
         console.warn('Error getting Spotify access token:', error.message);
         return null;
@@ -153,23 +183,27 @@ const classifySongTypeAdvanced = async (song, artist, album) => {
     try {
         const accessToken = await getSpotifyAccessToken();
         if (!accessToken) {
-            console.log(`[Classification] Using fallback for "${song}" by ${artist} - No access token`);
+            // Only log once when we switch to fallback mode
+            if (!spotifyAccessToken && Date.now() - lastTokenAttempt > TOKEN_RETRY_DELAY) {
+                console.log(`[Classification] Using fallback classification - No valid Spotify access token`);
+            }
             return classifySongTypeFallback(song, artist, album);
         }
 
         const trackId = await searchSpotifyTrack(song, artist, accessToken);
         if (!trackId) {
-            console.log(`[Classification] Using fallback for "${song}" by ${artist} - Track not found`);
             return classifySongTypeFallback(song, artist, album);
         }
 
         const features = await getAudioFeatures(trackId, accessToken);
         if (!features) {
-            console.log(`[Classification] Using fallback for "${song}" by ${artist} - No audio features`);
             return classifySongTypeFallback(song, artist, album);
         }
 
-        console.log(`[Classification] Using audio features for "${song}" by ${artist} - Energy: ${features.energy}, Valence: ${features.valence}`);
+        // Only log successful audio feature usage occasionally
+        if (Math.random() < 0.1) { // 10% chance to log
+            console.log(`[Classification] Using audio features for "${song}" by ${artist} - Energy: ${features.energy?.toFixed(2)}, Valence: ${features.valence?.toFixed(2)}`);
+        }
 
         // Classify based on audio features
         const { valence, energy, danceability, acousticness, mode, tempo } = features;
