@@ -1,4 +1,5 @@
 // 444lila Specific Tracker - Enhanced Friend Activity Monitor
+require('dotenv').config();
 const puppeteer = require('puppeteer');
 const fs = require('fs').promises;
 

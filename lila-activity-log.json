@@ -1,16 +1,6 @@
 [
   {
     "user": "444lila",
-    "song": "Test Song",
-    "artist": "Test Artist",
-    "album": "Test Album",
-    "timestamp": "7/28/2025, 4:04:00 PM",
-    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273test",
-    "spotifyUrl": "https://open.spotify.com/search/Test%20Song%20Test%20Artist",
-    "loggedAt": "2025-07-28T16:04:00.000Z"
-  },
-  {
-    "user": "444lila",
     "song": "Nun id change",
     "artist": "Yeat",
     "album": "AftërLyfe",
@@ -2831,12 +2821,3462 @@
   },
   {
     "user": "444lila",
+    "song": "Talk Down",
+    "artist": "Dijon",
+    "album": "Absolutely",
+    "timestamp": "8/3/2025, 5:52:42 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273a68442f97c3ad2dcba0beae6",
+    "spotifyUrl": "https://open.spotify.com/search/Talk%20Down%20Dijon",
+    "loggedAt": "2025-08-03T17:55:31.385Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Alesis",
+    "artist": "Mk.gee",
+    "album": "Two Star & The Dream Police",
+    "timestamp": "8/3/2025, 5:56:01 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273038b1c2017f14c805cf5b7e9",
+    "spotifyUrl": "https://open.spotify.com/search/Alesis%20Mk.gee",
+    "loggedAt": "2025-08-03T17:56:23.701Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Underdressed at the Symphony",
+    "artist": "Faye Webster",
+    "album": "Underdressed at the Symphony",
+    "timestamp": "8/3/2025, 6:02:11 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273f0923a06c895b3f507f1f7b3",
+    "spotifyUrl": "https://open.spotify.com/search/Underdressed%20at%20the%20Symphony%20Faye%20Webster",
+    "loggedAt": "2025-08-03T18:02:23.963Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Text Me",
+    "artist": "Kevin Abstract",
+    "album": "Blush",
+    "timestamp": "8/3/2025, 6:04:38 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273ecfb82c059a6e6543a1f3ce6",
+    "spotifyUrl": "https://open.spotify.com/search/Text%20Me%20Kevin%20Abstract",
+    "loggedAt": "2025-08-03T18:04:54.103Z"
+  },
+  {
+    "user": "444lila",
+    "song": "I Wasn’t There",
+    "artist": "Kevin Abstract",
+    "album": "Blush",
+    "timestamp": "8/3/2025, 6:06:49 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273ecfb82c059a6e6543a1f3ce6",
+    "spotifyUrl": "https://open.spotify.com/search/I%20Wasn%E2%80%99t%20There%20Kevin%20Abstract",
+    "loggedAt": "2025-08-03T18:06:54.168Z"
+  },
+  {
+    "user": "444lila",
     "song": "American Bitch",
     "artist": "BETWEEN FRIENDS",
     "album": "American Bitch",
-    "timestamp": "8/3/2025, 1:19:38 AM",
+    "timestamp": "8/3/2025, 6:09:35 PM",
     "imageUrl": "https://i.scdn.co/image/ab67616d0000b273bd4193770d70414e61f6bcc4",
     "spotifyUrl": "https://open.spotify.com/search/American%20Bitch%20BETWEEN%20FRIENDS",
-    "loggedAt": "2025-08-03T14:25:09.758Z"
+    "loggedAt": "2025-08-03T18:09:54.320Z"
+  },
+  {
+    "user": "444lila",
+    "song": "1234567",
+    "artist": "BETWEEN FRIENDS",
+    "album": "1234567",
+    "timestamp": "8/3/2025, 6:49:00 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273415964bb87226bf2f312c972",
+    "spotifyUrl": "https://open.spotify.com/search/1234567%20BETWEEN%20FRIENDS",
+    "loggedAt": "2025-08-03T18:51:03.977Z"
+  },
+  {
+    "user": "444lila",
+    "song": "XD",
+    "artist": "BETWEEN FRIENDS",
+    "album": "XD",
+    "timestamp": "8/3/2025, 6:51:27 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27396f460557b3433cb963acfa4",
+    "spotifyUrl": "https://open.spotify.com/search/XD%20BETWEEN%20FRIENDS",
+    "loggedAt": "2025-08-03T18:51:56.173Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Hartwell",
+    "artist": "Shelly",
+    "album": "Shelly 2",
+    "timestamp": "8/3/2025, 7:05:19 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2730686f66ebbda3d1c7a7e5d8e",
+    "spotifyUrl": "https://open.spotify.com/search/Hartwell%20Shelly",
+    "loggedAt": "2025-08-03T19:05:26.792Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Come Back Down",
+    "artist": "Men I Trust",
+    "album": "Equus Caballus",
+    "timestamp": "8/3/2025, 7:06:04 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273dcfa162250c7d0feed61d638",
+    "spotifyUrl": "https://open.spotify.com/search/Come%20Back%20Down%20Men%20I%20Trust",
+    "loggedAt": "2025-08-03T19:06:26.810Z"
+  },
+  {
+    "user": "444lila",
+    "song": "H-Town",
+    "artist": "Kevin Abstract",
+    "album": "Blush",
+    "timestamp": "8/3/2025, 7:09:15 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2736a2c4f936774dc0ced95cca1",
+    "spotifyUrl": "https://open.spotify.com/search/H-Town%20Kevin%20Abstract",
+    "loggedAt": "2025-08-03T19:09:26.949Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Dumb & Poetic",
+    "artist": "Sabrina Carpenter",
+    "album": "Short n' Sweet",
+    "timestamp": "8/3/2025, 7:42:25 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273fd8d7a8d96871e791cb1f626",
+    "spotifyUrl": "https://open.spotify.com/search/Dumb%20%26%20Poetic%20Sabrina%20Carpenter",
+    "loggedAt": "2025-08-03T19:46:36.384Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Uncle ACE",
+    "artist": "Blood Orange",
+    "album": "Cupid Deluxe",
+    "timestamp": "8/3/2025, 7:47:00 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2739d6bd2afa2987a69b7b55f72",
+    "spotifyUrl": "https://open.spotify.com/search/Uncle%20ACE%20Blood%20Orange",
+    "loggedAt": "2025-08-03T19:47:28.636Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Morning Song",
+    "artist": "The Lumineers",
+    "album": "The Lumineers",
+    "timestamp": "8/3/2025, 7:52:00 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273f350c13195ce048876b5fea4",
+    "spotifyUrl": "https://open.spotify.com/search/Morning%20Song%20The%20Lumineers",
+    "loggedAt": "2025-08-03T19:52:28.847Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Cruel, Cruel World",
+    "artist": "harf.",
+    "album": "Cruel, Cruel World",
+    "timestamp": "8/3/2025, 7:55:15 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2739349775dd53a129ab067d4a4",
+    "spotifyUrl": "https://open.spotify.com/search/Cruel%2C%20Cruel%20World%20harf.",
+    "loggedAt": "2025-08-03T19:55:28.965Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Out on the Weekend",
+    "artist": "Alex Nicol",
+    "album": "Out on the Weekend",
+    "timestamp": "8/3/2025, 8:40:36 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27312d8b431dac3db2ccde46394",
+    "spotifyUrl": "https://open.spotify.com/search/Out%20on%20the%20Weekend%20Alex%20Nicol",
+    "loggedAt": "2025-08-03T20:42:08.928Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Forever Ever After",
+    "artist": "Palace",
+    "album": "Greyhound",
+    "timestamp": "8/3/2025, 8:45:39 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27329a71d6388141aea77137e1c",
+    "spotifyUrl": "https://open.spotify.com/search/Forever%20Ever%20After%20Palace",
+    "loggedAt": "2025-08-03T20:46:01.160Z"
+  },
+  {
+    "user": "444lila",
+    "song": "No Broke Boys",
+    "artist": "Disco Lines",
+    "album": "No Broke Boys",
+    "timestamp": "8/3/2025, 8:48:24 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27369aa159daad3e671c749f4c5",
+    "spotifyUrl": "https://open.spotify.com/search/No%20Broke%20Boys%20Disco%20Lines",
+    "loggedAt": "2025-08-03T20:48:31.260Z"
+  },
+  {
+    "user": "444lila",
+    "song": "F2F",
+    "artist": "SZA",
+    "album": "SOS",
+    "timestamp": "8/3/2025, 9:28:23 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27370dbc9f47669d120ad874ec1",
+    "spotifyUrl": "https://open.spotify.com/search/F2F%20SZA",
+    "loggedAt": "2025-08-03T21:37:41.496Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Talk Down",
+    "artist": "Dijon",
+    "album": "Absolutely",
+    "timestamp": "8/3/2025, 11:53:45 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273a68442f97c3ad2dcba0beae6",
+    "spotifyUrl": "https://open.spotify.com/search/Talk%20Down%20Dijon",
+    "loggedAt": "2025-08-03T23:54:09.809Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Alesis",
+    "artist": "Mk.gee",
+    "album": "Two Star & The Dream Police",
+    "timestamp": "8/3/2025, 11:57:04 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273038b1c2017f14c805cf5b7e9",
+    "spotifyUrl": "https://open.spotify.com/search/Alesis%20Mk.gee",
+    "loggedAt": "2025-08-03T23:57:10.020Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Underdressed at the Symphony",
+    "artist": "Faye Webster",
+    "album": "Underdressed at the Symphony",
+    "timestamp": "8/4/2025, 12:00:37 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273f0923a06c895b3f507f1f7b3",
+    "spotifyUrl": "https://open.spotify.com/search/Underdressed%20at%20the%20Symphony%20Faye%20Webster",
+    "loggedAt": "2025-08-04T00:00:40.082Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Text Me",
+    "artist": "Kevin Abstract",
+    "album": "Blush",
+    "timestamp": "8/4/2025, 12:03:05 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273ecfb82c059a6e6543a1f3ce6",
+    "spotifyUrl": "https://open.spotify.com/search/Text%20Me%20Kevin%20Abstract",
+    "loggedAt": "2025-08-04T00:03:10.177Z"
+  },
+  {
+    "user": "444lila",
+    "song": "White Flag",
+    "artist": "Clairo",
+    "album": "Immunity",
+    "timestamp": "8/4/2025, 12:20:17 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27378d601a8e07bef8b1f8ecf82",
+    "spotifyUrl": "https://open.spotify.com/search/White%20Flag%20Clairo",
+    "loggedAt": "2025-08-04T00:21:19.740Z"
+  },
+  {
+    "user": "444lila",
+    "song": "This Empty Northern Hemisphere",
+    "artist": "Gregory Alan Isakov",
+    "album": "This Empty Northern Hemisphere",
+    "timestamp": "8/4/2025, 12:33:05 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27393a1519118102a6d78164713",
+    "spotifyUrl": "https://open.spotify.com/search/This%20Empty%20Northern%20Hemisphere%20Gregory%20Alan%20Isakov",
+    "loggedAt": "2025-08-04T00:33:11.503Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Ran Out",
+    "artist": "JT",
+    "album": "Ran Out",
+    "timestamp": "8/4/2025, 2:36:03 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273aea1d64afd33362ce90788c3",
+    "spotifyUrl": "https://open.spotify.com/search/Ran%20Out%20JT",
+    "loggedAt": "2025-08-04T02:36:16.909Z"
+  },
+  {
+    "user": "444lila",
+    "song": "400 Degreez",
+    "artist": "Lil Kayla",
+    "album": "Wassup",
+    "timestamp": "8/4/2025, 2:38:51 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2738d7d42c96b5aabc1400a4c69",
+    "spotifyUrl": "https://open.spotify.com/search/400%20Degreez%20Lil%20Kayla",
+    "loggedAt": "2025-08-04T02:39:16.904Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Bands (feat. OhGeesy, Fenix Flexin & Master Kato)",
+    "artist": "Shoreline Mafia",
+    "album": "Shoreline Mafia Presents Rob Vicious: Traplantic",
+    "timestamp": "8/4/2025, 2:41:46 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273125adb02782b04813d5bfef5",
+    "spotifyUrl": "https://open.spotify.com/search/Bands%20(feat.%20OhGeesy%2C%20Fenix%20Flexin%20%26%20Master%20Kato)%20Shoreline%20Mafia",
+    "loggedAt": "2025-08-04T02:41:47.047Z"
+  },
+  {
+    "user": "444lila",
+    "song": "I'm Too Sexy",
+    "artist": "Right Said Fred",
+    "album": "Up",
+    "timestamp": "8/4/2025, 2:44:19 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273daa036bbe8e54e156faa28b9",
+    "spotifyUrl": "https://open.spotify.com/search/I'm%20Too%20Sexy%20Right%20Said%20Fred",
+    "loggedAt": "2025-08-04T02:44:47.181Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Voices In My Head x Freaks x Love Parade",
+    "artist": "HARDSTYLE CVNT",
+    "album": "Voices In My Head x Freaks x Love Parade",
+    "timestamp": "8/4/2025, 2:47:21 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27376b498f86d4cb54a728b8f8a",
+    "spotifyUrl": "https://open.spotify.com/search/Voices%20In%20My%20Head%20x%20Freaks%20x%20Love%20Parade%20HARDSTYLE%20CVNT",
+    "loggedAt": "2025-08-04T02:47:47.275Z"
+  },
+  {
+    "user": "444lila",
+    "song": "If I Need I Take",
+    "artist": "Sideshow",
+    "album": "Farley",
+    "timestamp": "8/4/2025, 2:50:16 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273cc95af4bc9e82f3bce038376",
+    "spotifyUrl": "https://open.spotify.com/search/If%20I%20Need%20I%20Take%20Sideshow",
+    "loggedAt": "2025-08-04T02:50:47.408Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Nine Months",
+    "artist": "Annie DiRusso",
+    "album": "Nine Months",
+    "timestamp": "8/4/2025, 2:54:36 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2735fa628ba8749d627b2d21d10",
+    "spotifyUrl": "https://open.spotify.com/search/Nine%20Months%20Annie%20DiRusso",
+    "loggedAt": "2025-08-04T02:54:47.587Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Hell Raiser",
+    "artist": "Dee Watkins",
+    "album": "Problem Child",
+    "timestamp": "8/4/2025, 3:04:58 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273c569bdd63872548becee70f8",
+    "spotifyUrl": "https://open.spotify.com/search/Hell%20Raiser%20Dee%20Watkins",
+    "loggedAt": "2025-08-04T03:08:01.123Z"
+  },
+  {
+    "user": "444lila",
+    "song": "JAM !",
+    "artist": "BETWEEN FRIENDS",
+    "album": "WOW!",
+    "timestamp": "8/4/2025, 6:17:23 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273d12b876a6ba1df7a058f3ac9",
+    "spotifyUrl": "https://open.spotify.com/search/JAM%20!%20BETWEEN%20FRIENDS",
+    "loggedAt": "2025-08-04T18:17:27.488Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Alesis",
+    "artist": "Mk.gee",
+    "album": "Two Star & The Dream Police",
+    "timestamp": "8/4/2025, 6:20:52 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273038b1c2017f14c805cf5b7e9",
+    "spotifyUrl": "https://open.spotify.com/search/Alesis%20Mk.gee",
+    "loggedAt": "2025-08-04T18:20:57.634Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Underdressed at the Symphony",
+    "artist": "Faye Webster",
+    "album": "Underdressed at the Symphony",
+    "timestamp": "8/4/2025, 10:26:18 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273f0923a06c895b3f507f1f7b3",
+    "spotifyUrl": "https://open.spotify.com/search/Underdressed%20at%20the%20Symphony%20Faye%20Webster",
+    "loggedAt": "2025-08-04T22:26:38.191Z"
+  },
+  {
+    "user": "444lila",
+    "song": "American Bitch",
+    "artist": "BETWEEN FRIENDS",
+    "album": "American Bitch",
+    "timestamp": "8/4/2025, 10:29:05 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273bd4193770d70414e61f6bcc4",
+    "spotifyUrl": "https://open.spotify.com/search/American%20Bitch%20BETWEEN%20FRIENDS",
+    "loggedAt": "2025-08-04T22:29:08.341Z"
+  },
+  {
+    "user": "444lila",
+    "song": "JAM !",
+    "artist": "BETWEEN FRIENDS",
+    "album": "WOW!",
+    "timestamp": "8/5/2025, 4:25:46 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273d12b876a6ba1df7a058f3ac9",
+    "spotifyUrl": "https://open.spotify.com/search/JAM%20!%20BETWEEN%20FRIENDS",
+    "loggedAt": "2025-08-05T16:25:55.033Z"
+  },
+  {
+    "user": "444lila",
+    "song": "White Flag",
+    "artist": "Clairo",
+    "album": "Immunity",
+    "timestamp": "8/5/2025, 4:54:14 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27378d601a8e07bef8b1f8ecf82",
+    "spotifyUrl": "https://open.spotify.com/search/White%20Flag%20Clairo",
+    "loggedAt": "2025-08-05T16:54:26.070Z"
+  },
+  {
+    "user": "444lila",
+    "song": "The Field (feat. The Durutti Column, Tariq Al-Sabir, Caroline Polachek & Daniel Caesar)",
+    "artist": "Blood Orange",
+    "album": "The Field (feat. The Durutti Column, Tariq Al-Sabir, Caroline Polachek & Daniel Caesar)",
+    "timestamp": "8/5/2025, 5:01:16 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273e11256a3e685203e20a71257",
+    "spotifyUrl": "https://open.spotify.com/search/The%20Field%20(feat.%20The%20Durutti%20Column%2C%20Tariq%20Al-Sabir%2C%20Caroline%20Polachek%20%26%20Daniel%20Caesar)%20Blood%20Orange",
+    "loggedAt": "2025-08-05T17:01:26.383Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Add Up My Love",
+    "artist": "Clairo",
+    "album": "Charm",
+    "timestamp": "8/5/2025, 5:04:42 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273193c2fafdce8f116b5ca0a78",
+    "spotifyUrl": "https://open.spotify.com/search/Add%20Up%20My%20Love%20Clairo",
+    "loggedAt": "2025-08-05T17:05:06.806Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Talk Down",
+    "artist": "Dijon",
+    "album": "Absolutely",
+    "timestamp": "8/5/2025, 5:07:14 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273a68442f97c3ad2dcba0beae6",
+    "spotifyUrl": "https://open.spotify.com/search/Talk%20Down%20Dijon",
+    "loggedAt": "2025-08-05T17:07:26.667Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Alesis",
+    "artist": "Mk.gee",
+    "album": "Two Star & The Dream Police",
+    "timestamp": "8/5/2025, 5:10:33 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273038b1c2017f14c805cf5b7e9",
+    "spotifyUrl": "https://open.spotify.com/search/Alesis%20Mk.gee",
+    "loggedAt": "2025-08-05T17:10:56.836Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Underdressed at the Symphony",
+    "artist": "Faye Webster",
+    "album": "Underdressed at the Symphony",
+    "timestamp": "8/5/2025, 5:14:30 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273f0923a06c895b3f507f1f7b3",
+    "spotifyUrl": "https://open.spotify.com/search/Underdressed%20at%20the%20Symphony%20Faye%20Webster",
+    "loggedAt": "2025-08-05T17:14:56.969Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Text Me",
+    "artist": "Kevin Abstract",
+    "album": "Blush",
+    "timestamp": "8/5/2025, 5:17:02 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273ecfb82c059a6e6543a1f3ce6",
+    "spotifyUrl": "https://open.spotify.com/search/Text%20Me%20Kevin%20Abstract",
+    "loggedAt": "2025-08-05T17:17:27.067Z"
+  },
+  {
+    "user": "444lila",
+    "song": "I Wasn’t There",
+    "artist": "Kevin Abstract",
+    "album": "Blush",
+    "timestamp": "8/5/2025, 5:21:50 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273ecfb82c059a6e6543a1f3ce6",
+    "spotifyUrl": "https://open.spotify.com/search/I%20Wasn%E2%80%99t%20There%20Kevin%20Abstract",
+    "loggedAt": "2025-08-05T17:21:57.288Z"
+  },
+  {
+    "user": "444lila",
+    "song": "American Bitch",
+    "artist": "BETWEEN FRIENDS",
+    "album": "American Bitch",
+    "timestamp": "8/5/2025, 5:45:22 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273bd4193770d70414e61f6bcc4",
+    "spotifyUrl": "https://open.spotify.com/search/American%20Bitch%20BETWEEN%20FRIENDS",
+    "loggedAt": "2025-08-05T17:45:28.375Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Fingers and Clothes",
+    "artist": "Jake Minch",
+    "album": "George",
+    "timestamp": "8/5/2025, 5:47:49 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273eb71bb4508d8601918569ad0",
+    "spotifyUrl": "https://open.spotify.com/search/Fingers%20and%20Clothes%20Jake%20Minch",
+    "loggedAt": "2025-08-05T17:47:58.477Z"
+  },
+  {
+    "user": "444lila",
+    "song": "The Sick",
+    "artist": "Bella Kay",
+    "album": "The Sick",
+    "timestamp": "8/5/2025, 5:51:22 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2730fcdb3d64499e1978597c8fd",
+    "spotifyUrl": "https://open.spotify.com/search/The%20Sick%20Bella%20Kay",
+    "loggedAt": "2025-08-05T17:51:28.625Z"
+  },
+  {
+    "user": "444lila",
+    "song": "favorite apple",
+    "artist": "The Two Lips",
+    "album": "favorite apple",
+    "timestamp": "8/5/2025, 5:53:51 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273ae864846e7b27b30699915fa",
+    "spotifyUrl": "https://open.spotify.com/search/favorite%20apple%20The%20Two%20Lips",
+    "loggedAt": "2025-08-05T17:53:58.728Z"
+  },
+  {
+    "user": "444lila",
+    "song": "e-Asphyxiation",
+    "artist": "Cafuné",
+    "album": "e-Asphyxiation",
+    "timestamp": "8/5/2025, 5:57:30 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27332153f5acd61f88da1376962",
+    "spotifyUrl": "https://open.spotify.com/search/e-Asphyxiation%20Cafun%C3%A9",
+    "loggedAt": "2025-08-05T17:57:58.955Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Post Break Up Beauty",
+    "artist": "Kevin Abstract",
+    "album": "Blush",
+    "timestamp": "8/5/2025, 6:00:23 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273ecfb82c059a6e6543a1f3ce6",
+    "spotifyUrl": "https://open.spotify.com/search/Post%20Break%20Up%20Beauty%20Kevin%20Abstract",
+    "loggedAt": "2025-08-05T18:00:45.068Z"
+  },
+  {
+    "user": "444lila",
+    "song": "1234567",
+    "artist": "BETWEEN FRIENDS",
+    "album": "1234567",
+    "timestamp": "8/5/2025, 6:03:09 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273415964bb87226bf2f312c972",
+    "spotifyUrl": "https://open.spotify.com/search/1234567%20BETWEEN%20FRIENDS",
+    "loggedAt": "2025-08-05T18:03:29.147Z"
+  },
+  {
+    "user": "444lila",
+    "song": "XD",
+    "artist": "BETWEEN FRIENDS",
+    "album": "XD",
+    "timestamp": "8/5/2025, 6:05:36 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27396f460557b3433cb963acfa4",
+    "spotifyUrl": "https://open.spotify.com/search/XD%20BETWEEN%20FRIENDS",
+    "loggedAt": "2025-08-05T18:05:59.278Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Hartwell",
+    "artist": "Shelly",
+    "album": "Shelly 2",
+    "timestamp": "8/5/2025, 6:08:30 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2730686f66ebbda3d1c7a7e5d8e",
+    "spotifyUrl": "https://open.spotify.com/search/Hartwell%20Shelly",
+    "loggedAt": "2025-08-05T18:08:59.404Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Come Back Down",
+    "artist": "Men I Trust",
+    "album": "Equus Caballus",
+    "timestamp": "8/5/2025, 6:11:45 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273dcfa162250c7d0feed61d638",
+    "spotifyUrl": "https://open.spotify.com/search/Come%20Back%20Down%20Men%20I%20Trust",
+    "loggedAt": "2025-08-05T18:11:59.520Z"
+  },
+  {
+    "user": "444lila",
+    "song": "You're So Vain",
+    "artist": "Carly Simon",
+    "album": "No Secrets",
+    "timestamp": "8/5/2025, 7:58:07 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2731af9e8390e2d251b916d9185",
+    "spotifyUrl": "https://open.spotify.com/search/You're%20So%20Vain%20Carly%20Simon",
+    "loggedAt": "2025-08-05T19:58:34.254Z"
+  },
+  {
+    "user": "444lila",
+    "song": "West End Girls - 2018 Remaster",
+    "artist": "Pet Shop Boys",
+    "album": "Please: Further Listening 1984 - 1986 (2018 Remaster)",
+    "timestamp": "8/5/2025, 8:03:42 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2733540f5cb8e1e7a54125f84db",
+    "spotifyUrl": "https://open.spotify.com/search/West%20End%20Girls%20-%202018%20Remaster%20Pet%20Shop%20Boys",
+    "loggedAt": "2025-08-05T20:04:04.651Z"
+  },
+  {
+    "user": "444lila",
+    "song": "JAM !",
+    "artist": "BETWEEN FRIENDS",
+    "album": "WOW!",
+    "timestamp": "8/5/2025, 9:15:01 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273d12b876a6ba1df7a058f3ac9",
+    "spotifyUrl": "https://open.spotify.com/search/JAM%20!%20BETWEEN%20FRIENDS",
+    "loggedAt": "2025-08-05T21:15:07.576Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Add Up My Love",
+    "artist": "Clairo",
+    "album": "Charm",
+    "timestamp": "8/5/2025, 9:18:31 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273193c2fafdce8f116b5ca0a78",
+    "spotifyUrl": "https://open.spotify.com/search/Add%20Up%20My%20Love%20Clairo",
+    "loggedAt": "2025-08-05T21:18:37.719Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Alesis",
+    "artist": "Mk.gee",
+    "album": "Two Star & The Dream Police",
+    "timestamp": "8/5/2025, 9:22:00 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273038b1c2017f14c805cf5b7e9",
+    "spotifyUrl": "https://open.spotify.com/search/Alesis%20Mk.gee",
+    "loggedAt": "2025-08-05T21:22:07.945Z"
+  },
+  {
+    "user": "444lila",
+    "song": "The Sick",
+    "artist": "Bella Kay",
+    "album": "The Sick",
+    "timestamp": "8/5/2025, 10:03:12 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2730fcdb3d64499e1978597c8fd",
+    "spotifyUrl": "https://open.spotify.com/search/The%20Sick%20Bella%20Kay",
+    "loggedAt": "2025-08-05T22:03:39.741Z"
+  },
+  {
+    "user": "444lila",
+    "song": "West End Girls - 2018 Remaster",
+    "artist": "Pet Shop Boys",
+    "album": "Please: Further Listening 1984 - 1986 (2018 Remaster)",
+    "timestamp": "8/5/2025, 10:16:45 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2733540f5cb8e1e7a54125f84db",
+    "spotifyUrl": "https://open.spotify.com/search/West%20End%20Girls%20-%202018%20Remaster%20Pet%20Shop%20Boys",
+    "loggedAt": "2025-08-05T22:17:10.261Z"
+  },
+  {
+    "user": "444lila",
+    "song": "JAM !",
+    "artist": "BETWEEN FRIENDS",
+    "album": "WOW!",
+    "timestamp": "8/5/2025, 10:20:29 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273d12b876a6ba1df7a058f3ac9",
+    "spotifyUrl": "https://open.spotify.com/search/JAM%20!%20BETWEEN%20FRIENDS",
+    "loggedAt": "2025-08-05T22:20:40.408Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Alesis",
+    "artist": "Mk.gee",
+    "album": "Two Star & The Dream Police",
+    "timestamp": "8/5/2025, 10:26:45 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273038b1c2017f14c805cf5b7e9",
+    "spotifyUrl": "https://open.spotify.com/search/Alesis%20Mk.gee",
+    "loggedAt": "2025-08-05T22:27:10.731Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Underdressed at the Symphony",
+    "artist": "Faye Webster",
+    "album": "Underdressed at the Symphony",
+    "timestamp": "8/5/2025, 10:30:19 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273f0923a06c895b3f507f1f7b3",
+    "spotifyUrl": "https://open.spotify.com/search/Underdressed%20at%20the%20Symphony%20Faye%20Webster",
+    "loggedAt": "2025-08-05T22:30:40.869Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Text Me",
+    "artist": "Kevin Abstract",
+    "album": "Blush",
+    "timestamp": "8/5/2025, 10:32:46 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273ecfb82c059a6e6543a1f3ce6",
+    "spotifyUrl": "https://open.spotify.com/search/Text%20Me%20Kevin%20Abstract",
+    "loggedAt": "2025-08-05T22:33:10.952Z"
+  },
+  {
+    "user": "444lila",
+    "song": "I Wasn’t There",
+    "artist": "Kevin Abstract",
+    "album": "Blush",
+    "timestamp": "8/5/2025, 10:34:55 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273ecfb82c059a6e6543a1f3ce6",
+    "spotifyUrl": "https://open.spotify.com/search/I%20Wasn%E2%80%99t%20There%20Kevin%20Abstract",
+    "loggedAt": "2025-08-05T22:35:11.029Z"
+  },
+  {
+    "user": "444lila",
+    "song": "American Bitch",
+    "artist": "BETWEEN FRIENDS",
+    "album": "American Bitch",
+    "timestamp": "8/5/2025, 10:37:40 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273bd4193770d70414e61f6bcc4",
+    "spotifyUrl": "https://open.spotify.com/search/American%20Bitch%20BETWEEN%20FRIENDS",
+    "loggedAt": "2025-08-05T22:37:41.145Z"
+  },
+  {
+    "user": "444lila",
+    "song": "favorite apple",
+    "artist": "The Two Lips",
+    "album": "favorite apple",
+    "timestamp": "8/5/2025, 11:03:31 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273ae864846e7b27b30699915fa",
+    "spotifyUrl": "https://open.spotify.com/search/favorite%20apple%20The%20Two%20Lips",
+    "loggedAt": "2025-08-05T23:03:42.217Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Post Break Up Beauty",
+    "artist": "Kevin Abstract",
+    "album": "Blush",
+    "timestamp": "8/5/2025, 11:06:29 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273ecfb82c059a6e6543a1f3ce6",
+    "spotifyUrl": "https://open.spotify.com/search/Post%20Break%20Up%20Beauty%20Kevin%20Abstract",
+    "loggedAt": "2025-08-05T23:06:42.353Z"
+  },
+  {
+    "user": "444lila",
+    "song": "1234567",
+    "artist": "BETWEEN FRIENDS",
+    "album": "1234567",
+    "timestamp": "8/5/2025, 11:09:15 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273415964bb87226bf2f312c972",
+    "spotifyUrl": "https://open.spotify.com/search/1234567%20BETWEEN%20FRIENDS",
+    "loggedAt": "2025-08-05T23:09:42.441Z"
+  },
+  {
+    "user": "444lila",
+    "song": "XD",
+    "artist": "BETWEEN FRIENDS",
+    "album": "XD",
+    "timestamp": "8/5/2025, 11:11:42 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27396f460557b3433cb963acfa4",
+    "spotifyUrl": "https://open.spotify.com/search/XD%20BETWEEN%20FRIENDS",
+    "loggedAt": "2025-08-05T23:12:12.561Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Hartwell",
+    "artist": "Shelly",
+    "album": "Shelly 2",
+    "timestamp": "8/5/2025, 11:14:35 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2730686f66ebbda3d1c7a7e5d8e",
+    "spotifyUrl": "https://open.spotify.com/search/Hartwell%20Shelly",
+    "loggedAt": "2025-08-05T23:14:42.665Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Come Back Down",
+    "artist": "Men I Trust",
+    "album": "Equus Caballus",
+    "timestamp": "8/5/2025, 11:17:51 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273dcfa162250c7d0feed61d638",
+    "spotifyUrl": "https://open.spotify.com/search/Come%20Back%20Down%20Men%20I%20Trust",
+    "loggedAt": "2025-08-05T23:18:12.808Z"
+  },
+  {
+    "user": "444lila",
+    "song": "You're So Vain",
+    "artist": "Carly Simon",
+    "album": "No Secrets",
+    "timestamp": "8/6/2025, 12:37:54 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2731af9e8390e2d251b916d9185",
+    "spotifyUrl": "https://open.spotify.com/search/You're%20So%20Vain%20Carly%20Simon",
+    "loggedAt": "2025-08-06T00:38:16.211Z"
+  },
+  {
+    "user": "444lila",
+    "song": "JAM !",
+    "artist": "BETWEEN FRIENDS",
+    "album": "WOW!",
+    "timestamp": "8/6/2025, 12:46:41 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273d12b876a6ba1df7a058f3ac9",
+    "spotifyUrl": "https://open.spotify.com/search/JAM%20!%20BETWEEN%20FRIENDS",
+    "loggedAt": "2025-08-06T00:46:46.622Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Add Up My Love",
+    "artist": "Clairo",
+    "album": "Charm",
+    "timestamp": "8/6/2025, 1:09:35 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273193c2fafdce8f116b5ca0a78",
+    "spotifyUrl": "https://open.spotify.com/search/Add%20Up%20My%20Love%20Clairo",
+    "loggedAt": "2025-08-06T01:09:47.632Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Talk Down",
+    "artist": "Dijon",
+    "album": "Absolutely",
+    "timestamp": "8/6/2025, 1:12:07 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273a68442f97c3ad2dcba0beae6",
+    "spotifyUrl": "https://open.spotify.com/search/Talk%20Down%20Dijon",
+    "loggedAt": "2025-08-06T01:12:17.754Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Alesis",
+    "artist": "Mk.gee",
+    "album": "Two Star & The Dream Police",
+    "timestamp": "8/6/2025, 1:15:27 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273038b1c2017f14c805cf5b7e9",
+    "spotifyUrl": "https://open.spotify.com/search/Alesis%20Mk.gee",
+    "loggedAt": "2025-08-06T01:15:47.871Z"
+  },
+  {
+    "user": "444lila",
+    "song": "American Bitch",
+    "artist": "BETWEEN FRIENDS",
+    "album": "American Bitch",
+    "timestamp": "8/6/2025, 1:18:25 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273bd4193770d70414e61f6bcc4",
+    "spotifyUrl": "https://open.spotify.com/search/American%20Bitch%20BETWEEN%20FRIENDS",
+    "loggedAt": "2025-08-06T01:18:48.022Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Satellite",
+    "artist": "Harry Styles",
+    "album": "Harry's House",
+    "timestamp": "8/6/2025, 4:33:33 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2732e8ed79e177ff6011076f5f0",
+    "spotifyUrl": "https://open.spotify.com/search/Satellite%20Harry%20Styles",
+    "loggedAt": "2025-08-06T16:33:57.075Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Saturn",
+    "artist": "SZA",
+    "album": "SOS Deluxe: LANA",
+    "timestamp": "8/6/2025, 4:36:40 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2737f5a318e3ff35defa8d0e4af",
+    "spotifyUrl": "https://open.spotify.com/search/Saturn%20SZA",
+    "loggedAt": "2025-08-06T16:36:57.191Z"
+  },
+  {
+    "user": "444lila",
+    "song": "The King",
+    "artist": "Sarah Kinsley",
+    "album": "The King",
+    "timestamp": "8/6/2025, 4:40:06 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2733518fc5a457d66a382cac029",
+    "spotifyUrl": "https://open.spotify.com/search/The%20King%20Sarah%20Kinsley",
+    "loggedAt": "2025-08-06T16:40:27.334Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Weekend Friend",
+    "artist": "Goth Babe",
+    "album": "Weekend Friend",
+    "timestamp": "8/6/2025, 4:43:36 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273a82585185aa1139839d0f9ec",
+    "spotifyUrl": "https://open.spotify.com/search/Weekend%20Friend%20Goth%20Babe",
+    "loggedAt": "2025-08-06T16:43:57.456Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Highway Queen",
+    "artist": "Mt. Joy",
+    "album": "Hope We Have Fun",
+    "timestamp": "8/6/2025, 4:47:09 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273bb8271de817f45e2b1d45fc0",
+    "spotifyUrl": "https://open.spotify.com/search/Highway%20Queen%20Mt.%20Joy",
+    "loggedAt": "2025-08-06T16:47:27.662Z"
+  },
+  {
+    "user": "444lila",
+    "song": "What Was That",
+    "artist": "Lorde",
+    "album": "Virgin",
+    "timestamp": "8/6/2025, 4:50:39 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27323d41bf736920a032e222a78",
+    "spotifyUrl": "https://open.spotify.com/search/What%20Was%20That%20Lorde",
+    "loggedAt": "2025-08-06T16:50:57.777Z"
+  },
+  {
+    "user": "444lila",
+    "song": "so american",
+    "artist": "Olivia Rodrigo",
+    "album": "GUTS (spilled)",
+    "timestamp": "8/6/2025, 4:53:29 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2734063d624ebf8ff67bc3701ee",
+    "spotifyUrl": "https://open.spotify.com/search/so%20american%20Olivia%20Rodrigo",
+    "loggedAt": "2025-08-06T16:53:57.881Z"
+  },
+  {
+    "user": "444lila",
+    "song": "hospital beach",
+    "artist": "Cottonwood Firing Squad",
+    "album": "you missed the best part",
+    "timestamp": "8/6/2025, 4:55:35 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273566fde7d586c64b7f585cb71",
+    "spotifyUrl": "https://open.spotify.com/search/hospital%20beach%20Cottonwood%20Firing%20Squad",
+    "loggedAt": "2025-08-06T16:55:57.996Z"
+  },
+  {
+    "user": "444lila",
+    "song": "The Longest Goodbye (feat. Laufey)",
+    "artist": "ROLE MODEL",
+    "album": "The Longest Goodbye (feat. Laufey)",
+    "timestamp": "8/6/2025, 5:00:00 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2730fc67372728290bc38723922",
+    "spotifyUrl": "https://open.spotify.com/search/The%20Longest%20Goodbye%20(feat.%20Laufey)%20ROLE%20MODEL",
+    "loggedAt": "2025-08-06T17:00:28.143Z"
+  },
+  {
+    "user": "444lila",
+    "song": "97 Jag",
+    "artist": "Kevin Abstract",
+    "album": "Blush",
+    "timestamp": "8/6/2025, 5:02:50 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273ecfb82c059a6e6543a1f3ce6",
+    "spotifyUrl": "https://open.spotify.com/search/97%20Jag%20Kevin%20Abstract",
+    "loggedAt": "2025-08-06T17:02:58.249Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Fashion Killa",
+    "artist": "A$AP Rocky",
+    "album": "LONG.LIVE.A$AP (Deluxe Version)",
+    "timestamp": "8/6/2025, 5:06:47 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2732ae92030b51fb8135d694af9",
+    "spotifyUrl": "https://open.spotify.com/search/Fashion%20Killa%20A%24AP%20Rocky",
+    "loggedAt": "2025-08-06T17:06:58.435Z"
+  },
+  {
+    "user": "444lila",
+    "song": "End of Beginning",
+    "artist": "Djo",
+    "album": "DECIDE",
+    "timestamp": "8/6/2025, 5:07:58 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273fddfffec51b4580acae727c1",
+    "spotifyUrl": "https://open.spotify.com/search/End%20of%20Beginning%20Djo",
+    "loggedAt": "2025-08-06T17:08:28.490Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Missed Calls",
+    "artist": "Mac Miller",
+    "album": "Blue Slide Park",
+    "timestamp": "8/6/2025, 5:11:15 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273febab2761d0e72b3ce422a2b",
+    "spotifyUrl": "https://open.spotify.com/search/Missed%20Calls%20Mac%20Miller",
+    "loggedAt": "2025-08-06T17:11:28.598Z"
+  },
+  {
+    "user": "444lila",
+    "song": "The River",
+    "artist": "Daisy Jones & The Six",
+    "album": "AURORA",
+    "timestamp": "8/6/2025, 5:28:31 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27303d0025f96528545ca9a921d",
+    "spotifyUrl": "https://open.spotify.com/search/The%20River%20Daisy%20Jones%20%26%20The%20Six",
+    "loggedAt": "2025-08-06T17:28:59.329Z"
+  },
+  {
+    "user": "444lila",
+    "song": "1.23.23",
+    "artist": "Dominic Fike",
+    "album": "14 minutes",
+    "timestamp": "8/6/2025, 5:30:32 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273abdde781e79a44868914e661",
+    "spotifyUrl": "https://open.spotify.com/search/1.23.23%20Dominic%20Fike",
+    "loggedAt": "2025-08-06T17:30:59.394Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Babydoll",
+    "artist": "Dominic Fike",
+    "album": "Don't Forget About Me, Demos",
+    "timestamp": "8/6/2025, 5:32:11 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2737b1b6f41c1645af9757d5616",
+    "spotifyUrl": "https://open.spotify.com/search/Babydoll%20Dominic%20Fike",
+    "loggedAt": "2025-08-06T17:32:29.442Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Anticipate",
+    "artist": "El Michels Affair",
+    "album": "Anticipate",
+    "timestamp": "8/6/2025, 5:34:43 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27341a9874dcccc950dd494c292",
+    "spotifyUrl": "https://open.spotify.com/search/Anticipate%20El%20Michels%20Affair",
+    "loggedAt": "2025-08-06T17:34:59.547Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Someone To Call My Lover",
+    "artist": "Janet Jackson",
+    "album": "All For You",
+    "timestamp": "8/6/2025, 5:39:27 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27312da16fd0dec009d45f7dca3",
+    "spotifyUrl": "https://open.spotify.com/search/Someone%20To%20Call%20My%20Lover%20Janet%20Jackson",
+    "loggedAt": "2025-08-06T17:39:29.752Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Uncle ACE",
+    "artist": "Blood Orange",
+    "album": "Cupid Deluxe",
+    "timestamp": "8/6/2025, 5:49:46 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2739d6bd2afa2987a69b7b55f72",
+    "spotifyUrl": "https://open.spotify.com/search/Uncle%20ACE%20Blood%20Orange",
+    "loggedAt": "2025-08-06T17:50:00.202Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Champagne Coast",
+    "artist": "Blood Orange",
+    "album": "Coastal Grooves",
+    "timestamp": "8/6/2025, 5:54:39 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273a790082aa893b1f841d7d545",
+    "spotifyUrl": "https://open.spotify.com/search/Champagne%20Coast%20Blood%20Orange",
+    "loggedAt": "2025-08-06T17:55:00.416Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Headphones On",
+    "artist": "Addison Rae",
+    "album": "Addison",
+    "timestamp": "8/6/2025, 5:58:39 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273ec92248aecf970a5e6eae916",
+    "spotifyUrl": "https://open.spotify.com/search/Headphones%20On%20Addison%20Rae",
+    "loggedAt": "2025-08-06T17:59:00.568Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Wet Dream",
+    "artist": "Wet Leg",
+    "album": "Wet Leg",
+    "timestamp": "8/6/2025, 5:59:25 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273ea1126a33b0fb88e79915262",
+    "spotifyUrl": "https://open.spotify.com/search/Wet%20Dream%20Wet%20Leg",
+    "loggedAt": "2025-08-06T17:59:30.585Z"
+  },
+  {
+    "user": "444lila",
+    "song": "How Much Is Weed?",
+    "artist": "Dominic Fike",
+    "album": "Sunburn",
+    "timestamp": "8/6/2025, 6:01:29 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2730fb08616c78d44ceb4c8d061",
+    "spotifyUrl": "https://open.spotify.com/search/How%20Much%20Is%20Weed%3F%20Dominic%20Fike",
+    "loggedAt": "2025-08-06T18:01:30.672Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Roll My Stone",
+    "artist": "Arcy Drive",
+    "album": "Roll My Stone",
+    "timestamp": "8/6/2025, 6:04:29 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273bbfb1fea0ac022844614bc5e",
+    "spotifyUrl": "https://open.spotify.com/search/Roll%20My%20Stone%20Arcy%20Drive",
+    "loggedAt": "2025-08-06T18:04:51.079Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Slipfast",
+    "artist": "ROLE MODEL",
+    "album": "Kansas Anymore",
+    "timestamp": "8/6/2025, 6:07:42 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27317cb032bf1840aae7efa3859",
+    "spotifyUrl": "https://open.spotify.com/search/Slipfast%20ROLE%20MODEL",
+    "loggedAt": "2025-08-06T18:08:00.942Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Ode to a Conversation Stuck in Your Throat",
+    "artist": "Del Water Gap",
+    "album": "Del Water Gap",
+    "timestamp": "8/6/2025, 6:11:02 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2734809a527289734861ce03e20",
+    "spotifyUrl": "https://open.spotify.com/search/Ode%20to%20a%20Conversation%20Stuck%20in%20Your%20Throat%20Del%20Water%20Gap",
+    "loggedAt": "2025-08-06T18:11:31.131Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Calling After Me",
+    "artist": "Wallows",
+    "album": "Model",
+    "timestamp": "8/6/2025, 6:14:10 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273249ebe9bf12368d022324d95",
+    "spotifyUrl": "https://open.spotify.com/search/Calling%20After%20Me%20Wallows",
+    "loggedAt": "2025-08-06T18:14:31.207Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Sally, When The Wine Runs Out",
+    "artist": "ROLE MODEL",
+    "album": "Kansas Anymore (The Longest Goodbye)",
+    "timestamp": "8/6/2025, 6:17:49 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273ff9e807b292a861ded756d63",
+    "spotifyUrl": "https://open.spotify.com/search/Sally%2C%20When%20The%20Wine%20Runs%20Out%20ROLE%20MODEL",
+    "loggedAt": "2025-08-06T18:18:01.341Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Swim Between Trees",
+    "artist": "flipturn",
+    "album": "Burnout Days",
+    "timestamp": "8/6/2025, 6:21:43 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273dbce5fb8b86ce78cc8e8d541",
+    "spotifyUrl": "https://open.spotify.com/search/Swim%20Between%20Trees%20flipturn",
+    "loggedAt": "2025-08-06T18:22:01.523Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Von dutch",
+    "artist": "Charli xcx",
+    "album": "BRAT",
+    "timestamp": "8/6/2025, 6:24:28 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273c5c6772d1d98b2d0f3a69e37",
+    "spotifyUrl": "https://open.spotify.com/search/Von%20dutch%20Charli%20xcx",
+    "loggedAt": "2025-08-06T18:24:31.631Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Summertime",
+    "artist": "The Sundays",
+    "album": "Static & Silence",
+    "timestamp": "8/6/2025, 6:28:02 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2737455f0529e9a0cc371da902e",
+    "spotifyUrl": "https://open.spotify.com/search/Summertime%20The%20Sundays",
+    "loggedAt": "2025-08-06T18:28:31.847Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Let It Happen",
+    "artist": "Tame Impala",
+    "album": "Currents",
+    "timestamp": "8/6/2025, 6:49:16 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2739e1cfc756886ac782e363d79",
+    "spotifyUrl": "https://open.spotify.com/search/Let%20It%20Happen%20Tame%20Impala",
+    "loggedAt": "2025-08-06T18:49:32.740Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Change",
+    "artist": "Djo",
+    "album": "DECIDE",
+    "timestamp": "8/6/2025, 6:52:14 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273fddfffec51b4580acae727c1",
+    "spotifyUrl": "https://open.spotify.com/search/Change%20Djo",
+    "loggedAt": "2025-08-06T18:52:32.864Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Evergreen",
+    "artist": "Richy Mitch & The Coal Miners",
+    "album": "RMCM",
+    "timestamp": "8/6/2025, 6:53:41 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2731cc17bae5ee17cce117e198a",
+    "spotifyUrl": "https://open.spotify.com/search/Evergreen%20Richy%20Mitch%20%26%20The%20Coal%20Miners",
+    "loggedAt": "2025-08-06T18:54:02.986Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Hartwell",
+    "artist": "Shelly",
+    "album": "Shelly 2",
+    "timestamp": "8/6/2025, 6:56:35 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2730686f66ebbda3d1c7a7e5d8e",
+    "spotifyUrl": "https://open.spotify.com/search/Hartwell%20Shelly",
+    "loggedAt": "2025-08-06T18:57:03.101Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Satellite",
+    "artist": "Harry Styles",
+    "album": "Harry's House",
+    "timestamp": "8/6/2025, 7:05:22 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2732e8ed79e177ff6011076f5f0",
+    "spotifyUrl": "https://open.spotify.com/search/Satellite%20Harry%20Styles",
+    "loggedAt": "2025-08-06T19:05:33.434Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Saturn",
+    "artist": "SZA",
+    "album": "SOS Deluxe: LANA",
+    "timestamp": "8/6/2025, 7:07:50 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2737f5a318e3ff35defa8d0e4af",
+    "spotifyUrl": "https://open.spotify.com/search/Saturn%20SZA",
+    "loggedAt": "2025-08-06T19:08:03.540Z"
+  },
+  {
+    "user": "444lila",
+    "song": "West End Girls - 2018 Remaster",
+    "artist": "Pet Shop Boys",
+    "album": "Please: Further Listening 1984 - 1986 (2018 Remaster)",
+    "timestamp": "8/6/2025, 7:12:41 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2733540f5cb8e1e7a54125f84db",
+    "spotifyUrl": "https://open.spotify.com/search/West%20End%20Girls%20-%202018%20Remaster%20Pet%20Shop%20Boys",
+    "loggedAt": "2025-08-06T19:13:03.786Z"
+  },
+  {
+    "user": "444lila",
+    "song": "JAM !",
+    "artist": "BETWEEN FRIENDS",
+    "album": "WOW!",
+    "timestamp": "8/6/2025, 7:16:25 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273d12b876a6ba1df7a058f3ac9",
+    "spotifyUrl": "https://open.spotify.com/search/JAM%20!%20BETWEEN%20FRIENDS",
+    "loggedAt": "2025-08-06T19:16:33.977Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Add Up My Love",
+    "artist": "Clairo",
+    "album": "Charm",
+    "timestamp": "8/6/2025, 7:19:55 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273193c2fafdce8f116b5ca0a78",
+    "spotifyUrl": "https://open.spotify.com/search/Add%20Up%20My%20Love%20Clairo",
+    "loggedAt": "2025-08-06T19:20:04.074Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Talk Down",
+    "artist": "Dijon",
+    "album": "Absolutely",
+    "timestamp": "8/6/2025, 7:33:26 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273a68442f97c3ad2dcba0beae6",
+    "spotifyUrl": "https://open.spotify.com/search/Talk%20Down%20Dijon",
+    "loggedAt": "2025-08-06T19:33:34.648Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Alesis",
+    "artist": "Mk.gee",
+    "album": "Two Star & The Dream Police",
+    "timestamp": "8/6/2025, 7:36:45 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273038b1c2017f14c805cf5b7e9",
+    "spotifyUrl": "https://open.spotify.com/search/Alesis%20Mk.gee",
+    "loggedAt": "2025-08-06T19:37:04.811Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Underdressed at the Symphony",
+    "artist": "Faye Webster",
+    "album": "Underdressed at the Symphony",
+    "timestamp": "8/6/2025, 7:40:19 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273f0923a06c895b3f507f1f7b3",
+    "spotifyUrl": "https://open.spotify.com/search/Underdressed%20at%20the%20Symphony%20Faye%20Webster",
+    "loggedAt": "2025-08-06T19:40:34.944Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Funny Papers",
+    "artist": "Mac Miller",
+    "album": "Balloonerism",
+    "timestamp": "8/6/2025, 7:44:39 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2739a9c4cd69a6f514dfbb7305a",
+    "spotifyUrl": "https://open.spotify.com/search/Funny%20Papers%20Mac%20Miller",
+    "loggedAt": "2025-08-06T19:45:05.086Z"
+  },
+  {
+    "user": "444lila",
+    "song": "1234567",
+    "artist": "BETWEEN FRIENDS",
+    "album": "1234567",
+    "timestamp": "8/6/2025, 7:47:13 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273415964bb87226bf2f312c972",
+    "spotifyUrl": "https://open.spotify.com/search/1234567%20BETWEEN%20FRIENDS",
+    "loggedAt": "2025-08-06T19:47:35.204Z"
+  },
+  {
+    "user": "444lila",
+    "song": "XD",
+    "artist": "BETWEEN FRIENDS",
+    "album": "XD",
+    "timestamp": "8/6/2025, 7:49:39 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27396f460557b3433cb963acfa4",
+    "spotifyUrl": "https://open.spotify.com/search/XD%20BETWEEN%20FRIENDS",
+    "loggedAt": "2025-08-06T19:50:05.292Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Come Back Down",
+    "artist": "Men I Trust",
+    "album": "Equus Caballus",
+    "timestamp": "8/6/2025, 7:55:48 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273dcfa162250c7d0feed61d638",
+    "spotifyUrl": "https://open.spotify.com/search/Come%20Back%20Down%20Men%20I%20Trust",
+    "loggedAt": "2025-08-06T19:55:53.919Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Girlfriend",
+    "artist": "Kevin Abstract",
+    "album": "Blush",
+    "timestamp": "8/6/2025, 8:09:42 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2736a2c4f936774dc0ced95cca1",
+    "spotifyUrl": "https://open.spotify.com/search/Girlfriend%20Kevin%20Abstract",
+    "loggedAt": "2025-08-06T20:10:06.133Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Blush Interlude",
+    "artist": "Kevin Abstract",
+    "album": "Blush",
+    "timestamp": "8/6/2025, 8:11:05 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2736a2c4f936774dc0ced95cca1",
+    "spotifyUrl": "https://open.spotify.com/search/Blush%20Interlude%20Kevin%20Abstract",
+    "loggedAt": "2025-08-06T20:11:06.173Z"
+  },
+  {
+    "user": "444lila",
+    "song": "H-Town",
+    "artist": "Kevin Abstract",
+    "album": "Blush",
+    "timestamp": "8/6/2025, 8:14:09 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2736a2c4f936774dc0ced95cca1",
+    "spotifyUrl": "https://open.spotify.com/search/H-Town%20Kevin%20Abstract",
+    "loggedAt": "2025-08-06T20:14:36.360Z"
+  },
+  {
+    "user": "444lila",
+    "song": "NOLA",
+    "artist": "Kevin Abstract",
+    "album": "Blush",
+    "timestamp": "8/6/2025, 8:17:21 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2736a2c4f936774dc0ced95cca1",
+    "spotifyUrl": "https://open.spotify.com/search/NOLA%20Kevin%20Abstract",
+    "loggedAt": "2025-08-06T20:17:36.513Z"
+  },
+  {
+    "user": "444lila",
+    "song": "97 Jag",
+    "artist": "Kevin Abstract",
+    "album": "Blush",
+    "timestamp": "8/6/2025, 8:20:11 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2736a2c4f936774dc0ced95cca1",
+    "spotifyUrl": "https://open.spotify.com/search/97%20Jag%20Kevin%20Abstract",
+    "loggedAt": "2025-08-06T20:20:36.606Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Bloom",
+    "artist": "Kevin Abstract",
+    "album": "Blush",
+    "timestamp": "8/6/2025, 8:22:18 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2736a2c4f936774dc0ced95cca1",
+    "spotifyUrl": "https://open.spotify.com/search/Bloom%20Kevin%20Abstract",
+    "loggedAt": "2025-08-06T20:22:36.703Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Geezer",
+    "artist": "Kevin Abstract",
+    "album": "Blush",
+    "timestamp": "8/6/2025, 8:25:08 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2736a2c4f936774dc0ced95cca1",
+    "spotifyUrl": "https://open.spotify.com/search/Geezer%20Kevin%20Abstract",
+    "loggedAt": "2025-08-06T20:25:36.837Z"
+  },
+  {
+    "user": "444lila",
+    "song": "idk that bitch (feat. G Herbo)",
+    "artist": "Gunna",
+    "album": "DS4EVER",
+    "timestamp": "8/6/2025, 8:28:39 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27314d91ebdd6d7e2931322cc1a",
+    "spotifyUrl": "https://open.spotify.com/search/idk%20that%20bitch%20(feat.%20G%20Herbo)%20Gunna",
+    "loggedAt": "2025-08-06T20:29:07.023Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Comedown",
+    "artist": "Maude Latour",
+    "album": "Sugar Water",
+    "timestamp": "8/6/2025, 8:31:18 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273ff8fb405d660013796ae8aa4",
+    "spotifyUrl": "https://open.spotify.com/search/Comedown%20Maude%20Latour",
+    "loggedAt": "2025-08-06T20:31:37.116Z"
+  },
+  {
+    "user": "444lila",
+    "song": "a rose blooms in chaos",
+    "artist": "Davishmar",
+    "album": "a rose blooms in chaos",
+    "timestamp": "8/6/2025, 8:34:15 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2735a2caeafaab83062e4fe5a73",
+    "spotifyUrl": "https://open.spotify.com/search/a%20rose%20blooms%20in%20chaos%20Davishmar",
+    "loggedAt": "2025-08-06T20:34:37.255Z"
+  },
+  {
+    "user": "444lila",
+    "song": "I Wouldn't Ask You",
+    "artist": "Clairo",
+    "album": "Immunity",
+    "timestamp": "8/6/2025, 8:37:24 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27333ccb60f9b2785ef691b2fbc",
+    "spotifyUrl": "https://open.spotify.com/search/I%20Wouldn't%20Ask%20You%20Clairo",
+    "loggedAt": "2025-08-06T20:37:37.394Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Morning Song",
+    "artist": "The Lumineers",
+    "album": "The Lumineers",
+    "timestamp": "8/6/2025, 8:49:14 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273f350c13195ce048876b5fea4",
+    "spotifyUrl": "https://open.spotify.com/search/Morning%20Song%20The%20Lumineers",
+    "loggedAt": "2025-08-06T20:49:37.918Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Dog Has Its Day",
+    "artist": "TOLEDO",
+    "album": "Jockeys of Love",
+    "timestamp": "8/6/2025, 8:52:26 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2733d13b8f6af171e085bdedc11",
+    "spotifyUrl": "https://open.spotify.com/search/Dog%20Has%20Its%20Day%20TOLEDO",
+    "loggedAt": "2025-08-06T20:52:38.015Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Cruel, Cruel World",
+    "artist": "harf.",
+    "album": "Cruel, Cruel World",
+    "timestamp": "8/6/2025, 9:57:55 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2739349775dd53a129ab067d4a4",
+    "spotifyUrl": "https://open.spotify.com/search/Cruel%2C%20Cruel%20World%20harf.",
+    "loggedAt": "2025-08-06T21:58:10.934Z"
+  },
+  {
+    "user": "444lila",
+    "song": "exes",
+    "artist": "Tate McRae",
+    "album": "THINK LATER",
+    "timestamp": "8/6/2025, 10:00:35 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27377eb7a5b9367de79c3b92a49",
+    "spotifyUrl": "https://open.spotify.com/search/exes%20Tate%20McRae",
+    "loggedAt": "2025-08-06T22:00:41.043Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Altitude",
+    "artist": "Sydney Ross Mitchell",
+    "album": "Pure Bliss Forever",
+    "timestamp": "8/6/2025, 10:03:35 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2736e1cf08c100847e65d02149c",
+    "spotifyUrl": "https://open.spotify.com/search/Altitude%20Sydney%20Ross%20Mitchell",
+    "loggedAt": "2025-08-06T22:03:41.170Z"
+  },
+  {
+    "user": "444lila",
+    "song": "This Empty Northern Hemisphere",
+    "artist": "Gregory Alan Isakov",
+    "album": "This Empty Northern Hemisphere",
+    "timestamp": "8/6/2025, 10:08:36 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27393a1519118102a6d78164713",
+    "spotifyUrl": "https://open.spotify.com/search/This%20Empty%20Northern%20Hemisphere%20Gregory%20Alan%20Isakov",
+    "loggedAt": "2025-08-06T22:08:41.414Z"
+  },
+  {
+    "user": "444lila",
+    "song": "West End Girls - 2018 Remaster",
+    "artist": "Pet Shop Boys",
+    "album": "Please: Further Listening 1984 - 1986 (2018 Remaster)",
+    "timestamp": "8/7/2025, 1:20:03 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2733540f5cb8e1e7a54125f84db",
+    "spotifyUrl": "https://open.spotify.com/search/West%20End%20Girls%20-%202018%20Remaster%20Pet%20Shop%20Boys",
+    "loggedAt": "2025-08-07T01:20:19.589Z"
+  },
+  {
+    "user": "444lila",
+    "song": "JAM !",
+    "artist": "BETWEEN FRIENDS",
+    "album": "WOW!",
+    "timestamp": "8/7/2025, 1:23:47 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273d12b876a6ba1df7a058f3ac9",
+    "spotifyUrl": "https://open.spotify.com/search/JAM%20!%20BETWEEN%20FRIENDS",
+    "loggedAt": "2025-08-07T01:23:49.816Z"
+  },
+  {
+    "user": "444lila",
+    "song": "The Field (feat. The Durutti Column, Tariq Al-Sabir, Caroline Polachek & Daniel Caesar)",
+    "artist": "Blood Orange",
+    "album": "The Field (feat. The Durutti Column, Tariq Al-Sabir, Caroline Polachek & Daniel Caesar)",
+    "timestamp": "8/7/2025, 1:24:23 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273e11256a3e685203e20a71257",
+    "spotifyUrl": "https://open.spotify.com/search/The%20Field%20(feat.%20The%20Durutti%20Column%2C%20Tariq%20Al-Sabir%2C%20Caroline%20Polachek%20%26%20Daniel%20Caesar)%20Blood%20Orange",
+    "loggedAt": "2025-08-07T01:24:49.807Z"
+  },
+  {
+    "user": "444lila",
+    "song": "JAM !",
+    "artist": "BETWEEN FRIENDS",
+    "album": "WOW!",
+    "timestamp": "8/7/2025, 1:28:05 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273d12b876a6ba1df7a058f3ac9",
+    "spotifyUrl": "https://open.spotify.com/search/JAM%20!%20BETWEEN%20FRIENDS",
+    "loggedAt": "2025-08-07T01:28:19.934Z"
+  },
+  {
+    "user": "444lila",
+    "song": "The Field (feat. The Durutti Column, Tariq Al-Sabir, Caroline Polachek & Daniel Caesar)",
+    "artist": "Blood Orange",
+    "album": "The Field (feat. The Durutti Column, Tariq Al-Sabir, Caroline Polachek & Daniel Caesar)",
+    "timestamp": "8/7/2025, 1:31:25 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273e11256a3e685203e20a71257",
+    "spotifyUrl": "https://open.spotify.com/search/The%20Field%20(feat.%20The%20Durutti%20Column%2C%20Tariq%20Al-Sabir%2C%20Caroline%20Polachek%20%26%20Daniel%20Caesar)%20Blood%20Orange",
+    "loggedAt": "2025-08-07T01:31:50.112Z"
+  },
+  {
+    "user": "444lila",
+    "song": "West End Girls - 2018 Remaster",
+    "artist": "Pet Shop Boys",
+    "album": "Please: Further Listening 1984 - 1986 (2018 Remaster)",
+    "timestamp": "8/7/2025, 1:47:04 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2733540f5cb8e1e7a54125f84db",
+    "spotifyUrl": "https://open.spotify.com/search/West%20End%20Girls%20-%202018%20Remaster%20Pet%20Shop%20Boys",
+    "loggedAt": "2025-08-07T01:47:20.723Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Alesis",
+    "artist": "Mk.gee",
+    "album": "Two Star & The Dream Police",
+    "timestamp": "8/7/2025, 1:50:23 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273038b1c2017f14c805cf5b7e9",
+    "spotifyUrl": "https://open.spotify.com/search/Alesis%20Mk.gee",
+    "loggedAt": "2025-08-07T01:50:50.875Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Post Break Up Beauty",
+    "artist": "Kevin Abstract",
+    "album": "Blush",
+    "timestamp": "8/7/2025, 1:53:16 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273ecfb82c059a6e6543a1f3ce6",
+    "spotifyUrl": "https://open.spotify.com/search/Post%20Break%20Up%20Beauty%20Kevin%20Abstract",
+    "loggedAt": "2025-08-07T01:53:20.993Z"
+  },
+  {
+    "user": "444lila",
+    "song": "XD",
+    "artist": "BETWEEN FRIENDS",
+    "album": "XD",
+    "timestamp": "8/7/2025, 2:04:55 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27396f460557b3433cb963acfa4",
+    "spotifyUrl": "https://open.spotify.com/search/XD%20BETWEEN%20FRIENDS",
+    "loggedAt": "2025-08-07T02:05:21.565Z"
+  },
+  {
+    "user": "444lila",
+    "song": "The Field (feat. The Durutti Column, Tariq Al-Sabir, Caroline Polachek & Daniel Caesar)",
+    "artist": "Blood Orange",
+    "album": "The Field (feat. The Durutti Column, Tariq Al-Sabir, Caroline Polachek & Daniel Caesar)",
+    "timestamp": "8/7/2025, 2:25:17 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273e11256a3e685203e20a71257",
+    "spotifyUrl": "https://open.spotify.com/search/The%20Field%20(feat.%20The%20Durutti%20Column%2C%20Tariq%20Al-Sabir%2C%20Caroline%20Polachek%20%26%20Daniel%20Caesar)%20Blood%20Orange",
+    "loggedAt": "2025-08-07T14:25:23.314Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Add Up My Love",
+    "artist": "Clairo",
+    "album": "Charm",
+    "timestamp": "8/7/2025, 2:28:43 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273193c2fafdce8f116b5ca0a78",
+    "spotifyUrl": "https://open.spotify.com/search/Add%20Up%20My%20Love%20Clairo",
+    "loggedAt": "2025-08-07T14:28:53.441Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Talk Down",
+    "artist": "Dijon",
+    "album": "Absolutely",
+    "timestamp": "8/7/2025, 2:31:15 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273a68442f97c3ad2dcba0beae6",
+    "spotifyUrl": "https://open.spotify.com/search/Talk%20Down%20Dijon",
+    "loggedAt": "2025-08-07T14:31:23.537Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Underdressed at the Symphony",
+    "artist": "Faye Webster",
+    "album": "Underdressed at the Symphony",
+    "timestamp": "8/7/2025, 2:34:48 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273f0923a06c895b3f507f1f7b3",
+    "spotifyUrl": "https://open.spotify.com/search/Underdressed%20at%20the%20Symphony%20Faye%20Webster",
+    "loggedAt": "2025-08-07T14:34:53.711Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Text Me",
+    "artist": "Kevin Abstract",
+    "album": "Blush",
+    "timestamp": "8/7/2025, 2:45:31 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273ecfb82c059a6e6543a1f3ce6",
+    "spotifyUrl": "https://open.spotify.com/search/Text%20Me%20Kevin%20Abstract",
+    "loggedAt": "2025-08-07T14:45:54.177Z"
+  },
+  {
+    "user": "444lila",
+    "song": "I Wasn’t There",
+    "artist": "Kevin Abstract",
+    "album": "Blush",
+    "timestamp": "8/7/2025, 2:47:40 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273ecfb82c059a6e6543a1f3ce6",
+    "spotifyUrl": "https://open.spotify.com/search/I%20Wasn%E2%80%99t%20There%20Kevin%20Abstract",
+    "loggedAt": "2025-08-07T14:47:54.254Z"
+  },
+  {
+    "user": "444lila",
+    "song": "American Bitch",
+    "artist": "BETWEEN FRIENDS",
+    "album": "American Bitch",
+    "timestamp": "8/7/2025, 2:50:25 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273bd4193770d70414e61f6bcc4",
+    "spotifyUrl": "https://open.spotify.com/search/American%20Bitch%20BETWEEN%20FRIENDS",
+    "loggedAt": "2025-08-07T14:50:54.384Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Fingers and Clothes",
+    "artist": "Jake Minch",
+    "album": "George",
+    "timestamp": "8/7/2025, 2:53:43 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273eb71bb4508d8601918569ad0",
+    "spotifyUrl": "https://open.spotify.com/search/Fingers%20and%20Clothes%20Jake%20Minch",
+    "loggedAt": "2025-08-07T14:53:54.527Z"
+  },
+  {
+    "user": "444lila",
+    "song": "favorite apple",
+    "artist": "The Two Lips",
+    "album": "favorite apple",
+    "timestamp": "8/7/2025, 3:46:23 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273ae864846e7b27b30699915fa",
+    "spotifyUrl": "https://open.spotify.com/search/favorite%20apple%20The%20Two%20Lips",
+    "loggedAt": "2025-08-07T15:46:26.732Z"
+  },
+  {
+    "user": "444lila",
+    "song": "e-Asphyxiation",
+    "artist": "Cafuné",
+    "album": "e-Asphyxiation",
+    "timestamp": "8/7/2025, 4:04:52 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27332153f5acd61f88da1376962",
+    "spotifyUrl": "https://open.spotify.com/search/e-Asphyxiation%20Cafun%C3%A9",
+    "loggedAt": "2025-08-07T16:04:57.509Z"
+  },
+  {
+    "user": "444lila",
+    "song": "1234567",
+    "artist": "BETWEEN FRIENDS",
+    "album": "1234567",
+    "timestamp": "8/7/2025, 4:07:38 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273415964bb87226bf2f312c972",
+    "spotifyUrl": "https://open.spotify.com/search/1234567%20BETWEEN%20FRIENDS",
+    "loggedAt": "2025-08-07T16:07:57.647Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Hartwell",
+    "artist": "Shelly",
+    "album": "Shelly 2",
+    "timestamp": "8/7/2025, 4:13:21 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2730686f66ebbda3d1c7a7e5d8e",
+    "spotifyUrl": "https://open.spotify.com/search/Hartwell%20Shelly",
+    "loggedAt": "2025-08-07T16:13:27.909Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Come Back Down",
+    "artist": "Men I Trust",
+    "album": "Equus Caballus",
+    "timestamp": "8/7/2025, 4:16:36 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273dcfa162250c7d0feed61d638",
+    "spotifyUrl": "https://open.spotify.com/search/Come%20Back%20Down%20Men%20I%20Trust",
+    "loggedAt": "2025-08-07T16:16:58.095Z"
+  },
+  {
+    "user": "444lila",
+    "song": "West End Girls - 2018 Remaster",
+    "artist": "Pet Shop Boys",
+    "album": "Please: Further Listening 1984 - 1986 (2018 Remaster)",
+    "timestamp": "8/7/2025, 4:22:01 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2733540f5cb8e1e7a54125f84db",
+    "spotifyUrl": "https://open.spotify.com/search/West%20End%20Girls%20-%202018%20Remaster%20Pet%20Shop%20Boys",
+    "loggedAt": "2025-08-07T16:22:28.323Z"
+  },
+  {
+    "user": "444lila",
+    "song": "JAM !",
+    "artist": "BETWEEN FRIENDS",
+    "album": "WOW!",
+    "timestamp": "8/7/2025, 4:23:30 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273d12b876a6ba1df7a058f3ac9",
+    "spotifyUrl": "https://open.spotify.com/search/JAM%20!%20BETWEEN%20FRIENDS",
+    "loggedAt": "2025-08-07T16:23:58.364Z"
+  },
+  {
+    "user": "444lila",
+    "song": "West End Girls - 2018 Remaster",
+    "artist": "Pet Shop Boys",
+    "album": "Please: Further Listening 1984 - 1986 (2018 Remaster)",
+    "timestamp": "8/7/2025, 4:53:16 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2733540f5cb8e1e7a54125f84db",
+    "spotifyUrl": "https://open.spotify.com/search/West%20End%20Girls%20-%202018%20Remaster%20Pet%20Shop%20Boys",
+    "loggedAt": "2025-08-07T16:53:29.713Z"
+  },
+  {
+    "user": "444lila",
+    "song": "JAM !",
+    "artist": "BETWEEN FRIENDS",
+    "album": "WOW!",
+    "timestamp": "8/7/2025, 4:57:00 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273d12b876a6ba1df7a058f3ac9",
+    "spotifyUrl": "https://open.spotify.com/search/JAM%20!%20BETWEEN%20FRIENDS",
+    "loggedAt": "2025-08-07T16:57:29.904Z"
+  },
+  {
+    "user": "444lila",
+    "song": "The Field (feat. The Durutti Column, Tariq Al-Sabir, Caroline Polachek & Daniel Caesar)",
+    "artist": "Blood Orange",
+    "album": "The Field (feat. The Durutti Column, Tariq Al-Sabir, Caroline Polachek & Daniel Caesar)",
+    "timestamp": "8/7/2025, 5:00:20 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273e11256a3e685203e20a71257",
+    "spotifyUrl": "https://open.spotify.com/search/The%20Field%20(feat.%20The%20Durutti%20Column%2C%20Tariq%20Al-Sabir%2C%20Caroline%20Polachek%20%26%20Daniel%20Caesar)%20Blood%20Orange",
+    "loggedAt": "2025-08-07T17:00:30.012Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Add Up My Love",
+    "artist": "Clairo",
+    "album": "Charm",
+    "timestamp": "8/7/2025, 5:04:12 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273193c2fafdce8f116b5ca0a78",
+    "spotifyUrl": "https://open.spotify.com/search/Add%20Up%20My%20Love%20Clairo",
+    "loggedAt": "2025-08-07T17:04:30.192Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Talk Down",
+    "artist": "Dijon",
+    "album": "Absolutely",
+    "timestamp": "8/7/2025, 5:06:45 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273a68442f97c3ad2dcba0beae6",
+    "spotifyUrl": "https://open.spotify.com/search/Talk%20Down%20Dijon",
+    "loggedAt": "2025-08-07T17:07:00.348Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Underdressed at the Symphony",
+    "artist": "Faye Webster",
+    "album": "Underdressed at the Symphony",
+    "timestamp": "8/7/2025, 5:19:00 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273f0923a06c895b3f507f1f7b3",
+    "spotifyUrl": "https://open.spotify.com/search/Underdressed%20at%20the%20Symphony%20Faye%20Webster",
+    "loggedAt": "2025-08-07T17:19:30.845Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Nico's Red Truck",
+    "artist": "Dijon",
+    "album": "Nico's Red Truck",
+    "timestamp": "8/7/2025, 5:23:10 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2735fdb3e131ea8ff96e0b8994a",
+    "spotifyUrl": "https://open.spotify.com/search/Nico's%20Red%20Truck%20Dijon",
+    "loggedAt": "2025-08-07T17:23:31.095Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Julia",
+    "artist": "Mt. Joy",
+    "album": "Mt. Joy",
+    "timestamp": "8/7/2025, 5:30:30 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27331e4ef69237ca7ffbecda485",
+    "spotifyUrl": "https://open.spotify.com/search/Julia%20Mt.%20Joy",
+    "loggedAt": "2025-08-07T17:30:31.405Z"
+  },
+  {
+    "user": "444lila",
+    "song": "girl in new york",
+    "artist": "ROLE MODEL",
+    "album": "girl in new york",
+    "timestamp": "8/7/2025, 5:34:02 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273ad266cc086a2dc67bdf507dd",
+    "spotifyUrl": "https://open.spotify.com/search/girl%20in%20new%20york%20ROLE%20MODEL",
+    "loggedAt": "2025-08-07T17:34:31.584Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Hippies",
+    "artist": "flipturn",
+    "album": "Citrona",
+    "timestamp": "8/7/2025, 5:38:37 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27335cedd0fe1bd17882886d400",
+    "spotifyUrl": "https://open.spotify.com/search/Hippies%20flipturn",
+    "loggedAt": "2025-08-07T17:39:01.765Z"
+  },
+  {
+    "user": "444lila",
+    "song": "White Roses",
+    "artist": "Flyte",
+    "album": "White Roses",
+    "timestamp": "8/7/2025, 5:42:04 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2732969477f94aae2ff5808a76d",
+    "spotifyUrl": "https://open.spotify.com/search/White%20Roses%20Flyte",
+    "loggedAt": "2025-08-07T17:42:31.946Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Scratching",
+    "artist": "Dijon",
+    "album": "Absolutely",
+    "timestamp": "8/7/2025, 5:43:49 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273a68442f97c3ad2dcba0beae6",
+    "spotifyUrl": "https://open.spotify.com/search/Scratching%20Dijon",
+    "loggedAt": "2025-08-07T17:44:01.989Z"
+  },
+  {
+    "user": "444lila",
+    "song": "How many miles",
+    "artist": "Mk.gee",
+    "album": "Two Star & The Dream Police",
+    "timestamp": "8/7/2025, 5:46:32 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273038b1c2017f14c805cf5b7e9",
+    "spotifyUrl": "https://open.spotify.com/search/How%20many%20miles%20Mk.gee",
+    "loggedAt": "2025-08-07T17:47:02.127Z"
+  },
+  {
+    "user": "444lila",
+    "song": "HEADSTART",
+    "artist": "Ritt Momney",
+    "album": "Sunny Boy",
+    "timestamp": "8/7/2025, 6:54:59 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273abb69dc94a58df6814b68732",
+    "spotifyUrl": "https://open.spotify.com/search/HEADSTART%20Ritt%20Momney",
+    "loggedAt": "2025-08-07T18:55:05.143Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Someday, Somewhere",
+    "artist": "Palace",
+    "album": "Someday, Somewhere",
+    "timestamp": "8/7/2025, 6:58:13 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27390912ce0aad8b575d3cd1b50",
+    "spotifyUrl": "https://open.spotify.com/search/Someday%2C%20Somewhere%20Palace",
+    "loggedAt": "2025-08-07T18:58:35.317Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Glistening",
+    "artist": "flipturn",
+    "album": "Something You Needed",
+    "timestamp": "8/7/2025, 7:02:20 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273553697592a70a6a963ab9fa3",
+    "spotifyUrl": "https://open.spotify.com/search/Glistening%20flipturn",
+    "loggedAt": "2025-08-07T19:02:35.801Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Skin",
+    "artist": "Dijon",
+    "album": "Skin",
+    "timestamp": "8/7/2025, 7:06:11 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27324a1563d4e61f31efec9be17",
+    "spotifyUrl": "https://open.spotify.com/search/Skin%20Dijon",
+    "loggedAt": "2025-08-07T19:06:35.704Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Better Views",
+    "artist": "Yellow House",
+    "album": "Better Views",
+    "timestamp": "8/7/2025, 7:06:52 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273622b5587432cc5fb522965fc",
+    "spotifyUrl": "https://open.spotify.com/search/Better%20Views%20Yellow%20House",
+    "loggedAt": "2025-08-07T19:07:05.725Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Get On",
+    "artist": "Racoma",
+    "album": "Racoma",
+    "timestamp": "8/7/2025, 7:31:03 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2733c577cb3b210d1a019c26442",
+    "spotifyUrl": "https://open.spotify.com/search/Get%20On%20Racoma",
+    "loggedAt": "2025-08-07T19:31:06.782Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Doc Whiler",
+    "artist": "Alex Banin",
+    "album": "Since Winona",
+    "timestamp": "8/7/2025, 7:33:33 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2732985c8eda309ce0630f848de",
+    "spotifyUrl": "https://open.spotify.com/search/Doc%20Whiler%20Alex%20Banin",
+    "loggedAt": "2025-08-07T19:33:36.903Z"
+  },
+  {
+    "user": "444lila",
+    "song": "To Philly",
+    "artist": "Del Water Gap",
+    "album": "Don't Get Dark",
+    "timestamp": "8/7/2025, 7:42:19 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27398da0f5c6fce983b796b7cfc",
+    "spotifyUrl": "https://open.spotify.com/search/To%20Philly%20Del%20Water%20Gap",
+    "loggedAt": "2025-08-07T19:42:37.319Z"
+  },
+  {
+    "user": "444lila",
+    "song": "WILD",
+    "artist": "Dijon",
+    "album": "WILD",
+    "timestamp": "8/7/2025, 7:45:36 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2731480d423b262b3ee992a7536",
+    "spotifyUrl": "https://open.spotify.com/search/WILD%20Dijon",
+    "loggedAt": "2025-08-07T19:46:07.460Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Clueless",
+    "artist": "The Marías",
+    "album": "Superclean, Vol. II",
+    "timestamp": "8/7/2025, 7:49:24 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273a64b06c0eb30ce15c3e6edc1",
+    "spotifyUrl": "https://open.spotify.com/search/Clueless%20The%20Mar%C3%ADas",
+    "loggedAt": "2025-08-07T19:49:37.644Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Impossible",
+    "artist": "Clairo",
+    "album": "Immunity",
+    "timestamp": "8/7/2025, 7:53:53 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27378d601a8e07bef8b1f8ecf82",
+    "spotifyUrl": "https://open.spotify.com/search/Impossible%20Clairo",
+    "loggedAt": "2025-08-07T19:54:07.849Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Blinding Sights (Left Me Cold in the Night)",
+    "artist": "Yellow House",
+    "album": "A Carnival of Fears",
+    "timestamp": "8/7/2025, 8:03:52 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273238d9d43908b01587500d8cf",
+    "spotifyUrl": "https://open.spotify.com/search/Blinding%20Sights%20(Left%20Me%20Cold%20in%20the%20Night)%20Yellow%20House",
+    "loggedAt": "2025-08-07T20:04:08.241Z"
+  },
+  {
+    "user": "444lila",
+    "song": "The Kiss Of Venus (Dominic Fike)",
+    "artist": "Paul McCartney",
+    "album": "McCartney III Imagined",
+    "timestamp": "8/7/2025, 8:06:16 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27372275ae8324be1e829320a43",
+    "spotifyUrl": "https://open.spotify.com/search/The%20Kiss%20Of%20Venus%20(Dominic%20Fike)%20Paul%20McCartney",
+    "loggedAt": "2025-08-07T20:06:38.365Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Dog Eyes",
+    "artist": "Dijon",
+    "album": "Sci Fi 1",
+    "timestamp": "8/7/2025, 8:09:14 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2736badb46153f9bb6d8491c54b",
+    "spotifyUrl": "https://open.spotify.com/search/Dog%20Eyes%20Dijon",
+    "loggedAt": "2025-08-07T20:09:38.483Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Younger Days",
+    "artist": "Mt. Joy",
+    "album": "Mt. Joy",
+    "timestamp": "8/7/2025, 8:47:18 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27331e4ef69237ca7ffbecda485",
+    "spotifyUrl": "https://open.spotify.com/search/Younger%20Days%20Mt.%20Joy",
+    "loggedAt": "2025-08-07T20:47:40.183Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Right",
+    "artist": "Mac Miller",
+    "album": "Circles (Deluxe)",
+    "timestamp": "8/7/2025, 8:48:07 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2738cbe65eb023c2f2b5cdf5a91",
+    "spotifyUrl": "https://open.spotify.com/search/Right%20Mac%20Miller",
+    "loggedAt": "2025-08-07T20:48:10.180Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Many Times",
+    "artist": "Dijon",
+    "album": "Absolutely",
+    "timestamp": "8/7/2025, 8:49:39 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273a68442f97c3ad2dcba0beae6",
+    "spotifyUrl": "https://open.spotify.com/search/Many%20Times%20Dijon",
+    "loggedAt": "2025-08-07T20:50:10.273Z"
+  },
+  {
+    "user": "444lila",
+    "song": "August (Acoustic)",
+    "artist": "flipturn",
+    "album": "August (Acoustic)",
+    "timestamp": "8/7/2025, 8:50:48 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2735b674842e8fbd342df2e2cb4",
+    "spotifyUrl": "https://open.spotify.com/search/August%20(Acoustic)%20flipturn",
+    "loggedAt": "2025-08-07T20:51:10.326Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Theory of Emotion",
+    "artist": "Del Water Gap",
+    "album": "Theory of Emotion",
+    "timestamp": "8/7/2025, 8:52:57 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273bc3c6592042d33fadd25f15d",
+    "spotifyUrl": "https://open.spotify.com/search/Theory%20of%20Emotion%20Del%20Water%20Gap",
+    "loggedAt": "2025-08-07T20:53:10.440Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Overgrown",
+    "artist": "FELIVAND",
+    "album": "In Bloom",
+    "timestamp": "8/7/2025, 8:53:57 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2736ad474d02ccd8944191197d7",
+    "spotifyUrl": "https://open.spotify.com/search/Overgrown%20FELIVAND",
+    "loggedAt": "2025-08-07T20:54:10.483Z"
+  },
+  {
+    "user": "444lila",
+    "song": "King of Everything",
+    "artist": "Dominic Fike",
+    "album": "Don't Forget About Me, Demos",
+    "timestamp": "8/7/2025, 8:54:58 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2737b1b6f41c1645af9757d5616",
+    "spotifyUrl": "https://open.spotify.com/search/King%20of%20Everything%20Dominic%20Fike",
+    "loggedAt": "2025-08-07T20:55:27.218Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Rodeo Clown",
+    "artist": "Dijon",
+    "album": "Absolutely",
+    "timestamp": "8/7/2025, 8:56:07 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273a68442f97c3ad2dcba0beae6",
+    "spotifyUrl": "https://open.spotify.com/search/Rodeo%20Clown%20Dijon",
+    "loggedAt": "2025-08-07T20:56:10.527Z"
+  },
+  {
+    "user": "444lila",
+    "song": "ENTROPY",
+    "artist": "Daniel Caesar",
+    "album": "CASE STUDY 01",
+    "timestamp": "8/7/2025, 10:34:13 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273969c21ea34fe372a3e468947",
+    "spotifyUrl": "https://open.spotify.com/search/ENTROPY%20Daniel%20Caesar",
+    "loggedAt": "2025-08-07T22:34:15.034Z"
+  },
+  {
+    "user": "444lila",
+    "song": "NO SZNS",
+    "artist": "Jean Dawson",
+    "album": "NO SZNS",
+    "timestamp": "8/7/2025, 10:35:32 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2735986d0cd52e16f556c70d2c2",
+    "spotifyUrl": "https://open.spotify.com/search/NO%20SZNS%20Jean%20Dawson",
+    "loggedAt": "2025-08-07T22:35:45.128Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Nico's Red Truck",
+    "artist": "Dijon",
+    "album": "Nico's Red Truck",
+    "timestamp": "8/7/2025, 10:39:40 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2735fdb3e131ea8ff96e0b8994a",
+    "spotifyUrl": "https://open.spotify.com/search/Nico's%20Red%20Truck%20Dijon",
+    "loggedAt": "2025-08-07T22:39:45.271Z"
+  },
+  {
+    "user": "444lila",
+    "song": "The Sick",
+    "artist": "Bella Kay",
+    "album": "The Sick",
+    "timestamp": "8/7/2025, 11:56:19 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27379634ef94e7098877c180f50",
+    "spotifyUrl": "https://open.spotify.com/search/The%20Sick%20Bella%20Kay",
+    "loggedAt": "2025-08-07T23:56:48.892Z"
+  },
+  {
+    "user": "444lila",
+    "song": "West End Girls - 2018 Remaster",
+    "artist": "Pet Shop Boys",
+    "album": "Please: Further Listening 1984 - 1986 (2018 Remaster)",
+    "timestamp": "8/8/2025, 12:01:06 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2733540f5cb8e1e7a54125f84db",
+    "spotifyUrl": "https://open.spotify.com/search/West%20End%20Girls%20-%202018%20Remaster%20Pet%20Shop%20Boys",
+    "loggedAt": "2025-08-08T00:01:18.967Z"
+  },
+  {
+    "user": "444lila",
+    "song": "JAM !",
+    "artist": "BETWEEN FRIENDS",
+    "album": "WOW!",
+    "timestamp": "8/8/2025, 12:04:50 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273d12b876a6ba1df7a058f3ac9",
+    "spotifyUrl": "https://open.spotify.com/search/JAM%20!%20BETWEEN%20FRIENDS",
+    "loggedAt": "2025-08-08T00:05:19.104Z"
+  },
+  {
+    "user": "444lila",
+    "song": "The Field (feat. The Durutti Column, Tariq Al-Sabir, Caroline Polachek & Daniel Caesar)",
+    "artist": "Blood Orange",
+    "album": "The Field (feat. The Durutti Column, Tariq Al-Sabir, Caroline Polachek & Daniel Caesar)",
+    "timestamp": "8/8/2025, 2:34:03 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273e11256a3e685203e20a71257",
+    "spotifyUrl": "https://open.spotify.com/search/The%20Field%20(feat.%20The%20Durutti%20Column%2C%20Tariq%20Al-Sabir%2C%20Caroline%20Polachek%20%26%20Daniel%20Caesar)%20Blood%20Orange",
+    "loggedAt": "2025-08-08T02:34:25.720Z"
+  },
+  {
+    "user": "444lila",
+    "song": "The Sick",
+    "artist": "Bella Kay",
+    "album": "The Sick",
+    "timestamp": "8/8/2025, 2:37:19 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27379634ef94e7098877c180f50",
+    "spotifyUrl": "https://open.spotify.com/search/The%20Sick%20Bella%20Kay",
+    "loggedAt": "2025-08-08T02:37:25.860Z"
+  },
+  {
+    "user": "444lila",
+    "song": "West End Girls - 2018 Remaster",
+    "artist": "Pet Shop Boys",
+    "album": "Please: Further Listening 1984 - 1986 (2018 Remaster)",
+    "timestamp": "8/8/2025, 2:51:43 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2733540f5cb8e1e7a54125f84db",
+    "spotifyUrl": "https://open.spotify.com/search/West%20End%20Girls%20-%202018%20Remaster%20Pet%20Shop%20Boys",
+    "loggedAt": "2025-08-08T02:51:56.558Z"
+  },
+  {
+    "user": "444lila",
+    "song": "JAM !",
+    "artist": "BETWEEN FRIENDS",
+    "album": "WOW!",
+    "timestamp": "8/8/2025, 2:55:25 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273d12b876a6ba1df7a058f3ac9",
+    "spotifyUrl": "https://open.spotify.com/search/JAM%20!%20BETWEEN%20FRIENDS",
+    "loggedAt": "2025-08-08T02:55:26.704Z"
+  },
+  {
+    "user": "444lila",
+    "song": "The Field (feat. The Durutti Column, Tariq Al-Sabir, Caroline Polachek & Daniel Caesar)",
+    "artist": "Blood Orange",
+    "album": "The Field (feat. The Durutti Column, Tariq Al-Sabir, Caroline Polachek & Daniel Caesar)",
+    "timestamp": "8/8/2025, 2:58:45 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273e11256a3e685203e20a71257",
+    "spotifyUrl": "https://open.spotify.com/search/The%20Field%20(feat.%20The%20Durutti%20Column%2C%20Tariq%20Al-Sabir%2C%20Caroline%20Polachek%20%26%20Daniel%20Caesar)%20Blood%20Orange",
+    "loggedAt": "2025-08-08T02:58:56.900Z"
+  },
+  {
+    "user": "444lila",
+    "song": "WILD",
+    "artist": "Dijon",
+    "album": "WILD",
+    "timestamp": "8/8/2025, 5:54:20 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2731480d423b262b3ee992a7536",
+    "spotifyUrl": "https://open.spotify.com/search/WILD%20Dijon",
+    "loggedAt": "2025-08-08T17:54:36.313Z"
+  },
+  {
+    "user": "444lila",
+    "song": "To Philly",
+    "artist": "Del Water Gap",
+    "album": "Don't Get Dark",
+    "timestamp": "8/8/2025, 6:00:25 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27398da0f5c6fce983b796b7cfc",
+    "spotifyUrl": "https://open.spotify.com/search/To%20Philly%20Del%20Water%20Gap",
+    "loggedAt": "2025-08-08T18:00:36.609Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Nico's Red Truck",
+    "artist": "Dijon",
+    "album": "Nico's Red Truck",
+    "timestamp": "8/8/2025, 6:07:29 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2735fdb3e131ea8ff96e0b8994a",
+    "spotifyUrl": "https://open.spotify.com/search/Nico's%20Red%20Truck%20Dijon",
+    "loggedAt": "2025-08-08T18:07:36.905Z"
+  },
+  {
+    "user": "444lila",
+    "song": "West End Girls - 2018 Remaster",
+    "artist": "Pet Shop Boys",
+    "album": "Please: Further Listening 1984 - 1986 (2018 Remaster)",
+    "timestamp": "8/8/2025, 9:41:51 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2733540f5cb8e1e7a54125f84db",
+    "spotifyUrl": "https://open.spotify.com/search/West%20End%20Girls%20-%202018%20Remaster%20Pet%20Shop%20Boys",
+    "loggedAt": "2025-08-08T21:42:16.033Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Sweet Summer Sweat",
+    "artist": "Jim-E Stack",
+    "album": "EPHEMERA",
+    "timestamp": "8/8/2025, 10:31:40 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27377bea308842c8b3f51563b6c",
+    "spotifyUrl": "https://open.spotify.com/search/Sweet%20Summer%20Sweat%20Jim-E%20Stack",
+    "loggedAt": "2025-08-08T22:31:48.278Z"
+  },
+  {
+    "user": "444lila",
+    "song": "About April",
+    "artist": "Alex Banin",
+    "album": "About April",
+    "timestamp": "8/8/2025, 10:34:48 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273b1a738c508411968e38c8d37",
+    "spotifyUrl": "https://open.spotify.com/search/About%20April%20Alex%20Banin",
+    "loggedAt": "2025-08-08T22:35:18.416Z"
+  },
+  {
+    "user": "444lila",
+    "song": "IN FEAR, ETC.",
+    "artist": "Alex Banin",
+    "album": "Since Winona",
+    "timestamp": "8/8/2025, 10:38:22 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2732985c8eda309ce0630f848de",
+    "spotifyUrl": "https://open.spotify.com/search/IN%20FEAR%2C%20ETC.%20Alex%20Banin",
+    "loggedAt": "2025-08-08T22:38:48.589Z"
+  },
+  {
+    "user": "444lila",
+    "song": "delicate",
+    "artist": "Jonah Yano",
+    "album": "souvenir",
+    "timestamp": "8/8/2025, 10:41:39 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273bec5432b29ab2c3929a1d797",
+    "spotifyUrl": "https://open.spotify.com/search/delicate%20Jonah%20Yano",
+    "loggedAt": "2025-08-08T22:41:48.710Z"
+  },
+  {
+    "user": "444lila",
+    "song": "homebody",
+    "artist": "Kamal.",
+    "album": "homebody",
+    "timestamp": "8/8/2025, 10:44:49 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273bf5b141dda1056e0bd847b1e",
+    "spotifyUrl": "https://open.spotify.com/search/homebody%20Kamal.",
+    "loggedAt": "2025-08-08T22:45:18.860Z"
+  },
+  {
+    "user": "444lila",
+    "song": "PDLIF",
+    "artist": "Bon Iver",
+    "album": "PDLIF",
+    "timestamp": "8/8/2025, 10:47:46 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273bbae8e336b231d46a31de96e",
+    "spotifyUrl": "https://open.spotify.com/search/PDLIF%20Bon%20Iver",
+    "loggedAt": "2025-08-08T22:47:48.949Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Many Times",
+    "artist": "Dijon",
+    "album": "Absolutely",
+    "timestamp": "8/8/2025, 10:49:54 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273a68442f97c3ad2dcba0beae6",
+    "spotifyUrl": "https://open.spotify.com/search/Many%20Times%20Dijon",
+    "loggedAt": "2025-08-08T22:50:19.053Z"
+  },
+  {
+    "user": "444lila",
+    "song": "TV Blues",
+    "artist": "Dijon",
+    "album": "Sci Fi 1",
+    "timestamp": "8/8/2025, 10:51:48 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2736badb46153f9bb6d8491c54b",
+    "spotifyUrl": "https://open.spotify.com/search/TV%20Blues%20Dijon",
+    "loggedAt": "2025-08-08T22:52:19.118Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Come to You",
+    "artist": "Wet",
+    "album": "Come to You",
+    "timestamp": "8/8/2025, 10:55:39 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2733c82963be7c9c202b9bdd795",
+    "spotifyUrl": "https://open.spotify.com/search/Come%20to%20You%20Wet",
+    "loggedAt": "2025-08-08T22:55:49.312Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Rollerblades",
+    "artist": "Dominic Fike",
+    "album": "Rollerblades",
+    "timestamp": "8/8/2025, 10:57:13 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273f4f4db1cf76aa775b9f46447",
+    "spotifyUrl": "https://open.spotify.com/search/Rollerblades%20Dominic%20Fike",
+    "loggedAt": "2025-08-08T22:57:19.325Z"
+  },
+  {
+    "user": "444lila",
+    "song": "13 (Demo)",
+    "artist": "Abhi//Dijon",
+    "album": "2014",
+    "timestamp": "8/8/2025, 11:01:27 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273c0193122af24a18833120532",
+    "spotifyUrl": "https://open.spotify.com/search/13%20(Demo)%20Abhi%2F%2FDijon",
+    "loggedAt": "2025-08-08T23:01:49.550Z"
+  },
+  {
+    "user": "444lila",
+    "song": "To Philly",
+    "artist": "Del Water Gap",
+    "album": "Don't Get Dark",
+    "timestamp": "8/9/2025, 12:27:48 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27398da0f5c6fce983b796b7cfc",
+    "spotifyUrl": "https://open.spotify.com/search/To%20Philly%20Del%20Water%20Gap",
+    "loggedAt": "2025-08-09T00:27:53.190Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Someday, Somewhere",
+    "artist": "Palace",
+    "album": "Someday, Somewhere",
+    "timestamp": "8/9/2025, 12:34:38 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27390912ce0aad8b575d3cd1b50",
+    "spotifyUrl": "https://open.spotify.com/search/Someday%2C%20Somewhere%20Palace",
+    "loggedAt": "2025-08-09T00:34:53.510Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Nico's Red Truck",
+    "artist": "Dijon",
+    "album": "Nico's Red Truck",
+    "timestamp": "8/9/2025, 2:16:21 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2735fdb3e131ea8ff96e0b8994a",
+    "spotifyUrl": "https://open.spotify.com/search/Nico's%20Red%20Truck%20Dijon",
+    "loggedAt": "2025-08-09T02:16:27.749Z"
+  },
+  {
+    "user": "444lila",
+    "song": "West End Girls - 2018 Remaster",
+    "artist": "Pet Shop Boys",
+    "album": "Please: Further Listening 1984 - 1986 (2018 Remaster)",
+    "timestamp": "8/9/2025, 2:21:07 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2733540f5cb8e1e7a54125f84db",
+    "spotifyUrl": "https://open.spotify.com/search/West%20End%20Girls%20-%202018%20Remaster%20Pet%20Shop%20Boys",
+    "loggedAt": "2025-08-09T02:21:27.942Z"
+  },
+  {
+    "user": "444lila",
+    "song": "JAM !",
+    "artist": "BETWEEN FRIENDS",
+    "album": "WOW!",
+    "timestamp": "8/9/2025, 2:33:16 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273d12b876a6ba1df7a058f3ac9",
+    "spotifyUrl": "https://open.spotify.com/search/JAM%20!%20BETWEEN%20FRIENDS",
+    "loggedAt": "2025-08-09T02:33:28.444Z"
+  },
+  {
+    "user": "444lila",
+    "song": "The Field (feat. The Durutti Column, Tariq Al-Sabir, Caroline Polachek & Daniel Caesar)",
+    "artist": "Blood Orange",
+    "album": "The Field (feat. The Durutti Column, Tariq Al-Sabir, Caroline Polachek & Daniel Caesar)",
+    "timestamp": "8/9/2025, 2:33:50 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273e11256a3e685203e20a71257",
+    "spotifyUrl": "https://open.spotify.com/search/The%20Field%20(feat.%20The%20Durutti%20Column%2C%20Tariq%20Al-Sabir%2C%20Caroline%20Polachek%20%26%20Daniel%20Caesar)%20Blood%20Orange",
+    "loggedAt": "2025-08-09T02:34:28.478Z"
+  },
+  {
+    "user": "444lila",
+    "song": "BURR",
+    "artist": "YNG Martyr",
+    "album": "BURR",
+    "timestamp": "8/9/2025, 2:36:27 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27355d46bd90e5a5ee74b1def8b",
+    "spotifyUrl": "https://open.spotify.com/search/BURR%20YNG%20Martyr",
+    "loggedAt": "2025-08-09T02:36:58.585Z"
+  },
+  {
+    "user": "444lila",
+    "song": "If I Need I Take",
+    "artist": "Sideshow",
+    "album": "Farley",
+    "timestamp": "8/9/2025, 2:39:08 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273cc95af4bc9e82f3bce038376",
+    "spotifyUrl": "https://open.spotify.com/search/If%20I%20Need%20I%20Take%20Sideshow",
+    "loggedAt": "2025-08-09T02:39:28.681Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Voices In My Head x Freaks x Love Parade",
+    "artist": "HARDSTYLE CVNT",
+    "album": "Voices In My Head x Freaks x Love Parade",
+    "timestamp": "8/9/2025, 2:42:25 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27376b498f86d4cb54a728b8f8a",
+    "spotifyUrl": "https://open.spotify.com/search/Voices%20In%20My%20Head%20x%20Freaks%20x%20Love%20Parade%20HARDSTYLE%20CVNT",
+    "loggedAt": "2025-08-09T02:42:28.787Z"
+  },
+  {
+    "user": "444lila",
+    "song": "HIGHJACK",
+    "artist": "A$AP Rocky",
+    "album": "HIGHJACK",
+    "timestamp": "8/9/2025, 2:45:35 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273b1c42af52ff03037bbe5956a",
+    "spotifyUrl": "https://open.spotify.com/search/HIGHJACK%20A%24AP%20Rocky",
+    "loggedAt": "2025-08-09T02:45:58.963Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Bands (feat. OhGeesy, Fenix Flexin & Master Kato)",
+    "artist": "Shoreline Mafia",
+    "album": "Shoreline Mafia Presents Rob Vicious: Traplantic",
+    "timestamp": "8/9/2025, 2:52:26 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273125adb02782b04813d5bfef5",
+    "spotifyUrl": "https://open.spotify.com/search/Bands%20(feat.%20OhGeesy%2C%20Fenix%20Flexin%20%26%20Master%20Kato)%20Shoreline%20Mafia",
+    "loggedAt": "2025-08-09T02:52:29.253Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Gnaw",
+    "artist": "Alex G",
+    "album": "Race",
+    "timestamp": "8/9/2025, 3:51:36 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273c6d914dd1a455fb8dfb2f16b",
+    "spotifyUrl": "https://open.spotify.com/search/Gnaw%20Alex%20G",
+    "loggedAt": "2025-08-09T03:52:01.793Z"
+  },
+  {
+    "user": "444lila",
+    "song": "You got time and I got money",
+    "artist": "Smerz",
+    "album": "You got time and I got money",
+    "timestamp": "8/9/2025, 4:43:32 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2733642c8a4afaee4d856a41792",
+    "spotifyUrl": "https://open.spotify.com/search/You%20got%20time%20and%20I%20got%20money%20Smerz",
+    "loggedAt": "2025-08-09T16:43:34.910Z"
+  },
+  {
+    "user": "444lila",
+    "song": "True Love Waits - Live in Oslo",
+    "artist": "Radiohead",
+    "album": "I Might Be Wrong",
+    "timestamp": "8/9/2025, 4:48:37 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27305a2f9af5f0eaed4835acf54",
+    "spotifyUrl": "https://open.spotify.com/search/True%20Love%20Waits%20-%20Live%20in%20Oslo%20Radiohead",
+    "loggedAt": "2025-08-09T16:49:05.167Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Grace",
+    "artist": "Jeff Buckley",
+    "album": "Grace",
+    "timestamp": "8/9/2025, 4:54:00 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2736a760642a56847027428cb61",
+    "spotifyUrl": "https://open.spotify.com/search/Grace%20Jeff%20Buckley",
+    "loggedAt": "2025-08-09T16:54:05.384Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Maria También",
+    "artist": "Khruangbin",
+    "album": "Con Todo El Mundo",
+    "timestamp": "8/9/2025, 4:59:28 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27312db5c86831c0ee134ea3ba3",
+    "spotifyUrl": "https://open.spotify.com/search/Maria%20Tambi%C3%A9n%20Khruangbin",
+    "loggedAt": "2025-08-09T16:59:35.575Z"
+  },
+  {
+    "user": "444lila",
+    "song": "WILD",
+    "artist": "Dijon",
+    "album": "WILD",
+    "timestamp": "8/9/2025, 5:01:22 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2731480d423b262b3ee992a7536",
+    "spotifyUrl": "https://open.spotify.com/search/WILD%20Dijon",
+    "loggedAt": "2025-08-09T17:01:35.674Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Nico's Red Truck",
+    "artist": "Dijon",
+    "album": "Nico's Red Truck",
+    "timestamp": "8/9/2025, 5:05:36 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2735fdb3e131ea8ff96e0b8994a",
+    "spotifyUrl": "https://open.spotify.com/search/Nico's%20Red%20Truck%20Dijon",
+    "loggedAt": "2025-08-09T17:06:05.861Z"
+  },
+  {
+    "user": "444lila",
+    "song": "West End Girls - 2018 Remaster",
+    "artist": "Pet Shop Boys",
+    "album": "Please: Further Listening 1984 - 1986 (2018 Remaster)",
+    "timestamp": "8/9/2025, 7:09:09 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2733540f5cb8e1e7a54125f84db",
+    "spotifyUrl": "https://open.spotify.com/search/West%20End%20Girls%20-%202018%20Remaster%20Pet%20Shop%20Boys",
+    "loggedAt": "2025-08-09T19:09:11.282Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Nico's Red Truck",
+    "artist": "Dijon",
+    "album": "Nico's Red Truck",
+    "timestamp": "8/9/2025, 7:13:18 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2735fdb3e131ea8ff96e0b8994a",
+    "spotifyUrl": "https://open.spotify.com/search/Nico's%20Red%20Truck%20Dijon",
+    "loggedAt": "2025-08-09T19:13:41.471Z"
+  },
+  {
+    "user": "444lila",
+    "song": "The Field (feat. The Durutti Column, Tariq Al-Sabir, Caroline Polachek & Daniel Caesar)",
+    "artist": "Blood Orange",
+    "album": "The Field (feat. The Durutti Column, Tariq Al-Sabir, Caroline Polachek & Daniel Caesar)",
+    "timestamp": "8/9/2025, 7:15:56 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273e11256a3e685203e20a71257",
+    "spotifyUrl": "https://open.spotify.com/search/The%20Field%20(feat.%20The%20Durutti%20Column%2C%20Tariq%20Al-Sabir%2C%20Caroline%20Polachek%20%26%20Daniel%20Caesar)%20Blood%20Orange",
+    "loggedAt": "2025-08-09T19:16:11.567Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Add Up My Love",
+    "artist": "Clairo",
+    "album": "Charm",
+    "timestamp": "8/9/2025, 7:19:20 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273193c2fafdce8f116b5ca0a78",
+    "spotifyUrl": "https://open.spotify.com/search/Add%20Up%20My%20Love%20Clairo",
+    "loggedAt": "2025-08-09T19:19:41.697Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Talk Down",
+    "artist": "Dijon",
+    "album": "Absolutely",
+    "timestamp": "8/9/2025, 7:21:52 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273a68442f97c3ad2dcba0beae6",
+    "spotifyUrl": "https://open.spotify.com/search/Talk%20Down%20Dijon",
+    "loggedAt": "2025-08-09T19:22:11.794Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Alesis",
+    "artist": "Mk.gee",
+    "album": "Two Star & The Dream Police",
+    "timestamp": "8/9/2025, 7:25:11 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273038b1c2017f14c805cf5b7e9",
+    "spotifyUrl": "https://open.spotify.com/search/Alesis%20Mk.gee",
+    "loggedAt": "2025-08-09T19:25:44.475Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Text Me",
+    "artist": "Kevin Abstract",
+    "album": "Blush",
+    "timestamp": "8/9/2025, 7:27:42 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273ecfb82c059a6e6543a1f3ce6",
+    "spotifyUrl": "https://open.spotify.com/search/Text%20Me%20Kevin%20Abstract",
+    "loggedAt": "2025-08-09T19:28:12.070Z"
+  },
+  {
+    "user": "444lila",
+    "song": "I Wasn’t There",
+    "artist": "Kevin Abstract",
+    "album": "Blush",
+    "timestamp": "8/9/2025, 7:29:50 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273ecfb82c059a6e6543a1f3ce6",
+    "spotifyUrl": "https://open.spotify.com/search/I%20Wasn%E2%80%99t%20There%20Kevin%20Abstract",
+    "loggedAt": "2025-08-09T19:30:12.160Z"
+  },
+  {
+    "user": "444lila",
+    "song": "American Bitch",
+    "artist": "BETWEEN FRIENDS",
+    "album": "American Bitch",
+    "timestamp": "8/9/2025, 8:49:47 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273bd4193770d70414e61f6bcc4",
+    "spotifyUrl": "https://open.spotify.com/search/American%20Bitch%20BETWEEN%20FRIENDS",
+    "loggedAt": "2025-08-09T20:50:15.671Z"
+  },
+  {
+    "user": "444lila",
+    "song": "White Flag",
+    "artist": "Clairo",
+    "album": "Immunity",
+    "timestamp": "8/9/2025, 8:52:47 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27378d601a8e07bef8b1f8ecf82",
+    "spotifyUrl": "https://open.spotify.com/search/White%20Flag%20Clairo",
+    "loggedAt": "2025-08-09T20:53:15.798Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Some Protector - Live from Vevo",
+    "artist": "ROLE MODEL",
+    "album": "Some Protector (Live From Vevo)",
+    "timestamp": "8/10/2025, 1:11:13 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273916a27f8e19baf86460ec388",
+    "spotifyUrl": "https://open.spotify.com/search/Some%20Protector%20-%20Live%20from%20Vevo%20ROLE%20MODEL",
+    "loggedAt": "2025-08-10T01:11:27.132Z"
+  },
+  {
+    "user": "444lila",
+    "song": "True Love Waits - Live in Oslo",
+    "artist": "Radiohead",
+    "album": "I Might Be Wrong",
+    "timestamp": "8/10/2025, 1:16:18 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27305a2f9af5f0eaed4835acf54",
+    "spotifyUrl": "https://open.spotify.com/search/True%20Love%20Waits%20-%20Live%20in%20Oslo%20Radiohead",
+    "loggedAt": "2025-08-10T01:16:27.293Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Grace",
+    "artist": "Jeff Buckley",
+    "album": "Grace",
+    "timestamp": "8/10/2025, 1:21:40 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2736a760642a56847027428cb61",
+    "spotifyUrl": "https://open.spotify.com/search/Grace%20Jeff%20Buckley",
+    "loggedAt": "2025-08-10T01:21:57.542Z"
+  },
+  {
+    "user": "444lila",
+    "song": "WILD",
+    "artist": "Dijon",
+    "album": "WILD",
+    "timestamp": "8/10/2025, 2:27:08 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2731480d423b262b3ee992a7536",
+    "spotifyUrl": "https://open.spotify.com/search/WILD%20Dijon",
+    "loggedAt": "2025-08-10T02:27:30.343Z"
+  },
+  {
+    "user": "444lila",
+    "song": "To Philly",
+    "artist": "Del Water Gap",
+    "album": "Don't Get Dark",
+    "timestamp": "8/10/2025, 2:30:30 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27398da0f5c6fce983b796b7cfc",
+    "spotifyUrl": "https://open.spotify.com/search/To%20Philly%20Del%20Water%20Gap",
+    "loggedAt": "2025-08-10T02:31:00.512Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Someday, Somewhere",
+    "artist": "Palace",
+    "album": "Someday, Somewhere",
+    "timestamp": "8/10/2025, 2:33:41 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27390912ce0aad8b575d3cd1b50",
+    "spotifyUrl": "https://open.spotify.com/search/Someday%2C%20Somewhere%20Palace",
+    "loggedAt": "2025-08-10T02:34:00.643Z"
+  },
+  {
+    "user": "444lila",
+    "song": "The Sick",
+    "artist": "Bella Kay",
+    "album": "The Sick",
+    "timestamp": "8/10/2025, 2:37:13 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27379634ef94e7098877c180f50",
+    "spotifyUrl": "https://open.spotify.com/search/The%20Sick%20Bella%20Kay",
+    "loggedAt": "2025-08-10T02:37:30.737Z"
+  },
+  {
+    "user": "444lila",
+    "song": "West End Girls - 2018 Remaster",
+    "artist": "Pet Shop Boys",
+    "album": "Please: Further Listening 1984 - 1986 (2018 Remaster)",
+    "timestamp": "8/10/2025, 5:28:52 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2733540f5cb8e1e7a54125f84db",
+    "spotifyUrl": "https://open.spotify.com/search/West%20End%20Girls%20-%202018%20Remaster%20Pet%20Shop%20Boys",
+    "loggedAt": "2025-08-10T05:29:08.092Z"
+  },
+  {
+    "user": "444lila",
+    "song": "The Sick",
+    "artist": "Bella Kay",
+    "album": "The Sick",
+    "timestamp": "8/10/2025, 5:32:25 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27379634ef94e7098877c180f50",
+    "spotifyUrl": "https://open.spotify.com/search/The%20Sick%20Bella%20Kay",
+    "loggedAt": "2025-08-10T05:32:38.206Z"
+  },
+  {
+    "user": "444lila",
+    "song": "West End Girls - 2018 Remaster",
+    "artist": "Pet Shop Boys",
+    "album": "Please: Further Listening 1984 - 1986 (2018 Remaster)",
+    "timestamp": "8/10/2025, 6:27:13 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2733540f5cb8e1e7a54125f84db",
+    "spotifyUrl": "https://open.spotify.com/search/West%20End%20Girls%20-%202018%20Remaster%20Pet%20Shop%20Boys",
+    "loggedAt": "2025-08-10T18:27:33.767Z"
+  },
+  {
+    "user": "444lila",
+    "song": "JAM !",
+    "artist": "BETWEEN FRIENDS",
+    "album": "WOW!",
+    "timestamp": "8/10/2025, 6:29:59 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273d12b876a6ba1df7a058f3ac9",
+    "spotifyUrl": "https://open.spotify.com/search/JAM%20!%20BETWEEN%20FRIENDS",
+    "loggedAt": "2025-08-10T18:30:03.809Z"
+  },
+  {
+    "user": "444lila",
+    "song": "The Field (feat. The Durutti Column, Tariq Al-Sabir, Caroline Polachek & Daniel Caesar)",
+    "artist": "Blood Orange",
+    "album": "The Field (feat. The Durutti Column, Tariq Al-Sabir, Caroline Polachek & Daniel Caesar)",
+    "timestamp": "8/10/2025, 6:33:01 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273e11256a3e685203e20a71257",
+    "spotifyUrl": "https://open.spotify.com/search/The%20Field%20(feat.%20The%20Durutti%20Column%2C%20Tariq%20Al-Sabir%2C%20Caroline%20Polachek%20%26%20Daniel%20Caesar)%20Blood%20Orange",
+    "loggedAt": "2025-08-10T18:33:42.200Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Add Up My Love",
+    "artist": "Clairo",
+    "album": "Charm",
+    "timestamp": "8/10/2025, 6:52:08 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273193c2fafdce8f116b5ca0a78",
+    "spotifyUrl": "https://open.spotify.com/search/Add%20Up%20My%20Love%20Clairo",
+    "loggedAt": "2025-08-10T18:52:34.289Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Talk Down",
+    "artist": "Dijon",
+    "album": "Absolutely",
+    "timestamp": "8/10/2025, 6:54:40 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273a68442f97c3ad2dcba0beae6",
+    "spotifyUrl": "https://open.spotify.com/search/Talk%20Down%20Dijon",
+    "loggedAt": "2025-08-10T18:55:04.274Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Alesis",
+    "artist": "Mk.gee",
+    "album": "Two Star & The Dream Police",
+    "timestamp": "8/10/2025, 6:57:59 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273038b1c2017f14c805cf5b7e9",
+    "spotifyUrl": "https://open.spotify.com/search/Alesis%20Mk.gee",
+    "loggedAt": "2025-08-10T18:58:04.331Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Underdressed at the Symphony",
+    "artist": "Faye Webster",
+    "album": "Underdressed at the Symphony",
+    "timestamp": "8/10/2025, 7:01:32 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273f0923a06c895b3f507f1f7b3",
+    "spotifyUrl": "https://open.spotify.com/search/Underdressed%20at%20the%20Symphony%20Faye%20Webster",
+    "loggedAt": "2025-08-10T19:02:04.383Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Text Me",
+    "artist": "Kevin Abstract",
+    "album": "Blush",
+    "timestamp": "8/10/2025, 7:02:28 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273ecfb82c059a6e6543a1f3ce6",
+    "spotifyUrl": "https://open.spotify.com/search/Text%20Me%20Kevin%20Abstract",
+    "loggedAt": "2025-08-10T19:02:34.399Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Size of the Moon",
+    "artist": "Pinegrove",
+    "album": "Cardinal (Expanded Edition)",
+    "timestamp": "8/10/2025, 7:03:33 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273b25a7fb1b8ad5d1c3c09a20f",
+    "spotifyUrl": "https://open.spotify.com/search/Size%20of%20the%20Moon%20Pinegrove",
+    "loggedAt": "2025-08-10T19:03:34.416Z"
+  },
+  {
+    "user": "444lila",
+    "song": "at least i'm pretty",
+    "artist": "Harriette",
+    "album": "at least i'm pretty",
+    "timestamp": "8/10/2025, 7:05:19 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2731e6f820f03577487489cff91",
+    "spotifyUrl": "https://open.spotify.com/search/at%20least%20i'm%20pretty%20Harriette",
+    "loggedAt": "2025-08-10T19:05:34.436Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Simple Love",
+    "artist": "Genevieve Stokes",
+    "album": "Simple Love (Voice Memo)",
+    "timestamp": "8/10/2025, 7:12:05 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273f86b2795a24ba0fd0533e91a",
+    "spotifyUrl": "https://open.spotify.com/search/Simple%20Love%20Genevieve%20Stokes",
+    "loggedAt": "2025-08-10T19:12:34.545Z"
+  },
+  {
+    "user": "444lila",
+    "song": "H-Town",
+    "artist": "Kevin Abstract",
+    "album": "Blush",
+    "timestamp": "8/10/2025, 7:18:55 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2736a2c4f936774dc0ced95cca1",
+    "spotifyUrl": "https://open.spotify.com/search/H-Town%20Kevin%20Abstract",
+    "loggedAt": "2025-08-10T19:19:04.651Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Chewing Gum",
+    "artist": "Blood Orange",
+    "album": "Negro Swan",
+    "timestamp": "8/10/2025, 7:23:22 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27347dd2ca47ec9bf14559e17c6",
+    "spotifyUrl": "https://open.spotify.com/search/Chewing%20Gum%20Blood%20Orange",
+    "loggedAt": "2025-08-10T19:23:34.738Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Nice To Each Other",
+    "artist": "Olivia Dean",
+    "album": "Nice To Each Other",
+    "timestamp": "8/10/2025, 7:26:51 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273a9e75099d7065c71cc7ede72",
+    "spotifyUrl": "https://open.spotify.com/search/Nice%20To%20Each%20Other%20Olivia%20Dean",
+    "loggedAt": "2025-08-10T19:27:04.787Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Indigo (feat. Avery Anna)",
+    "artist": "Sam Barber",
+    "album": "Restless Mind",
+    "timestamp": "8/10/2025, 7:37:13 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273c944a2c490ed24e29eef5119",
+    "spotifyUrl": "https://open.spotify.com/search/Indigo%20(feat.%20Avery%20Anna)%20Sam%20Barber",
+    "loggedAt": "2025-08-10T19:37:34.938Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Goddamn",
+    "artist": "flipturn",
+    "album": "Shadowglow (Deluxe)",
+    "timestamp": "8/10/2025, 7:40:27 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273f5d784240144e78eada64822",
+    "spotifyUrl": "https://open.spotify.com/search/Goddamn%20flipturn",
+    "loggedAt": "2025-08-10T19:40:34.996Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Fireworks",
+    "artist": "Radiator Hospital",
+    "album": "Torch Song",
+    "timestamp": "8/10/2025, 7:42:38 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273c00f64dccd468241125f9b65",
+    "spotifyUrl": "https://open.spotify.com/search/Fireworks%20Radiator%20Hospital",
+    "loggedAt": "2025-08-10T19:43:05.021Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Our Song",
+    "artist": "Radiator Hospital",
+    "album": "Something Wild",
+    "timestamp": "8/10/2025, 7:45:05 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273295c9a242811916a7a2c4733",
+    "spotifyUrl": "https://open.spotify.com/search/Our%20Song%20Radiator%20Hospital",
+    "loggedAt": "2025-08-10T19:45:35.069Z"
+  },
+  {
+    "user": "444lila",
+    "song": "20 Something",
+    "artist": "SZA",
+    "album": "Ctrl",
+    "timestamp": "8/10/2025, 7:50:56 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2734c79d5ec52a6d0302f3add25",
+    "spotifyUrl": "https://open.spotify.com/search/20%20Something%20SZA",
+    "loggedAt": "2025-08-10T19:51:05.152Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Never Been Sure Of Anything",
+    "artist": "Spacey Jane",
+    "album": "No Way to Treat an Animal",
+    "timestamp": "8/10/2025, 7:54:38 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273f171968923d3bc6fedff5a1e",
+    "spotifyUrl": "https://open.spotify.com/search/Never%20Been%20Sure%20Of%20Anything%20Spacey%20Jane",
+    "loggedAt": "2025-08-10T19:55:05.207Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Gypsy",
+    "artist": "Fleetwood Mac",
+    "album": "Greatest Hits",
+    "timestamp": "8/10/2025, 7:58:04 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273813da91820fd194cbee5bdce",
+    "spotifyUrl": "https://open.spotify.com/search/Gypsy%20Fleetwood%20Mac",
+    "loggedAt": "2025-08-10T19:58:35.356Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Master",
+    "artist": "Alex G",
+    "album": "Rules",
+    "timestamp": "8/10/2025, 8:00:23 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27363fd13d593552c3cdc7c0b3e",
+    "spotifyUrl": "https://open.spotify.com/search/Master%20Alex%20G",
+    "loggedAt": "2025-08-10T20:00:35.309Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Hardlight",
+    "artist": "Spacey Jane",
+    "album": "Here Comes Everybody",
+    "timestamp": "8/10/2025, 8:04:09 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273039dc8870d655be2008e14b0",
+    "spotifyUrl": "https://open.spotify.com/search/Hardlight%20Spacey%20Jane",
+    "loggedAt": "2025-08-10T20:04:35.325Z"
+  },
+  {
+    "user": "444lila",
+    "song": "ICU",
+    "artist": "Phoebe Bridgers",
+    "album": "Punisher",
+    "timestamp": "8/10/2025, 8:07:20 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273a91b75c9ef65ed8d760ff600",
+    "spotifyUrl": "https://open.spotify.com/search/ICU%20Phoebe%20Bridgers",
+    "loggedAt": "2025-08-10T20:07:35.405Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Maria También",
+    "artist": "Khruangbin",
+    "album": "Con Todo El Mundo",
+    "timestamp": "8/10/2025, 8:09:37 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27312db5c86831c0ee134ea3ba3",
+    "spotifyUrl": "https://open.spotify.com/search/Maria%20Tambi%C3%A9n%20Khruangbin",
+    "loggedAt": "2025-08-10T20:10:05.421Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Sitting Up",
+    "artist": "Spacey Jane",
+    "album": "Here Comes Everybody",
+    "timestamp": "8/10/2025, 8:15:33 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273039dc8870d655be2008e14b0",
+    "spotifyUrl": "https://open.spotify.com/search/Sitting%20Up%20Spacey%20Jane",
+    "loggedAt": "2025-08-10T20:16:05.501Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Walls",
+    "artist": "The Lumineers",
+    "album": "Walls",
+    "timestamp": "8/10/2025, 8:18:52 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2736727b100ec282e07678e5cc2",
+    "spotifyUrl": "https://open.spotify.com/search/Walls%20The%20Lumineers",
+    "loggedAt": "2025-08-10T20:19:05.546Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Gretel",
+    "artist": "Alex G",
+    "album": "Southern Sky",
+    "timestamp": "8/10/2025, 8:22:22 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2731d9775cbed222d909b7a587d",
+    "spotifyUrl": "https://open.spotify.com/search/Gretel%20Alex%20G",
+    "loggedAt": "2025-08-10T20:22:35.590Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Magnolia",
+    "artist": "J.J. Cale",
+    "album": "Naturally",
+    "timestamp": "8/10/2025, 8:23:21 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27336f87f70bd74db7f54652179",
+    "spotifyUrl": "https://open.spotify.com/search/Magnolia%20J.J.%20Cale",
+    "loggedAt": "2025-08-10T20:23:35.612Z"
+  },
+  {
+    "user": "444lila",
+    "song": "us. (feat. Taylor Swift)",
+    "artist": "Gracie Abrams",
+    "album": "The Secret of Us",
+    "timestamp": "8/10/2025, 8:28:19 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2736e2101520787791370f4a96b",
+    "spotifyUrl": "https://open.spotify.com/search/us.%20(feat.%20Taylor%20Swift)%20Gracie%20Abrams",
+    "loggedAt": "2025-08-10T20:28:35.671Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Taking What's Not Yours",
+    "artist": "TV Girl",
+    "album": "Who Really Cares",
+    "timestamp": "8/10/2025, 8:29:05 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27332f5fec7a879ed6ef28f0dfd",
+    "spotifyUrl": "https://open.spotify.com/search/Taking%20What's%20Not%20Yours%20TV%20Girl",
+    "loggedAt": "2025-08-10T20:29:35.695Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Fearless",
+    "artist": "Taylor Swift",
+    "album": "Fearless",
+    "timestamp": "8/10/2025, 8:33:06 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2737b25c072237f29ee50025fdc",
+    "spotifyUrl": "https://open.spotify.com/search/Fearless%20Taylor%20Swift",
+    "loggedAt": "2025-08-10T20:33:35.761Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Everything Has Changed",
+    "artist": "Taylor Swift",
+    "album": "Red",
+    "timestamp": "8/10/2025, 8:34:50 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2737d2f918a1b23f98ceb7510fa",
+    "spotifyUrl": "https://open.spotify.com/search/Everything%20Has%20Changed%20Taylor%20Swift",
+    "loggedAt": "2025-08-10T20:35:06.024Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Back To December",
+    "artist": "Taylor Swift",
+    "album": "Speak Now",
+    "timestamp": "8/10/2025, 8:37:19 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273e11a75a2f2ff39cec788a015",
+    "spotifyUrl": "https://open.spotify.com/search/Back%20To%20December%20Taylor%20Swift",
+    "loggedAt": "2025-08-10T20:37:35.814Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Come In With The Rain",
+    "artist": "Taylor Swift",
+    "album": "Fearless (Platinum Edition)",
+    "timestamp": "8/10/2025, 8:41:16 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27323772ebfb18de81c57186964",
+    "spotifyUrl": "https://open.spotify.com/search/Come%20In%20With%20The%20Rain%20Taylor%20Swift",
+    "loggedAt": "2025-08-10T20:41:35.841Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Innocent",
+    "artist": "Taylor Swift",
+    "album": "Speak Now (Deluxe Package)",
+    "timestamp": "8/10/2025, 8:46:27 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2732d2d5ed5df27e4399899d48c",
+    "spotifyUrl": "https://open.spotify.com/search/Innocent%20Taylor%20Swift",
+    "loggedAt": "2025-08-10T20:46:35.906Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Picture To Burn",
+    "artist": "Taylor Swift",
+    "album": "Taylor Swift",
+    "timestamp": "8/10/2025, 8:50:54 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2732f8c0fd72a80a93f8c53b96c",
+    "spotifyUrl": "https://open.spotify.com/search/Picture%20To%20Burn%20Taylor%20Swift",
+    "loggedAt": "2025-08-10T20:51:05.945Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Should've Said No",
+    "artist": "Taylor Swift",
+    "album": "Taylor Swift",
+    "timestamp": "8/10/2025, 8:54:56 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2732f8c0fd72a80a93f8c53b96c",
+    "spotifyUrl": "https://open.spotify.com/search/Should've%20Said%20No%20Taylor%20Swift",
+    "loggedAt": "2025-08-10T20:55:06.020Z"
+  },
+  {
+    "user": "444lila",
+    "song": "White Horse",
+    "artist": "Taylor Swift",
+    "album": "Fearless",
+    "timestamp": "8/10/2025, 8:58:31 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2737b25c072237f29ee50025fdc",
+    "spotifyUrl": "https://open.spotify.com/search/White%20Horse%20Taylor%20Swift",
+    "loggedAt": "2025-08-10T20:58:36.068Z"
+  },
+  {
+    "user": "444lila",
+    "song": "The Story Of Us",
+    "artist": "Taylor Swift",
+    "album": "Speak Now",
+    "timestamp": "8/10/2025, 9:03:05 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273e11a75a2f2ff39cec788a015",
+    "spotifyUrl": "https://open.spotify.com/search/The%20Story%20Of%20Us%20Taylor%20Swift",
+    "loggedAt": "2025-08-10T21:03:06.119Z"
+  },
+  {
+    "user": "444lila",
+    "song": "All Too Well",
+    "artist": "Taylor Swift",
+    "album": "Red (Deluxe Edition)",
+    "timestamp": "8/10/2025, 9:08:18 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273a7613d346501b828b56a0bc3",
+    "spotifyUrl": "https://open.spotify.com/search/All%20Too%20Well%20Taylor%20Swift",
+    "loggedAt": "2025-08-10T21:08:36.178Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Long Live",
+    "artist": "Taylor Swift",
+    "album": "Speak Now",
+    "timestamp": "8/10/2025, 9:11:45 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273e11a75a2f2ff39cec788a015",
+    "spotifyUrl": "https://open.spotify.com/search/Long%20Live%20Taylor%20Swift",
+    "loggedAt": "2025-08-10T21:12:06.227Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Tell Me Why",
+    "artist": "Taylor Swift",
+    "album": "Fearless",
+    "timestamp": "8/10/2025, 9:14:26 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2737b25c072237f29ee50025fdc",
+    "spotifyUrl": "https://open.spotify.com/search/Tell%20Me%20Why%20Taylor%20Swift",
+    "loggedAt": "2025-08-10T21:14:36.268Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Dear John",
+    "artist": "Taylor Swift",
+    "album": "Speak Now (Deluxe Edition)",
+    "timestamp": "8/10/2025, 9:21:37 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2732e4ec3175d848eca7b76b07f",
+    "spotifyUrl": "https://open.spotify.com/search/Dear%20John%20Taylor%20Swift",
+    "loggedAt": "2025-08-10T21:21:44.047Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Seaside (Live)",
+    "artist": "Arcy Drive",
+    "album": "Attic Sessions",
+    "timestamp": "8/10/2025, 9:25:19 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273bcdec82f3febed81745c7657",
+    "spotifyUrl": "https://open.spotify.com/search/Seaside%20(Live)%20Arcy%20Drive",
+    "loggedAt": "2025-08-10T21:25:36.412Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Greyhound",
+    "artist": "Palace",
+    "album": "Greyhound",
+    "timestamp": "8/10/2025, 9:29:14 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2735ca322fd23e4c47334e3d0e9",
+    "spotifyUrl": "https://open.spotify.com/search/Greyhound%20Palace",
+    "loggedAt": "2025-08-10T21:29:36.454Z"
+  },
+  {
+    "user": "444lila",
+    "song": "L.S.D",
+    "artist": "Skegss",
+    "album": "L.S.D",
+    "timestamp": "8/10/2025, 9:30:19 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27342d5449ae7d932fbf6dbb7ee",
+    "spotifyUrl": "https://open.spotify.com/search/L.S.D%20Skegss",
+    "loggedAt": "2025-08-10T21:30:36.438Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Floorboards",
+    "artist": "McCafferty",
+    "album": "Forest Life",
+    "timestamp": "8/10/2025, 9:35:01 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2735d4dbee48fb65c87ab07b69f",
+    "spotifyUrl": "https://open.spotify.com/search/Floorboards%20McCafferty",
+    "loggedAt": "2025-08-10T21:35:06.506Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Free Now - Live From Vevo",
+    "artist": "Gracie Abrams",
+    "album": "The Secret of Us (Deluxe)",
+    "timestamp": "8/10/2025, 9:38:19 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2731dac3694b3289cd903cb3acf",
+    "spotifyUrl": "https://open.spotify.com/search/Free%20Now%20-%20Live%20From%20Vevo%20Gracie%20Abrams",
+    "loggedAt": "2025-08-10T21:38:36.529Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Sawteeth",
+    "artist": "Spacey Jane",
+    "album": "In the Slight",
+    "timestamp": "8/10/2025, 9:42:42 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2730ea132422aa3c06ccf8c53d4",
+    "spotifyUrl": "https://open.spotify.com/search/Sawteeth%20Spacey%20Jane",
+    "loggedAt": "2025-08-10T21:43:06.584Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Snow",
+    "artist": "Zach Bryan",
+    "album": "DeAnn",
+    "timestamp": "8/10/2025, 9:46:10 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273e2aa84b988e58703f8ed4e84",
+    "spotifyUrl": "https://open.spotify.com/search/Snow%20Zach%20Bryan",
+    "loggedAt": "2025-08-10T21:46:36.595Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Hartwell",
+    "artist": "Shelly",
+    "album": "Shelly 2",
+    "timestamp": "8/10/2025, 9:49:42 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2730686f66ebbda3d1c7a7e5d8e",
+    "spotifyUrl": "https://open.spotify.com/search/Hartwell%20Shelly",
+    "loggedAt": "2025-08-10T21:50:06.646Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Someday, Somewhere",
+    "artist": "Palace",
+    "album": "Someday, Somewhere",
+    "timestamp": "8/10/2025, 9:53:09 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27390912ce0aad8b575d3cd1b50",
+    "spotifyUrl": "https://open.spotify.com/search/Someday%2C%20Somewhere%20Palace",
+    "loggedAt": "2025-08-10T21:53:36.676Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Heaven or Las Vegas",
+    "artist": "Cocteau Twins",
+    "album": "Heaven or Las Vegas",
+    "timestamp": "8/10/2025, 10:00:07 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2735d2fdd1564ccab97e60c656f",
+    "spotifyUrl": "https://open.spotify.com/search/Heaven%20or%20Las%20Vegas%20Cocteau%20Twins",
+    "loggedAt": "2025-08-10T22:00:36.770Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Blowing Smoke",
+    "artist": "Gracie Abrams",
+    "album": "The Secret of Us (Deluxe)",
+    "timestamp": "8/10/2025, 10:06:58 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2731dac3694b3289cd903cb3acf",
+    "spotifyUrl": "https://open.spotify.com/search/Blowing%20Smoke%20Gracie%20Abrams",
+    "loggedAt": "2025-08-10T22:07:06.806Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Balmy",
+    "artist": "Spacey Jane",
+    "album": "In the Slight",
+    "timestamp": "8/10/2025, 10:08:22 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273771988ae843892771043fa3a",
+    "spotifyUrl": "https://open.spotify.com/search/Balmy%20Spacey%20Jane",
+    "loggedAt": "2025-08-10T22:08:36.841Z"
+  },
+  {
+    "user": "444lila",
+    "song": "pretty isn’t pretty",
+    "artist": "Olivia Rodrigo",
+    "album": "GUTS",
+    "timestamp": "8/10/2025, 10:11:58 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273e85259a1cae29a8d91f2093d",
+    "spotifyUrl": "https://open.spotify.com/search/pretty%20isn%E2%80%99t%20pretty%20Olivia%20Rodrigo",
+    "loggedAt": "2025-08-10T22:12:06.872Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Cruel, Cruel World",
+    "artist": "harf.",
+    "album": "Cruel, Cruel World",
+    "timestamp": "8/10/2025, 10:15:09 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2739349775dd53a129ab067d4a4",
+    "spotifyUrl": "https://open.spotify.com/search/Cruel%2C%20Cruel%20World%20harf.",
+    "loggedAt": "2025-08-10T22:15:36.907Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Live Well",
+    "artist": "Palace",
+    "album": "So Long Forever",
+    "timestamp": "8/10/2025, 10:19:19 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273929dae46c6b93942c7499b7d",
+    "spotifyUrl": "https://open.spotify.com/search/Live%20Well%20Palace",
+    "loggedAt": "2025-08-10T22:19:36.951Z"
+  },
+  {
+    "user": "444lila",
+    "song": "I Don’t Know You Like I Used To",
+    "artist": "mercury",
+    "album": "I Don’t Know You Like I Used To",
+    "timestamp": "8/10/2025, 10:24:02 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27390bc8dd82f871af5f4109811",
+    "spotifyUrl": "https://open.spotify.com/search/I%20Don%E2%80%99t%20Know%20You%20Like%20I%20Used%20To%20mercury",
+    "loggedAt": "2025-08-10T22:24:07.004Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Will you cry?",
+    "artist": "Gracie Abrams",
+    "album": "Good Riddance (Deluxe)",
+    "timestamp": "8/10/2025, 11:42:16 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2730500294bb235c45c0a964d69",
+    "spotifyUrl": "https://open.spotify.com/search/Will%20you%20cry%3F%20Gracie%20Abrams",
+    "loggedAt": "2025-08-10T23:42:37.767Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Come In With The Rain",
+    "artist": "Taylor Swift",
+    "album": "Fearless (Platinum Edition)",
+    "timestamp": "8/11/2025, 5:51:02 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27323772ebfb18de81c57186964",
+    "spotifyUrl": "https://open.spotify.com/search/Come%20In%20With%20The%20Rain%20Taylor%20Swift",
+    "loggedAt": "2025-08-11T17:51:11.550Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Francis Forever",
+    "artist": "Mitski",
+    "album": "Bury Me At Makeout Creek",
+    "timestamp": "8/11/2025, 6:10:20 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273e90db8983ebd43b776694179",
+    "spotifyUrl": "https://open.spotify.com/search/Francis%20Forever%20Mitski",
+    "loggedAt": "2025-08-11T18:10:41.652Z"
+  },
+  {
+    "user": "444lila",
+    "song": "20191009 I Like Her",
+    "artist": "Mac DeMarco",
+    "album": "One Wayne G",
+    "timestamp": "8/11/2025, 6:12:37 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27340461e96808378ae2787a7e4",
+    "spotifyUrl": "https://open.spotify.com/search/20191009%20I%20Like%20Her%20Mac%20DeMarco",
+    "loggedAt": "2025-08-11T18:12:41.676Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Lunchtime",
+    "artist": "Spacey Jane",
+    "album": "Here Comes Everybody",
+    "timestamp": "8/11/2025, 9:00:23 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273cc3d962daa7e5d11efc6563e",
+    "spotifyUrl": "https://open.spotify.com/search/Lunchtime%20Spacey%20Jane",
+    "loggedAt": "2025-08-11T21:00:42.473Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Oh, Gemini",
+    "artist": "ROLE MODEL",
+    "album": "Kansas Anymore (The Longest Goodbye)",
+    "timestamp": "8/11/2025, 9:03:09 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273ff9e807b292a861ded756d63",
+    "spotifyUrl": "https://open.spotify.com/search/Oh%2C%20Gemini%20ROLE%20MODEL",
+    "loggedAt": "2025-08-11T21:03:12.497Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Come In With The Rain",
+    "artist": "Taylor Swift",
+    "album": "Fearless (Platinum Edition)",
+    "timestamp": "8/11/2025, 9:25:27 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27323772ebfb18de81c57186964",
+    "spotifyUrl": "https://open.spotify.com/search/Come%20In%20With%20The%20Rain%20Taylor%20Swift",
+    "loggedAt": "2025-08-11T21:25:42.601Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Some Protector - Live from Vevo",
+    "artist": "ROLE MODEL",
+    "album": "Some Protector (Live From Vevo)",
+    "timestamp": "8/11/2025, 9:29:50 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273916a27f8e19baf86460ec388",
+    "spotifyUrl": "https://open.spotify.com/search/Some%20Protector%20-%20Live%20from%20Vevo%20ROLE%20MODEL",
+    "loggedAt": "2025-08-11T21:30:12.621Z"
+  },
+  {
+    "user": "444lila",
+    "song": "You got time and I got money",
+    "artist": "Smerz",
+    "album": "You got time and I got money",
+    "timestamp": "8/11/2025, 9:34:22 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2733642c8a4afaee4d856a41792",
+    "spotifyUrl": "https://open.spotify.com/search/You%20got%20time%20and%20I%20got%20money%20Smerz",
+    "loggedAt": "2025-08-11T21:34:42.643Z"
+  },
+  {
+    "user": "444lila",
+    "song": "True Love Waits - Live in Oslo",
+    "artist": "Radiohead",
+    "album": "I Might Be Wrong",
+    "timestamp": "8/11/2025, 9:39:28 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27305a2f9af5f0eaed4835acf54",
+    "spotifyUrl": "https://open.spotify.com/search/True%20Love%20Waits%20-%20Live%20in%20Oslo%20Radiohead",
+    "loggedAt": "2025-08-11T21:39:42.680Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Grace",
+    "artist": "Jeff Buckley",
+    "album": "Grace",
+    "timestamp": "8/11/2025, 9:44:31 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2736a760642a56847027428cb61",
+    "spotifyUrl": "https://open.spotify.com/search/Grace%20Jeff%20Buckley",
+    "loggedAt": "2025-08-11T21:44:42.694Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Maria También",
+    "artist": "Khruangbin",
+    "album": "Con Todo El Mundo",
+    "timestamp": "8/11/2025, 9:47:41 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27312db5c86831c0ee134ea3ba3",
+    "spotifyUrl": "https://open.spotify.com/search/Maria%20Tambi%C3%A9n%20Khruangbin",
+    "loggedAt": "2025-08-11T21:48:12.766Z"
+  },
+  {
+    "user": "444lila",
+    "song": "WILD",
+    "artist": "Dijon",
+    "album": "WILD",
+    "timestamp": "8/11/2025, 11:35:18 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2731480d423b262b3ee992a7536",
+    "spotifyUrl": "https://open.spotify.com/search/WILD%20Dijon",
+    "loggedAt": "2025-08-11T23:35:43.313Z"
+  },
+  {
+    "user": "444lila",
+    "song": "To Philly",
+    "artist": "Del Water Gap",
+    "album": "Don't Get Dark",
+    "timestamp": "8/11/2025, 11:39:13 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27398da0f5c6fce983b796b7cfc",
+    "spotifyUrl": "https://open.spotify.com/search/To%20Philly%20Del%20Water%20Gap",
+    "loggedAt": "2025-08-11T23:39:43.316Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Someday, Somewhere",
+    "artist": "Palace",
+    "album": "Someday, Somewhere",
+    "timestamp": "8/11/2025, 11:42:25 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27390912ce0aad8b575d3cd1b50",
+    "spotifyUrl": "https://open.spotify.com/search/Someday%2C%20Somewhere%20Palace",
+    "loggedAt": "2025-08-11T23:42:43.306Z"
+  },
+  {
+    "user": "444lila",
+    "song": "The Sick",
+    "artist": "Bella Kay",
+    "album": "The Sick",
+    "timestamp": "8/12/2025, 8:07:44 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27379634ef94e7098877c180f50",
+    "spotifyUrl": "https://open.spotify.com/search/The%20Sick%20Bella%20Kay",
+    "loggedAt": "2025-08-12T20:07:49.847Z"
+  },
+  {
+    "user": "444lila",
+    "song": "West End Girls - 2018 Remaster",
+    "artist": "Pet Shop Boys",
+    "album": "Please: Further Listening 1984 - 1986 (2018 Remaster)",
+    "timestamp": "8/12/2025, 8:12:28 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2733540f5cb8e1e7a54125f84db",
+    "spotifyUrl": "https://open.spotify.com/search/West%20End%20Girls%20-%202018%20Remaster%20Pet%20Shop%20Boys",
+    "loggedAt": "2025-08-12T20:12:49.991Z"
+  },
+  {
+    "user": "444lila",
+    "song": "The Field (feat. The Durutti Column, Tariq Al-Sabir, Caroline Polachek & Daniel Caesar)",
+    "artist": "Blood Orange",
+    "album": "The Field (feat. The Durutti Column, Tariq Al-Sabir, Caroline Polachek & Daniel Caesar)",
+    "timestamp": "8/12/2025, 10:00:06 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273e11256a3e685203e20a71257",
+    "spotifyUrl": "https://open.spotify.com/search/The%20Field%20(feat.%20The%20Durutti%20Column%2C%20Tariq%20Al-Sabir%2C%20Caroline%20Polachek%20%26%20Daniel%20Caesar)%20Blood%20Orange",
+    "loggedAt": "2025-08-12T22:00:20.338Z"
+  },
+  {
+    "user": "444lila",
+    "song": "The Field (feat. The Durutti Column, Tariq Al-Sabir, Caroline Polachek & Daniel Caesar)",
+    "artist": "Blood Orange",
+    "album": "The Field (feat. The Durutti Column, Tariq Al-Sabir, Caroline Polachek & Daniel Caesar)",
+    "timestamp": "8/12/2025, 10:00:06 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273e11256a3e685203e20a71257",
+    "spotifyUrl": "https://open.spotify.com/search/The%20Field%20(feat.%20The%20Durutti%20Column%2C%20Tariq%20Al-Sabir%2C%20Caroline%20Polachek%20%26%20Daniel%20Caesar)%20Blood%20Orange",
+    "loggedAt": "2025-08-13T04:44:59.320Z"
   }
 ]

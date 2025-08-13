@@ -1,4 +1,5 @@
 // Modern Web Dashboard for Lila's Spotify Activity with Analytics
+require('dotenv').config();
 const express = require('express');
 const fs = require('fs').promises;
 const path = require('path');
