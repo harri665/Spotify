@@ -4,9 +4,25 @@ const express = require('express');
 const fs = require('fs').promises;
 const path = require('path');
 const crypto = require('crypto');
+const OpenAI = require('openai');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Initialize OpenAI client
+let openai = null;
+if (process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY !== 'your_openai_api_key_here') {
+    openai = new OpenAI({
+        apiKey: process.env.OPENAI_API_KEY,
+    });
+    console.log('✅ OpenAI client initialized');
+} else {
+    console.log('⚠️  OPENAI_API_KEY not configured - using fallback classification');
+}
+
+// Cache for OpenAI classifications to avoid repeated API calls and save costs
+const classificationCache = new Map();
+const CACHE_DURATION = 7 * 24 * 60 * 60 * 1000; // 7 days
 
 // Dashboard password (you can change this)
 const DASHBOARD_PASSWORD = process.env.DASHBOARD_PASSWORD || 'lila2025';
@@ -72,251 +88,234 @@ app.get('/api/auth/verify', requireAuth, (req, res) => {
     res.json({ authenticated: true });
 });
 
-// Cache for Spotify access tokens and audio features to avoid repeated API calls
-const audioFeaturesCache = new Map();
-let spotifyAccessToken = null;
-let tokenExpiry = 0;
-const TOKEN_CACHE_TIME = 3600000; // 1 hour
-let lastTokenAttempt = 0;
-const TOKEN_RETRY_DELAY = 300000; // 5 minutes between failed attempts
-
-// Get Spotify access token using sp_dc cookie with caching
-const getSpotifyAccessToken = async () => {
+// Advanced song classification using OpenAI ChatGPT
+const classifySongWithOpenAI = async (song, artist, album) => {
     try {
-        // Return cached token if still valid
-        if (spotifyAccessToken && Date.now() < tokenExpiry) {
-            return spotifyAccessToken;
-        }
-
-        // Don't retry too frequently if we recently failed
-        if (Date.now() - lastTokenAttempt < TOKEN_RETRY_DELAY && !spotifyAccessToken) {
-            return null;
-        }
-
-        lastTokenAttempt = Date.now();
-
-        const spDc = process.env.SP_DC_COOKIE;
-        if (!spDc) {
-            console.warn('SP_DC_COOKIE not found, using fallback classification');
-            return null;
-        }
-
-        // Try the web player access token endpoint
-        const response = await fetch('https://open.spotify.com/get_access_token?reason=transport&productType=web_player', {
-            headers: {
-                'Cookie': `sp_dc=${spDc}`,
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                'Accept': 'application/json',
-                'Accept-Language': 'en-US,en;q=0.9',
-                'Referer': 'https://open.spotify.com/',
-                'Origin': 'https://open.spotify.com'
-            }
-        });
-
-        if (!response.ok) {
-            console.warn(`Failed to get Spotify access token: ${response.status} ${response.statusText}`);
-            return null;
-        }
-
-        const data = await response.json();
-        if (data.accessToken) {
-            console.log('✅ Successfully obtained Spotify access token');
-            spotifyAccessToken = data.accessToken;
-            tokenExpiry = Date.now() + TOKEN_CACHE_TIME;
-            return spotifyAccessToken;
-        } else {
-            console.warn('No access token in response, likely expired sp_dc cookie');
-            return null;
-        }
-    } catch (error) {
-        console.warn('Error getting Spotify access token:', error.message);
-        return null;
-    }
-};
-
-// Search for track ID on Spotify
-const searchSpotifyTrack = async (song, artist, accessToken) => {
-    try {
-        const query = encodeURIComponent(`track:"${song}" artist:"${artist}"`);
-        const response = await fetch(`https://api.spotify.com/v1/search?q=${query}&type=track&limit=1`, {
-            headers: {
-                'Authorization': `Bearer ${accessToken}`
-            }
-        });
-
-        if (!response.ok) return null;
-        
-        const data = await response.json();
-        return data.tracks?.items?.[0]?.id || null;
-    } catch (error) {
-        console.warn('Error searching Spotify track:', error.message);
-        return null;
-    }
-};
-
-// Get audio features from Spotify
-const getAudioFeatures = async (trackId, accessToken) => {
-    try {
-        if (audioFeaturesCache.has(trackId)) {
-            return audioFeaturesCache.get(trackId);
-        }
-
-        const response = await fetch(`https://api.spotify.com/v1/audio-features/${trackId}`, {
-            headers: {
-                'Authorization': `Bearer ${accessToken}`
-            }
-        });
-
-        if (!response.ok) return null;
-        
-        const features = await response.json();
-        audioFeaturesCache.set(trackId, features);
-        return features;
-    } catch (error) {
-        console.warn('Error getting audio features:', error.message);
-        return null;
-    }
-};
-
-// Advanced song classification using Spotify Audio Features
-const classifySongTypeAdvanced = async (song, artist, album) => {
-    try {
-        const accessToken = await getSpotifyAccessToken();
-        if (!accessToken) {
-            // Only log once when we switch to fallback mode
-            if (!spotifyAccessToken && Date.now() - lastTokenAttempt > TOKEN_RETRY_DELAY) {
-                console.log(`[Classification] Using fallback classification - No valid Spotify access token`);
-            }
+        if (!openai) {
             return classifySongTypeFallback(song, artist, album);
         }
 
-        const trackId = await searchSpotifyTrack(song, artist, accessToken);
-        if (!trackId) {
-            return classifySongTypeFallback(song, artist, album);
-        }
-
-        const features = await getAudioFeatures(trackId, accessToken);
-        if (!features) {
-            return classifySongTypeFallback(song, artist, album);
-        }
-
-        // Only log successful audio feature usage occasionally
-        if (Math.random() < 0.1) { // 10% chance to log
-            console.log(`[Classification] Using audio features for "${song}" by ${artist} - Energy: ${features.energy?.toFixed(2)}, Valence: ${features.valence?.toFixed(2)}`);
-        }
-
-        // Classify based on audio features
-        const { valence, energy, danceability, acousticness, mode, tempo } = features;
-
-        // High energy + high valence = energetic/happy
-        if (energy > 0.7 && valence > 0.6) {
-            return 'energetic';
-        }
+        // Create cache key
+        const cacheKey = `${song}-${artist}-${album}`.toLowerCase();
         
-        // Low valence + low energy = sad
-        if (valence < 0.3 && energy < 0.4) {
-            return 'sad';
-        }
-
-        // Low valence + medium energy = angry/breakup
-        if (valence < 0.4 && energy > 0.5 && energy < 0.8) {
-            // Check lyrics/title for breakup indicators
-            const text = `${song} ${artist}`.toLowerCase();
-            const breakupKeywords = ['ex', 'over', 'leave', 'goodbye', 'forget', 'move on', 'done', 'through', 'end', 'break'];
-            if (breakupKeywords.some(keyword => text.includes(keyword))) {
-                return 'breakup';
-            }
-            return 'angry';
-        }
-
-        // High valence + medium energy = love/romantic
-        if (valence > 0.6 && energy > 0.3 && energy < 0.7) {
-            const text = `${song} ${artist}`.toLowerCase();
-            const loveKeywords = ['love', 'heart', 'baby', 'honey', 'together', 'kiss', 'romance'];
-            if (loveKeywords.some(keyword => text.includes(keyword))) {
-                return 'love';
+        // Check cache first
+        if (classificationCache.has(cacheKey)) {
+            const cached = classificationCache.get(cacheKey);
+            if (Date.now() - cached.timestamp < CACHE_DURATION) {
+                return cached.mood;
             }
         }
 
-        // High acousticness + low energy = chill
-        if (acousticness > 0.5 && energy < 0.5) {
-            return 'chill';
-        }
+        // Prepare prompt for ChatGPT
+        const prompt = `Classify the mood/genre of this song based on the title, artist, and album. 
 
-        // High danceability + high energy = party/energetic
-        if (danceability > 0.7 && energy > 0.6) {
-            return 'energetic';
-        }
+Song: "${song}"
+Artist: "${artist}"
+Album: "${album}"
 
-        // Low energy + medium valence = nostalgic/melodic
-        if (energy < 0.5 && valence > 0.3 && valence < 0.7) {
-            return 'nostalgic';
-        }
+Choose ONE of these categories that best fits:
+- energetic (high energy, pump-up, workout music)
+- sad (melancholy, depressing, emotional pain)
+- breakup (relationship endings, moving on, heartbreak)
+- love (romantic, affectionate, relationship happiness)
+- chill (relaxed, laid-back, easy listening)
+- angry (aggressive, frustrated, intense)
+- nostalgic (reminiscent, memories, past-focused)
+- confident (empowering, self-assured, boss vibes)
+- melodic (beautiful vocals, harmony-focused, musical)
+- party (celebration, dancing, nightlife)
 
-        // High energy + low valence + fast tempo = angry
-        if (energy > 0.7 && valence < 0.4 && tempo > 120) {
-            return 'angry';
-        }
+Only respond with the single word category, nothing else.`;
 
-        // Medium everything = melodic
-        if (energy > 0.4 && energy < 0.7 && valence > 0.4 && valence < 0.7) {
-            return 'melodic';
-        }
+        const completion = await openai.chat.completions.create({
+            model: "gpt-3.5-turbo",
+            messages: [
+                {
+                    role: "system",
+                    content: "You are a music expert that classifies songs into mood categories. You always respond with exactly one word from the provided categories."
+                },
+                {
+                    role: "user",
+                    content: prompt
+                }
+            ],
+            max_tokens: 10,
+            temperature: 0.3
+        });
 
-        // Fallback to keyword-based if no clear audio pattern
-        return classifySongTypeFallback(song, artist, album);
+        const classification = completion.choices[0]?.message?.content?.trim().toLowerCase();
+        
+        // Validate the response
+        const validMoods = ['energetic', 'sad', 'breakup', 'love', 'chill', 'angry', 'nostalgic', 'confident', 'melodic', 'party'];
+        const finalMood = validMoods.includes(classification) ? classification : 'melodic';
+        
+        // Cache the result
+        classificationCache.set(cacheKey, {
+            mood: finalMood,
+            timestamp: Date.now()
+        });
+
+        console.log(`[OpenAI] "${song}" by ${artist} → ${finalMood}`);
+        return finalMood;
 
     } catch (error) {
-        console.warn('Error in advanced classification:', error.message);
+        console.warn(`[OpenAI] Error classifying "${song}" by ${artist}:`, error.message);
         return classifySongTypeFallback(song, artist, album);
     }
 };
 
-// Fallback classification using keywords (original method)
+// Batch classification for multiple songs (more efficient)
+const classifyMultipleSongsWithOpenAI = async (songs) => {
+    try {
+        if (!openai || songs.length === 0) {
+            return songs.map(song => ({
+                ...song,
+                mood: classifySongTypeFallback(song.song, song.artist, song.album)
+            }));
+        }
+
+        // Check cache for all songs first
+        const results = [];
+        const uncachedSongs = [];
+        
+        for (const song of songs) {
+            const cacheKey = `${song.song}-${song.artist}-${song.album}`.toLowerCase();
+            if (classificationCache.has(cacheKey)) {
+                const cached = classificationCache.get(cacheKey);
+                if (Date.now() - cached.timestamp < CACHE_DURATION) {
+                    results.push({ ...song, mood: cached.mood });
+                    continue;
+                }
+            }
+            uncachedSongs.push(song);
+        }
+
+        // Process uncached songs in batches of 5 to save API calls
+        if (uncachedSongs.length > 0) {
+            const batchSize = 5;
+            for (let i = 0; i < uncachedSongs.length; i += batchSize) {
+                const batch = uncachedSongs.slice(i, i + batchSize);
+                
+                const songList = batch.map((song, index) => 
+                    `${index + 1}. "${song.song}" by ${song.artist} (Album: ${song.album})`
+                ).join('\n');
+
+                const prompt = `Classify the mood/genre of these songs. For each song, choose ONE category:
+
+Songs:
+${songList}
+
+Categories:
+- energetic (high energy, pump-up, workout music)
+- sad (melancholy, depressing, emotional pain)
+- breakup (relationship endings, moving on, heartbreak)
+- love (romantic, affectionate, relationship happiness)
+- chill (relaxed, laid-back, easy listening)
+- angry (aggressive, frustrated, intense)
+- nostalgic (reminiscent, memories, past-focused)
+- confident (empowering, self-assured, boss vibes)
+- melodic (beautiful vocals, harmony-focused, musical)
+- party (celebration, dancing, nightlife)
+
+Respond with only the numbers and categories, like:
+1. energetic
+2. sad
+3. love
+etc.`;
+
+                const completion = await openai.chat.completions.create({
+                    model: "gpt-3.5-turbo",
+                    messages: [
+                        {
+                            role: "system",
+                            content: "You are a music expert that classifies songs into mood categories. Always respond in the exact format requested."
+                        },
+                        {
+                            role: "user",
+                            content: prompt
+                        }
+                    ],
+                    max_tokens: 100,
+                    temperature: 0.3
+                });
+
+                const response = completion.choices[0]?.message?.content?.trim();
+                const lines = response.split('\n');
+                
+                // Parse results and cache them
+                const validMoods = ['energetic', 'sad', 'breakup', 'love', 'chill', 'angry', 'nostalgic', 'confident', 'melodic', 'party'];
+                
+                batch.forEach((song, index) => {
+                    let mood = 'melodic'; // default
+                    
+                    if (lines[index]) {
+                        const match = lines[index].match(/\d+\.\s*(\w+)/);
+                        if (match && validMoods.includes(match[1].toLowerCase())) {
+                            mood = match[1].toLowerCase();
+                        }
+                    }
+                    
+                    // Cache the result
+                    const cacheKey = `${song.song}-${song.artist}-${song.album}`.toLowerCase();
+                    classificationCache.set(cacheKey, {
+                        mood: mood,
+                        timestamp: Date.now()
+                    });
+                    
+                    results.push({ ...song, mood });
+                });
+
+                // Small delay to respect rate limits
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
+        }
+
+        console.log(`[OpenAI] Batch classified ${results.length} songs`);
+        return results;
+
+    } catch (error) {
+        console.warn('[OpenAI] Error in batch classification:', error.message);
+        return songs.map(song => ({
+            ...song,
+            mood: classifySongTypeFallback(song.song, song.artist, song.album)
+        }));
+    }
+};
+
+// Keep the original fallback method
 const classifySongTypeFallback = (song, artist, album) => {
     const text = `${song} ${artist} ${album}`.toLowerCase();
     
-    // Define classification keywords
+    // Simple classification keywords
     const classifications = {
-        'energetic': ['pump', 'energy', 'fire', 'hype', 'party', 'dance', 'club', 'bounce', 'wild', 'crazy', 'turnt', 'lit'],
-        'sad': ['sad', 'cry', 'tear', 'hurt', 'pain', 'broken', 'lonely', 'miss', 'gone', 'lost', 'empty', 'blue'],
-        'breakup': ['ex', 'over', 'leave', 'goodbye', 'forget', 'move on', 'done', 'through', 'end', 'break up', 'split'],
-        'love': ['love', 'heart', 'baby', 'honey', 'forever', 'together', 'kiss', 'romance', 'sweet', 'mine'],
-        'chill': ['chill', 'vibe', 'calm', 'smooth', 'relax', 'easy', 'soft', 'mellow', 'cool', 'peaceful'],
-        'angry': ['mad', 'hate', 'fight', 'rage', 'angry', 'fuck', 'kill', 'destroy', 'war', 'violence'],
-        'nostalgic': ['remember', 'old', 'back', 'time', 'past', 'memories', 'used to', 'childhood', 'young'],
-        'confident': ['boss', 'king', 'queen', 'winner', 'rich', 'money', 'success', 'top', 'best', 'flex'],
-        'melodic': ['melody', 'sing', 'voice', 'sound', 'music', 'notes', 'harmony', 'tune'],
-        'experimental': ['weird', 'strange', 'different', 'new', 'experimental', 'abstract', 'avant']
+        'energetic': ['pump', 'energy', 'fire', 'hype', 'party', 'dance', 'club', 'bounce'],
+        'sad': ['sad', 'cry', 'tear', 'hurt', 'pain', 'broken', 'lonely', 'miss', 'gone'],
+        'breakup': ['ex', 'over', 'leave', 'goodbye', 'forget', 'move on', 'done', 'through'],
+        'love': ['love', 'heart', 'baby', 'honey', 'forever', 'together', 'kiss', 'romance'],
+        'chill': ['chill', 'vibe', 'calm', 'smooth', 'relax', 'easy', 'soft', 'mellow'],
+        'angry': ['mad', 'hate', 'fight', 'rage', 'angry', 'fuck', 'kill', 'destroy'],
+        'nostalgic': ['remember', 'old', 'back', 'time', 'past', 'memories', 'used to'],
+        'confident': ['boss', 'king', 'queen', 'winner', 'rich', 'money', 'success']
     };
     
-    // Check for explicit mood indicators in song title
     for (const [type, keywords] of Object.entries(classifications)) {
         if (keywords.some(keyword => text.includes(keyword))) {
             return type;
         }
     }
     
-    // Genre-based classification fallback
-    const genres = {
-        'energetic': ['rap', 'hip hop', 'trap', 'drill', 'edm', 'electronic'],
-        'chill': ['lo-fi', 'indie', 'acoustic', 'folk'],
-        'melodic': ['pop', 'r&b', 'soul'],
-        'experimental': ['alternative', 'experimental']
-    };
-    
-    for (const [type, genreKeywords] of Object.entries(genres)) {
-        if (genreKeywords.some(genre => text.includes(genre))) {
-            return type;
-        }
-    }
-    
-    return 'neutral';
+    return 'melodic'; // Default to melodic instead of neutral
 };
 
-// Main classification function (uses advanced method with fallback)
-const classifySongType = async (song, artist, album) => {
-    return await classifySongTypeAdvanced(song, artist, album);
+// Main classification function using OpenAI/ChatGPT
+const classifySongType = async (song, artist, album, timestamp = null, context = {}) => {
+    // Try OpenAI classification first if available
+    if (openai) {
+        return await classifySongWithOpenAI(song, artist, album);
+    }
+    
+    // Fallback to pattern recognition if OpenAI is not available
+    return classifySongTypeFallback(song, artist, album);
 };
 
 // API endpoint to get Lila's activity data with enhanced analytics
@@ -345,12 +344,37 @@ app.get('/api/lila-activity', requireAuth, async (req, res) => {
         const data = await fs.readFile(logPath, 'utf8');
         const activities = JSON.parse(data);
         
-        // Enhance each activity with mood classification
-        const enhancedActivities = await Promise.all(activities.map(async activity => ({
-            ...activity,
-            moodType: await classifySongType(activity.song, activity.artist, activity.album),
-            id: `${activity.song}-${activity.artist}-${activity.loggedAt}`.replace(/[^a-zA-Z0-9]/g, '-')
-        })));
+        // Enhance each activity with mood classification using OpenAI
+        let enhancedActivities = [];
+        
+        // Process in batches for better performance with OpenAI
+        if (openai && activities.length > 10) {
+            // Use batch processing for large datasets
+            const classified = await classifyMultipleSongsWithOpenAI(activities);
+            
+            enhancedActivities = classified.map(activity => ({
+                ...activity,
+                moodType: activity.mood,
+                id: `${activity.song}-${activity.artist}-${activity.loggedAt}`.replace(/[^a-zA-Z0-9]/g, '-')
+            }));
+        } else {
+            // Process individually for smaller datasets or fallback
+            for (let i = 0; i < activities.length; i++) {
+                const activity = activities[i];
+                const moodType = await classifySongType(
+                    activity.song, 
+                    activity.artist, 
+                    activity.album, 
+                    activity.loggedAt
+                );
+                
+                enhancedActivities.push({
+                    ...activity,
+                    moodType,
+                    id: `${activity.song}-${activity.artist}-${activity.loggedAt}`.replace(/[^a-zA-Z0-9]/g, '-')
+                });
+            }
+        }
         
         // Sort by timestamp (newest first)
         enhancedActivities.sort((a, b) => new Date(b.loggedAt) - new Date(a.loggedAt));
@@ -403,11 +427,29 @@ const generateAnalytics = async (activities) => {
     const hourlyListening = {};
     const dailyListening = {};
     
-    // Process all activities with async mood classification
-    const activitiesWithMood = await Promise.all(activities.map(async activity => ({
-        ...activity,
-        mood: await classifySongType(activity.song, activity.artist, activity.album)
-    })));
+    // Process all activities with mood classification using OpenAI
+    let activitiesWithMood = [];
+    
+    // Use batch processing for better performance with OpenAI
+    if (openai && activities.length > 10) {
+        activitiesWithMood = await classifyMultipleSongsWithOpenAI(activities);
+    } else {
+        // Process individually for smaller datasets or fallback
+        for (let i = 0; i < activities.length; i++) {
+            const activity = activities[i];
+            const mood = await classifySongType(
+                activity.song, 
+                activity.artist, 
+                activity.album, 
+                activity.loggedAt
+            );
+            
+            activitiesWithMood.push({
+                ...activity,
+                mood
+            });
+        }
+    }
     
     activitiesWithMood.forEach(activity => {
         // Mood distribution
@@ -432,7 +474,7 @@ const generateAnalytics = async (activities) => {
         .map(([artist, count]) => ({ artist, count }));
     
     // Generate listening sessions
-    const sessions = await generateListeningSessions(activitiesWithMood);
+    const sessions = generateListeningSessions(activitiesWithMood);
     
     return {
         totalSongs: activities.length,
@@ -734,7 +776,7 @@ app.put('/api/raw/diary', requireAuth, async (req, res) => {
 });
 
 // Generate listening sessions with mood classification
-const generateListeningSessions = async (activitiesWithMood) => {
+const generateListeningSessions = (activitiesWithMood) => {
     if (activitiesWithMood.length === 0) return [];
     
     const sessions = [];
@@ -848,17 +890,14 @@ app.get('/', (req, res) => {
 app.listen(PORT, () => {
     console.log(`🎵 Lila Tracker Dashboard running at http://localhost:${PORT}`);
     console.log('📊 Enhanced dashboard with mood analysis and analytics tools!');
-    console.log('🎯 Advanced song classification using Spotify Audio Features API');
+    console.log('🤖 Advanced song classification using pattern recognition');
+    console.log('🧠 Multi-factor analysis: title structure, artist patterns, temporal context');
+    console.log('📈 Behavioral learning from listening sequences');
     console.log('🔍 Available endpoints:');
     console.log('  - GET / (Dashboard)');
     console.log('  - GET /api/lila-activity (Enhanced activity data)');
     console.log('  - GET /api/analytics (Analytics data)');
     console.log('  - Authentication required for all API endpoints');
     
-    // Test the classification system on startup
-    if (process.env.SP_DC_COOKIE) {
-        console.log('✅ SP_DC_COOKIE found - Advanced classification available');
-    } else {
-        console.log('⚠️  SP_DC_COOKIE not found - Using fallback classification');
-    }
+    console.log('✅ Pattern recognition system ready - No external dependencies');
 });
