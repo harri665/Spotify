@@ -334,9 +334,34 @@ class SpotifyDashboard {
                         <div class="song-album">${this.escapeHtml(activity.album)}</div>
                     </div>
                     <div class="song-metadata">
-                        <span class="mood-tag mood-${activity.moodType || 'neutral'}">
+                        <span class="mood-tag mood-${activity.moodType || 'neutral'}" id="mood-tag-${activity.id}">
                             ${this.getMoodIcon(activity.moodType)} ${this.formatMoodName(activity.moodType || 'neutral')}
+                            ${activity.moodManuallySet ? '<span class="manual-mood-indicator" title="Manually set mood">✏️</span>' : ''}
                         </span>
+                        <button class="quick-mood-edit-btn" onclick="event.stopPropagation(); dashboard.toggleQuickMoodEdit('${activity.id}')" title="Edit mood">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <div class="quick-mood-editor" id="quick-mood-editor-${activity.id}" style="display: none;">
+                            <select class="quick-mood-selector" id="quick-mood-selector-${activity.id}">
+                                <option value="energetic" ${(activity.moodType || 'neutral') === 'energetic' ? 'selected' : ''}>🔥 Energetic</option>
+                                <option value="sad" ${(activity.moodType || 'neutral') === 'sad' ? 'selected' : ''}>😢 Sad</option>
+                                <option value="love" ${(activity.moodType || 'neutral') === 'love' ? 'selected' : ''}>❤️ Love</option>
+                                <option value="chill" ${(activity.moodType || 'neutral') === 'chill' ? 'selected' : ''}>😌 Chill</option>
+                                <option value="breakup" ${(activity.moodType || 'neutral') === 'breakup' ? 'selected' : ''}>💔 Breakup</option>
+                                <option value="angry" ${(activity.moodType || 'neutral') === 'angry' ? 'selected' : ''}>😡 Angry</option>
+                                <option value="nostalgic" ${(activity.moodType || 'neutral') === 'nostalgic' ? 'selected' : ''}>🌅 Nostalgic</option>
+                                <option value="confident" ${(activity.moodType || 'neutral') === 'confident' ? 'selected' : ''}>😎 Confident</option>
+                                <option value="melodic" ${(activity.moodType || 'neutral') === 'melodic' ? 'selected' : ''}>🎵 Melodic</option>
+                                <option value="experimental" ${(activity.moodType || 'neutral') === 'experimental' ? 'selected' : ''}>🎨 Experimental</option>
+                                <option value="neutral" ${(activity.moodType || 'neutral') === 'neutral' ? 'selected' : ''}>🎶 Neutral</option>
+                            </select>
+                            <button class="quick-update-btn" onclick="event.stopPropagation(); dashboard.quickUpdateMood('${activity.id}')" title="Update">
+                                <i class="fas fa-check"></i>
+                            </button>
+                            <button class="quick-cancel-btn" onclick="event.stopPropagation(); dashboard.cancelQuickMoodEdit('${activity.id}')" title="Cancel">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
                         <span class="song-timestamp">${timeString}</span>
                         <a href="${activity.spotifyUrl}" target="_blank" class="spotify-link" onclick="event.stopPropagation()">
                             <i class="fab fa-spotify"></i> Open
@@ -855,11 +880,38 @@ class SpotifyDashboard {
                 <h2 style="color: #fff; margin-bottom: 10px;">${this.escapeHtml(song.song)}</h2>
                 <h3 style="color: #1db954; margin-bottom: 5px;">${this.escapeHtml(song.artist)}</h3>
                 <p style="color: #b3b3b3; margin-bottom: 20px;">${this.escapeHtml(song.album)}</p>
-                <div style="margin-bottom: 20px;">
-                    <span class="mood-tag mood-${song.moodType || 'neutral'}">
-                        ${this.getMoodIcon(song.moodType)} ${this.formatMoodName(song.moodType || 'neutral')}
-                    </span>
+                
+                <!-- Mood Editor Section -->
+                <div class="mood-editor" style="margin-bottom: 25px; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 12px;">
+                    <h4 style="color: #fff; margin-bottom: 15px; font-size: 1.1rem;">
+                        <i class="fas fa-heart"></i> Song Mood
+                    </h4>
+                    <div style="margin-bottom: 15px;">
+                        <span class="mood-tag mood-${song.moodType || 'neutral'}" id="current-mood-display-${songId}">
+                            ${this.getMoodIcon(song.moodType)} ${this.formatMoodName(song.moodType || 'neutral')}
+                        </span>
+                        <span style="color: #888; font-size: 0.9rem; margin-left: 10px;">
+                            (${song.moodManuallySet ? 'Manual' : 'Auto-detected'})
+                        </span>
+                    </div>
+                    <select id="mood-selector-${songId}" class="mood-selector" style="padding: 8px 12px; border: 1px solid #444; background: #2a2a2a; color: #fff; border-radius: 6px; margin-right: 10px;">
+                        <option value="energetic" ${(song.moodType || 'neutral') === 'energetic' ? 'selected' : ''}>🔥 Energetic</option>
+                        <option value="sad" ${(song.moodType || 'neutral') === 'sad' ? 'selected' : ''}>😢 Sad</option>
+                        <option value="love" ${(song.moodType || 'neutral') === 'love' ? 'selected' : ''}>❤️ Love</option>
+                        <option value="chill" ${(song.moodType || 'neutral') === 'chill' ? 'selected' : ''}>😌 Chill</option>
+                        <option value="breakup" ${(song.moodType || 'neutral') === 'breakup' ? 'selected' : ''}>💔 Breakup</option>
+                        <option value="angry" ${(song.moodType || 'neutral') === 'angry' ? 'selected' : ''}>😡 Angry</option>
+                        <option value="nostalgic" ${(song.moodType || 'neutral') === 'nostalgic' ? 'selected' : ''}>🌅 Nostalgic</option>
+                        <option value="confident" ${(song.moodType || 'neutral') === 'confident' ? 'selected' : ''}>😎 Confident</option>
+                        <option value="melodic" ${(song.moodType || 'neutral') === 'melodic' ? 'selected' : ''}>🎵 Melodic</option>
+                        <option value="experimental" ${(song.moodType || 'neutral') === 'experimental' ? 'selected' : ''}>🎨 Experimental</option>
+                        <option value="neutral" ${(song.moodType || 'neutral') === 'neutral' ? 'selected' : ''}>🎶 Neutral</option>
+                    </select>
+                    <button onclick="dashboard.updateSongMood('${songId}')" class="update-mood-btn" style="padding: 8px 16px; background: #1db954; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
+                        <i class="fas fa-save"></i> Update Mood
+                    </button>
                 </div>
+                
                 <p style="color: #b3b3b3; margin-bottom: 20px;">
                     Played on ${timestamp.toLocaleDateString()} at ${timestamp.toLocaleTimeString()}
                 </p>
@@ -870,6 +922,187 @@ class SpotifyDashboard {
         `;
 
         modal.style.display = 'block';
+    }
+
+    async updateSongMood(songId) {
+        const selector = document.getElementById(`mood-selector-${songId}`);
+        const newMood = selector.value;
+        const updateBtn = document.querySelector('.update-mood-btn');
+        
+        if (!newMood) {
+            this.showError('Please select a mood');
+            return;
+        }
+
+        // Show loading state
+        const originalBtnText = updateBtn.innerHTML;
+        updateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
+        updateBtn.disabled = true;
+
+        try {
+            const response = await this.authenticatedFetch(`/api/song/${songId}/mood`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ mood: newMood })
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.error || 'Failed to update mood');
+            }
+
+            // Update local data
+            const songIndex = this.activities.findIndex(a => a.id === songId);
+            if (songIndex !== -1) {
+                this.activities[songIndex].moodType = newMood;
+                this.activities[songIndex].moodManuallySet = true;
+                this.filteredActivities = [...this.activities]; // Refresh filtered activities
+            }
+
+            // Update the mood display
+            const moodDisplay = document.getElementById(`current-mood-display-${songId}`);
+            if (moodDisplay) {
+                moodDisplay.className = `mood-tag mood-${newMood}`;
+                moodDisplay.innerHTML = `${this.getMoodIcon(newMood)} ${this.formatMoodName(newMood)}`;
+                
+                // Update the manual indicator in the modal if it exists
+                const modalMoodDisplay = moodDisplay.parentElement;
+                if (modalMoodDisplay) {
+                    const manualIndicator = modalMoodDisplay.querySelector('span[style*="color: #888"]');
+                    if (manualIndicator) {
+                        manualIndicator.textContent = '(Manual)';
+                    }
+                }
+            }
+
+            // Show success feedback
+            updateBtn.innerHTML = '<i class="fas fa-check"></i> Updated!';
+            updateBtn.style.background = '#28a745';
+            
+            // Refresh the current tab to show updated mood
+            this.renderCurrentTab();
+            
+            setTimeout(() => {
+                updateBtn.innerHTML = originalBtnText;
+                updateBtn.style.background = '#1db954';
+                updateBtn.disabled = false;
+            }, 1500);
+
+        } catch (error) {
+            console.error('Error updating song mood:', error);
+            this.showError(`Failed to update mood: ${error.message}`);
+            
+            updateBtn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Error';
+            updateBtn.style.background = '#dc3545';
+            
+            setTimeout(() => {
+                updateBtn.innerHTML = originalBtnText;
+                updateBtn.style.background = '#1db954';
+                updateBtn.disabled = false;
+            }, 2000);
+        }
+    }
+
+    toggleQuickMoodEdit(songId) {
+        // Hide any other open quick editors
+        document.querySelectorAll('.quick-mood-editor').forEach(editor => {
+            if (editor.id !== `quick-mood-editor-${songId}`) {
+                editor.style.display = 'none';
+            }
+        });
+
+        const editor = document.getElementById(`quick-mood-editor-${songId}`);
+        const moodTag = document.getElementById(`mood-tag-${songId}`);
+        
+        if (editor.style.display === 'none' || !editor.style.display) {
+            editor.style.display = 'flex';
+            moodTag.style.display = 'none';
+        } else {
+            editor.style.display = 'none';
+            moodTag.style.display = 'inline-flex';
+        }
+    }
+
+    async quickUpdateMood(songId) {
+        const selector = document.getElementById(`quick-mood-selector-${songId}`);
+        const newMood = selector.value;
+        const updateBtn = document.querySelector(`#quick-mood-editor-${songId} .quick-update-btn`);
+        
+        if (!newMood) {
+            this.showError('Please select a mood');
+            return;
+        }
+
+        // Show loading state
+        const originalIcon = updateBtn.innerHTML;
+        updateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        updateBtn.disabled = true;
+
+        try {
+            const response = await this.authenticatedFetch(`/api/song/${songId}/mood`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ mood: newMood })
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.error || 'Failed to update mood');
+            }
+
+            // Update local data
+            const songIndex = this.activities.findIndex(a => a.id === songId);
+            if (songIndex !== -1) {
+                this.activities[songIndex].moodType = newMood;
+                this.activities[songIndex].moodManuallySet = true;
+                this.filteredActivities = [...this.activities];
+            }
+
+            // Update the mood display
+            const moodTag = document.getElementById(`mood-tag-${songId}`);
+            if (moodTag) {
+                moodTag.className = `mood-tag mood-${newMood}`;
+                moodTag.innerHTML = `${this.getMoodIcon(newMood)} ${this.formatMoodName(newMood)} <span class="manual-mood-indicator" title="Manually set mood">✏️</span>`;
+            }
+
+            // Hide the editor and show success
+            this.cancelQuickMoodEdit(songId);
+            
+            // Brief success indication
+            updateBtn.innerHTML = '<i class="fas fa-check"></i>';
+            updateBtn.style.color = '#28a745';
+            
+            setTimeout(() => {
+                updateBtn.innerHTML = originalIcon;
+                updateBtn.style.color = '';
+                updateBtn.disabled = false;
+            }, 1000);
+
+        } catch (error) {
+            console.error('Error updating song mood:', error);
+            this.showError(`Failed to update mood: ${error.message}`);
+            
+            updateBtn.innerHTML = '<i class="fas fa-exclamation-triangle"></i>';
+            updateBtn.style.color = '#dc3545';
+            
+            setTimeout(() => {
+                updateBtn.innerHTML = originalIcon;
+                updateBtn.style.color = '';
+                updateBtn.disabled = false;
+            }, 2000);
+        }
+    }
+
+    cancelQuickMoodEdit(songId) {
+        const editor = document.getElementById(`quick-mood-editor-${songId}`);
+        const moodTag = document.getElementById(`mood-tag-${songId}`);
+        
+        editor.style.display = 'none';
+        moodTag.style.display = 'inline-flex';
     }
 
     filterByMood() {
@@ -1256,6 +1489,22 @@ window.showNewEntryModal = function() {
 
 window.closeDiaryModal = function() {
     dashboard.closeDiaryModal();
+};
+
+window.updateSongMood = function(songId) {
+    dashboard.updateSongMood(songId);
+};
+
+window.toggleQuickMoodEdit = function(songId) {
+    dashboard.toggleQuickMoodEdit(songId);
+};
+
+window.quickUpdateMood = function(songId) {
+    dashboard.quickUpdateMood(songId);
+};
+
+window.cancelQuickMoodEdit = function(songId) {
+    dashboard.cancelQuickMoodEdit(songId);
 };
 
 // Initialize dashboard when DOM is loaded

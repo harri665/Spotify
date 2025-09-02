@@ -661,6 +661,75 @@ app.delete('/api/diary/:id', requireAuth, async (req, res) => {
     }
 });
 
+// API endpoint to update song mood
+app.put('/api/song/:id/mood', requireAuth, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { mood } = req.body;
+        
+        if (!mood) {
+            return res.status(400).json({ error: 'Mood is required' });
+        }
+        
+        // Validate mood
+        const validMoods = ['energetic', 'sad', 'breakup', 'love', 'chill', 'angry', 'nostalgic', 'confident', 'melodic', 'experimental', 'neutral'];
+        if (!validMoods.includes(mood)) {
+            return res.status(400).json({ error: 'Invalid mood value' });
+        }
+        
+        const logPath = process.env.NODE_ENV === 'production' 
+            ? '/app/shared/lila-activity-log.json'
+            : path.join(__dirname, '..', 'lila-activity-log.json');
+        
+        // Read current data
+        const data = await fs.readFile(logPath, 'utf8');
+        const activities = JSON.parse(data);
+        
+        // Find the activity by constructing the same ID format used in the frontend
+        let activityIndex = -1;
+        
+        // Try to find by ID (constructed in frontend)
+        for (let i = 0; i < activities.length; i++) {
+            const activity = activities[i];
+            const constructedId = `${activity.song}-${activity.artist}-${activity.loggedAt}`.replace(/[^a-zA-Z0-9]/g, '-');
+            if (constructedId === id) {
+                activityIndex = i;
+                break;
+            }
+        }
+        
+        if (activityIndex === -1) {
+            return res.status(404).json({ error: 'Song not found' });
+        }
+        
+        // Update the mood
+        activities[activityIndex].moodType = mood;
+        activities[activityIndex].moodManuallySet = true; // Flag to indicate manual override
+        activities[activityIndex].moodUpdatedAt = new Date().toISOString();
+        
+        // Create backup before saving
+        const backupPath = logPath + '.backup.' + Date.now();
+        try {
+            await fs.copyFile(logPath, backupPath);
+        } catch (error) {
+            console.warn('Failed to create backup:', error.message);
+        }
+        
+        // Save updated data
+        await fs.writeFile(logPath, JSON.stringify(activities, null, 2));
+        
+        res.json({ 
+            success: true, 
+            message: 'Song mood updated successfully',
+            song: activities[activityIndex]
+        });
+        
+    } catch (error) {
+        console.error('Error updating song mood:', error.message);
+        res.status(500).json({ error: 'Failed to update song mood' });
+    }
+});
+
 // Raw JSON editing endpoints
 app.get('/api/raw/activity', requireAuth, async (req, res) => {
     try {
