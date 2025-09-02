@@ -307,14 +307,44 @@ const classifySongTypeFallback = (song, artist, album) => {
     return 'melodic'; // Default to melodic instead of neutral
 };
 
-// Main classification function using OpenAI/ChatGPT
+
+// Manual classification override (loads from JSON file)
+let manualClassifications = null;
+const manualClassificationsPath = path.join(__dirname, '..', 'manual-classifications.json');
+
+async function loadManualClassifications() {
+    if (manualClassifications !== null) return manualClassifications;
+    try {
+        const data = await fs.readFile(manualClassificationsPath, 'utf8');
+        const parsed = JSON.parse(data);
+        // Convert to a lookup map for fast access
+        manualClassifications = new Map();
+        Object.values(parsed).forEach(entry => {
+            if (entry.song && entry.artist && entry.mood) {
+                const key = `${entry.song.toLowerCase()}|${entry.artist.toLowerCase()}|${(entry.album||'').toLowerCase()}`;
+                manualClassifications.set(key, entry.mood.toLowerCase());
+            }
+        });
+        return manualClassifications;
+    } catch (e) {
+        manualClassifications = new Map();
+        return manualClassifications;
+    }
+}
+
+// Main classification function using manual override, OpenAI, or fallback
 const classifySongType = async (song, artist, album, timestamp = null, context = {}) => {
-    // Try OpenAI classification first if available
+    // 1. Check manual override first
+    const manualMap = await loadManualClassifications();
+    const key = `${(song||'').toLowerCase()}|${(artist||'').toLowerCase()}|${(album||'').toLowerCase()}`;
+    if (manualMap.has(key)) {
+        return manualMap.get(key);
+    }
+    // 2. Try OpenAI classification if available
     if (openai) {
         return await classifySongWithOpenAI(song, artist, album);
     }
-    
-    // Fallback to pattern recognition if OpenAI is not available
+    // 3. Fallback to pattern recognition if OpenAI is not available
     return classifySongTypeFallback(song, artist, album);
 };
 

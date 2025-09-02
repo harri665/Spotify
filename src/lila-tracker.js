@@ -115,7 +115,7 @@ class LilaTracker {
                 const authHeader = request.headers()['authorization'];
                 if (authHeader && authHeader.startsWith('Bearer ') && authHeader.length > 100) {
                     capturedToken = authHeader.substring(7);
-                    console.log('🎯 Fresh token captured:', capturedToken.substring(0, 50) + '...');
+                    console.log('🎯 Fresh token captured:', capturedToken);
                 }
                 request.continue();
             });
