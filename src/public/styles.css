@@ -1528,3 +1528,79 @@ body {
         width: 100%;
     }
 }
+
+/* Timeline Tab Specific Styles */
+.timeline-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.timeline-action-btn {
+    background: var(--spotify-gray);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.timeline-action-btn:hover {
+    background: var(--spotify-light-gray);
+    color: var(--text-primary);
+    border-color: var(--spotify-green);
+}
+
+.timeline-help {
+    margin-top: 20px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: var(--border-radius);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.timeline-help-content h4 {
+    color: var(--text-primary);
+    margin-bottom: 12px;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.timeline-help-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+}
+
+.help-item {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.help-item strong {
+    color: var(--spotify-green);
+}
+
+@media (max-width: 768px) {
+    .timeline-header-actions {
+        flex-direction: column;
+        gap: 8px;
+        width: 100%;
+    }
+    
+    .timeline-action-btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .timeline-help-grid {
+        grid-template-columns: 1fr;
+    }
+}

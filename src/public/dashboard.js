@@ -8,6 +8,7 @@ class SpotifyDashboard {
         this.filteredActivities = [];
         this.sessionId = localStorage.getItem('sessionId');
         this.isAuthenticated = false;
+        this.timeline = null; // Timeline component instance
         
         this.init();
     }
@@ -233,6 +234,9 @@ class SpotifyDashboard {
             case 'patterns':
                 this.renderListeningPatterns();
                 break;
+            case 'timeline':
+                this.renderTimeline();
+                break;
             case 'json-editor':
                 if (!this.jsonEditor) {
                     this.initJsonEditor();
@@ -256,6 +260,11 @@ class SpotifyDashboard {
             // Load diary entries if on diary tab
             if (this.currentTab === 'diary') {
                 await this.loadDiaryEntries();
+            }
+
+            // Update timeline if it exists
+            if (this.timeline && this.currentTab === 'timeline') {
+                this.timeline.refreshData(this.activities);
             }
 
             this.updateQuickStats();
@@ -301,6 +310,9 @@ class SpotifyDashboard {
                 break;
             case 'patterns':
                 this.renderListeningPatterns();
+                break;
+            case 'timeline':
+                this.renderTimeline();
                 break;
         }
     }
@@ -863,6 +875,73 @@ class SpotifyDashboard {
         container.innerHTML = hourlyHTML;
     }
 
+    renderTimeline() {
+        const container = document.getElementById('timeline-container');
+        
+        if (this.activities.length === 0) {
+            container.innerHTML = `
+                <div class="loading">
+                    <i class="fas fa-music"></i>
+                    <p>No timeline data available</p>
+                </div>
+            `;
+            return;
+        }
+
+        // Initialize timeline component if not already done
+        if (!this.timeline) {
+            container.innerHTML = ''; // Clear loading message
+            this.timeline = new TimelineComponent(container, {
+                height: 500,
+                viewMode: 'activity'
+            });
+        }
+
+        // Set data for timeline
+        this.timeline.setData(this.activities);
+    }
+
+    exportTimelineData() {
+        if (!this.timeline) {
+            this.showError('Timeline not initialized');
+            return;
+        }
+
+        const visibleData = this.timeline.getVisibleData();
+        const currentRange = this.timeline.getCurrentRange();
+        
+        const exportData = {
+            range: currentRange,
+            data: visibleData,
+            exportedAt: new Date().toISOString(),
+            totalPoints: visibleData.length
+        };
+
+        // Create and download JSON file
+        const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `timeline-export-${new Date().toISOString().slice(0, 10)}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        this.showSuccess('Timeline data exported successfully');
+    }
+
+    resetTimelineView() {
+        if (!this.timeline) {
+            this.showError('Timeline not initialized');
+            return;
+        }
+
+        this.timeline.resetZoom();
+        this.timeline.clearSelection();
+        this.showSuccess('Timeline view reset');
+    }
+
     showSongDetails(songId) {
         const song = this.activities.find(a => a.id === songId);
         if (!song) return;
@@ -1163,6 +1242,31 @@ class SpotifyDashboard {
     showError(message) {
         console.error(message);
         // Could implement a toast notification here
+    }
+
+    showSuccess(message) {
+        console.log(message);
+        // Could implement a toast notification here
+        // For now, just show a brief visual feedback
+        const toast = document.createElement('div');
+        toast.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 6px;
+            z-index: 10000;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        `;
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.remove();
+        }, 3000);
     }
 
     async refreshData() {
@@ -1505,6 +1609,14 @@ window.quickUpdateMood = function(songId) {
 
 window.cancelQuickMoodEdit = function(songId) {
     dashboard.cancelQuickMoodEdit(songId);
+};
+
+window.exportTimelineData = function() {
+    dashboard.exportTimelineData();
+};
+
+window.resetTimelineView = function() {
+    dashboard.resetTimelineView();
 };
 
 // Initialize dashboard when DOM is loaded

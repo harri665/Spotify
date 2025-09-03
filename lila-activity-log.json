@@ -15257,7 +15257,10 @@
     "timestamp": "9/1/2025, 7:15:16 PM",
     "imageUrl": "https://i.scdn.co/image/ab67616d0000b27323d41bf736920a032e222a78",
     "spotifyUrl": "https://open.spotify.com/search/Shapeshifter%20Lorde",
-    "loggedAt": "2025-09-01T19:15:30.298Z"
+    "loggedAt": "2025-09-01T19:15:30.298Z",
+    "moodType": "breakup",
+    "moodManuallySet": true,
+    "moodUpdatedAt": "2025-09-02T01:01:25.205Z"
   },
   {
     "user": "444lila",
@@ -15267,7 +15270,10 @@
     "timestamp": "9/1/2025, 7:48:56 PM",
     "imageUrl": "https://i.scdn.co/image/ab67616d0000b273a1d9c9969f2a7ed27e449a3c",
     "spotifyUrl": "https://open.spotify.com/search/Wild%20Horses%20-%202009%20Mix%20The%20Rolling%20Stones",
-    "loggedAt": "2025-09-01T19:49:01.786Z"
+    "loggedAt": "2025-09-01T19:49:01.786Z",
+    "moodType": "breakup",
+    "moodManuallySet": true,
+    "moodUpdatedAt": "2025-09-02T01:01:20.444Z"
   },
   {
     "user": "444lila",
@@ -15277,7 +15283,10 @@
     "timestamp": "9/1/2025, 7:52:01 PM",
     "imageUrl": "https://i.scdn.co/image/ab67616d0000b273092c5e1cf9c3d58916791987",
     "spotifyUrl": "https://open.spotify.com/search/Man%20I%20Need%20Olivia%20Dean",
-    "loggedAt": "2025-09-01T19:52:31.916Z"
+    "loggedAt": "2025-09-01T19:52:31.916Z",
+    "moodType": "breakup",
+    "moodManuallySet": true,
+    "moodUpdatedAt": "2025-09-02T01:43:41.266Z"
   },
   {
     "user": "444lila",
@@ -15287,7 +15296,10 @@
     "timestamp": "9/1/2025, 7:57:44 PM",
     "imageUrl": "https://i.scdn.co/image/ab67616d0000b2736981e1c59d89169ac001ffa9",
     "spotifyUrl": "https://open.spotify.com/search/Timeline%20hey%2C%20nothing",
-    "loggedAt": "2025-09-01T19:58:02.154Z"
+    "loggedAt": "2025-09-01T19:58:02.154Z",
+    "moodType": "breakup",
+    "moodManuallySet": true,
+    "moodUpdatedAt": "2025-09-02T01:43:34.775Z"
   },
   {
     "user": "444lila",
@@ -15428,5 +15440,403 @@
     "imageUrl": "https://i.scdn.co/image/ab67616d0000b2732f2eeee9b405f4d00428d84c",
     "spotifyUrl": "https://open.spotify.com/search/Don't%20Look%20Back%20In%20Anger%20Oasis",
     "loggedAt": "2025-09-02T00:10:13.039Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Don't Look Back In Anger",
+    "artist": "Oasis",
+    "album": "(What's The Story) Morning Glory?",
+    "timestamp": "9/2/2025, 12:08:23 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2732f2eeee9b405f4d00428d84c",
+    "spotifyUrl": "https://open.spotify.com/search/Don't%20Look%20Back%20In%20Anger%20Oasis",
+    "loggedAt": "2025-09-02T00:48:29.815Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Siren sounds (bonus)",
+    "artist": "Tate McRae",
+    "album": "So Close To What",
+    "timestamp": "9/2/2025, 1:31:52 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2737e8ac0e1145f9543812df95c",
+    "spotifyUrl": "https://open.spotify.com/search/Siren%20sounds%20(bonus)%20Tate%20McRae",
+    "loggedAt": "2025-09-02T01:34:13.585Z",
+    "moodType": "energetic",
+    "moodManuallySet": true,
+    "moodUpdatedAt": "2025-09-02T01:41:10.204Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Goodbye",
+    "artist": "Sabrina Carpenter",
+    "album": "Man’s Best Friend",
+    "timestamp": "9/2/2025, 1:35:38 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27345e9957f1f728941041d3210",
+    "spotifyUrl": "https://open.spotify.com/search/Goodbye%20Sabrina%20Carpenter",
+    "loggedAt": "2025-09-02T01:35:43.771Z",
+    "moodType": "energetic",
+    "moodManuallySet": true,
+    "moodUpdatedAt": "2025-09-02T01:41:05.852Z"
+  },
+  {
+    "user": "444lila",
+    "song": "When Did You Get Hot?",
+    "artist": "Sabrina Carpenter",
+    "album": "Man’s Best Friend",
+    "timestamp": "9/2/2025, 1:38:04 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27345e9957f1f728941041d3210",
+    "spotifyUrl": "https://open.spotify.com/search/When%20Did%20You%20Get%20Hot%3F%20Sabrina%20Carpenter",
+    "loggedAt": "2025-09-02T01:38:13.882Z",
+    "moodType": "energetic",
+    "moodManuallySet": true,
+    "moodUpdatedAt": "2025-09-02T01:41:01.026Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Death Wish - Live from The O2 Arena",
+    "artist": "Gracie Abrams",
+    "album": "Death Wish (Live from The O2 Arena)",
+    "timestamp": "9/2/2025, 1:42:10 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273c49495321e91f431f42839fa",
+    "spotifyUrl": "https://open.spotify.com/search/Death%20Wish%20-%20Live%20from%20The%20O2%20Arena%20Gracie%20Abrams",
+    "loggedAt": "2025-09-02T01:42:14.040Z",
+    "moodType": "melodic",
+    "moodManuallySet": true,
+    "moodUpdatedAt": "2025-09-02T02:12:23.099Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Cedar",
+    "artist": "Gracie Abrams",
+    "album": "The Buccaneers: Season 1 (Apple TV+ Original Series Soundtrack)",
+    "timestamp": "9/2/2025, 3:50:38 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2734a46268112218d562609af92",
+    "spotifyUrl": "https://open.spotify.com/search/Cedar%20Gracie%20Abrams",
+    "loggedAt": "2025-09-02T03:50:49.599Z",
+    "moodType": "melodic",
+    "moodManuallySet": true,
+    "moodUpdatedAt": "2025-09-02T06:27:58.185Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Fall Back",
+    "artist": "Porch Light",
+    "album": "Fall Back",
+    "timestamp": "9/2/2025, 3:23:38 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27343b34bda395bad221ef13391",
+    "spotifyUrl": "https://open.spotify.com/search/Fall%20Back%20Porch%20Light",
+    "loggedAt": "2025-09-02T15:23:50.234Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Carlisle",
+    "artist": "Lola Bllue",
+    "album": "Carlisle",
+    "timestamp": "9/2/2025, 3:27:16 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273636233309d8741601c6c8158",
+    "spotifyUrl": "https://open.spotify.com/search/Carlisle%20Lola%20Bllue",
+    "loggedAt": "2025-09-02T15:27:20.091Z"
+  },
+  {
+    "user": "444lila",
+    "song": "For You I'll Wait",
+    "artist": "harf.",
+    "album": "Watch You Fly",
+    "timestamp": "9/2/2025, 3:31:12 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273c93d1fac16ca00e17f3f1a57",
+    "spotifyUrl": "https://open.spotify.com/search/For%20You%20I'll%20Wait%20harf.",
+    "loggedAt": "2025-09-02T15:31:20.284Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Can't Buy Happiness",
+    "artist": "Tash Sultana",
+    "album": "Can't Buy Happiness",
+    "timestamp": "9/2/2025, 3:34:25 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273966a2d5d7a70f52216ea053b",
+    "spotifyUrl": "https://open.spotify.com/search/Can't%20Buy%20Happiness%20Tash%20Sultana",
+    "loggedAt": "2025-09-02T15:34:50.424Z"
+  },
+  {
+    "user": "444lila",
+    "song": "dead horse",
+    "artist": "Esha Tewari",
+    "album": "better off",
+    "timestamp": "9/2/2025, 3:36:59 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273a02609dde4363ca209f885b6",
+    "spotifyUrl": "https://open.spotify.com/search/dead%20horse%20Esha%20Tewari",
+    "loggedAt": "2025-09-02T15:37:20.565Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Souvenir",
+    "artist": "boygenius",
+    "album": "boygenius",
+    "timestamp": "9/2/2025, 3:40:31 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273aaf249e10efa3f8897df2697",
+    "spotifyUrl": "https://open.spotify.com/search/Souvenir%20boygenius",
+    "loggedAt": "2025-09-02T15:40:50.699Z"
+  },
+  {
+    "user": "444lila",
+    "song": "toothache",
+    "artist": "Searows",
+    "album": "toothache",
+    "timestamp": "9/2/2025, 3:44:00 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273bd82a743c5b3a94bdf9fe360",
+    "spotifyUrl": "https://open.spotify.com/search/toothache%20Searows",
+    "loggedAt": "2025-09-02T15:44:20.827Z"
+  },
+  {
+    "user": "444lila",
+    "song": "The Bell Jar",
+    "artist": "Chrissy",
+    "album": "The Bell Jar",
+    "timestamp": "9/2/2025, 3:46:19 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273fe1cabe619fec587577d1944",
+    "spotifyUrl": "https://open.spotify.com/search/The%20Bell%20Jar%20Chrissy",
+    "loggedAt": "2025-09-02T15:46:50.934Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Teenage Love",
+    "artist": "Katie Gregson-MacLeod",
+    "album": "Teenage Love",
+    "timestamp": "9/2/2025, 3:50:42 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2739883438ecf37c5ce29514297",
+    "spotifyUrl": "https://open.spotify.com/search/Teenage%20Love%20Katie%20Gregson-MacLeod",
+    "loggedAt": "2025-09-02T15:50:51.137Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Haunt Me",
+    "artist": "Yana",
+    "album": "Haunt Me",
+    "timestamp": "9/2/2025, 3:54:01 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2731c68265c3e2715165b3dda3d",
+    "spotifyUrl": "https://open.spotify.com/search/Haunt%20Me%20Yana",
+    "loggedAt": "2025-09-02T15:54:21.333Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Be My Mistake",
+    "artist": "The 1975",
+    "album": "A Brief Inquiry Into Online Relationships",
+    "timestamp": "9/2/2025, 3:58:18 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2736c582022e90b11f0da287a9a",
+    "spotifyUrl": "https://open.spotify.com/search/Be%20My%20Mistake%20The%201975",
+    "loggedAt": "2025-09-02T15:58:21.522Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Abandoned Mansion",
+    "artist": "Dr. Dog",
+    "album": "Abandoned Mansion",
+    "timestamp": "9/2/2025, 4:04:27 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2734517d71456812b438154aa17",
+    "spotifyUrl": "https://open.spotify.com/search/Abandoned%20Mansion%20Dr.%20Dog",
+    "loggedAt": "2025-09-02T16:04:51.776Z"
+  },
+  {
+    "user": "444lila",
+    "song": "If I Go, I'm Goin",
+    "artist": "Gregory Alan Isakov",
+    "album": "This Empty Northern Hemisphere",
+    "timestamp": "9/2/2025, 5:38:44 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27393a1519118102a6d78164713",
+    "spotifyUrl": "https://open.spotify.com/search/If%20I%20Go%2C%20I'm%20Goin%20Gregory%20Alan%20Isakov",
+    "loggedAt": "2025-09-02T17:38:55.801Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Older",
+    "artist": "Searows",
+    "album": "Older",
+    "timestamp": "9/2/2025, 5:42:57 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2730900846c6c29c05dccc7ba97",
+    "spotifyUrl": "https://open.spotify.com/search/Older%20Searows",
+    "loggedAt": "2025-09-02T17:43:25.990Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Something, Somehow, Someday",
+    "artist": "ROLE MODEL",
+    "album": "Kansas Anymore (The Longest Goodbye)",
+    "timestamp": "9/2/2025, 5:48:57 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273ff9e807b292a861ded756d63",
+    "spotifyUrl": "https://open.spotify.com/search/Something%2C%20Somehow%2C%20Someday%20ROLE%20MODEL",
+    "loggedAt": "2025-09-02T17:49:26.228Z"
+  },
+  {
+    "user": "444lila",
+    "song": "couldn't i",
+    "artist": "amelie kalia",
+    "album": "couldn't i",
+    "timestamp": "9/2/2025, 5:51:58 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273a9ca45281615d19927061895",
+    "spotifyUrl": "https://open.spotify.com/search/couldn't%20i%20amelie%20kalia",
+    "loggedAt": "2025-09-02T17:52:26.371Z"
+  },
+  {
+    "user": "444lila",
+    "song": "29 #Strafford APTS",
+    "artist": "Bon Iver",
+    "album": "22, A Million",
+    "timestamp": "9/2/2025, 7:08:27 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273011bea9a2b6b25b84a1f611c",
+    "spotifyUrl": "https://open.spotify.com/search/29%20%23Strafford%20APTS%20Bon%20Iver",
+    "loggedAt": "2025-09-02T19:08:29.674Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Two Against Three",
+    "artist": "Daisy Jones & The Six",
+    "album": "AURORA",
+    "timestamp": "9/2/2025, 8:56:46 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27303d0025f96528545ca9a921d",
+    "spotifyUrl": "https://open.spotify.com/search/Two%20Against%20Three%20Daisy%20Jones%20%26%20The%20Six",
+    "loggedAt": "2025-09-02T20:57:04.189Z"
+  },
+  {
+    "user": "444lila",
+    "song": "I Remember Everything (feat. Kacey Musgraves)",
+    "artist": "Zach Bryan",
+    "album": "Zach Bryan",
+    "timestamp": "9/2/2025, 9:03:53 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273e5a25ed08d1e7e0fbb440cef",
+    "spotifyUrl": "https://open.spotify.com/search/I%20Remember%20Everything%20(feat.%20Kacey%20Musgraves)%20Zach%20Bryan",
+    "loggedAt": "2025-09-02T21:04:06.985Z"
+  },
+  {
+    "user": "444lila",
+    "song": "We Hug Now",
+    "artist": "Sydney Rose",
+    "album": "We Hug Now",
+    "timestamp": "9/2/2025, 9:04:48 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273f548be53555ed29d47ae3a3e",
+    "spotifyUrl": "https://open.spotify.com/search/We%20Hug%20Now%20Sydney%20Rose",
+    "loggedAt": "2025-09-02T21:05:08.464Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Flowers In December",
+    "artist": "Mazzy Star",
+    "album": "Among My Swan",
+    "timestamp": "9/2/2025, 9:09:55 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27340f8e560e743f9b5d382c0af",
+    "spotifyUrl": "https://open.spotify.com/search/Flowers%20In%20December%20Mazzy%20Star",
+    "loggedAt": "2025-09-02T21:10:04.703Z"
+  },
+  {
+    "user": "444lila",
+    "song": "1.23.23",
+    "artist": "Dominic Fike",
+    "album": "14 minutes",
+    "timestamp": "9/2/2025, 9:11:57 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273abdde781e79a44868914e661",
+    "spotifyUrl": "https://open.spotify.com/search/1.23.23%20Dominic%20Fike",
+    "loggedAt": "2025-09-02T21:12:04.718Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Fall Back",
+    "artist": "Porch Light",
+    "album": "Fall Back",
+    "timestamp": "9/2/2025, 9:43:06 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27343b34bda395bad221ef13391",
+    "spotifyUrl": "https://open.spotify.com/search/Fall%20Back%20Porch%20Light",
+    "loggedAt": "2025-09-02T21:43:36.110Z",
+    "moodType": "nostalgic",
+    "moodManuallySet": true,
+    "moodUpdatedAt": "2025-09-02T21:44:35.288Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Carlisle",
+    "artist": "Lola Bllue",
+    "album": "Carlisle",
+    "timestamp": "9/2/2025, 11:20:46 PM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273636233309d8741601c6c8158",
+    "spotifyUrl": "https://open.spotify.com/search/Carlisle%20Lola%20Bllue",
+    "loggedAt": "2025-09-02T23:21:10.159Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Always Let U Down",
+    "artist": "Blood Orange",
+    "album": "Cupid Deluxe",
+    "timestamp": "9/3/2025, 2:01:35 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2739d6bd2afa2987a69b7b55f72",
+    "spotifyUrl": "https://open.spotify.com/search/Always%20Let%20U%20Down%20Blood%20Orange",
+    "loggedAt": "2025-09-03T02:01:47.054Z"
+  },
+  {
+    "user": "444lila",
+    "song": "loml",
+    "artist": "Taylor Swift",
+    "album": "THE TORTURED POETS DEPARTMENT: THE ANTHOLOGY",
+    "timestamp": "9/3/2025, 2:06:13 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2738ecc33f195df6aa257c39eaa",
+    "spotifyUrl": "https://open.spotify.com/search/loml%20Taylor%20Swift",
+    "loggedAt": "2025-09-03T02:06:17.277Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Race",
+    "artist": "Alex G",
+    "album": "Race",
+    "timestamp": "9/3/2025, 2:07:49 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b273c6d914dd1a455fb8dfb2f16b",
+    "spotifyUrl": "https://open.spotify.com/search/Race%20Alex%20G",
+    "loggedAt": "2025-09-03T02:08:17.345Z"
+  },
+  {
+    "user": "444lila",
+    "song": "who’s your boyfriend",
+    "artist": "Royel Otis",
+    "album": "hickey",
+    "timestamp": "9/3/2025, 2:10:42 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b27349fab21f824cbecbec65299b",
+    "spotifyUrl": "https://open.spotify.com/search/who%E2%80%99s%20your%20boyfriend%20Royel%20Otis",
+    "loggedAt": "2025-09-03T02:10:47.427Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Snap My Finger (feat. PinkPantheress)",
+    "artist": "KAYTRANADA",
+    "album": "TIMELESS",
+    "timestamp": "9/3/2025, 2:31:32 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2733d1996a2dc962e53e12cb7cb",
+    "spotifyUrl": "https://open.spotify.com/search/Snap%20My%20Finger%20(feat.%20PinkPantheress)%20KAYTRANADA",
+    "loggedAt": "2025-09-03T02:31:48.327Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Perc Popper",
+    "artist": "Shoreline Mafia",
+    "album": "Mafia Bidness",
+    "timestamp": "9/3/2025, 2:33:34 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2737925e88cf812671c79881a8f",
+    "spotifyUrl": "https://open.spotify.com/search/Perc%20Popper%20Shoreline%20Mafia",
+    "loggedAt": "2025-09-03T02:33:48.449Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Snap My Finger (feat. PinkPantheress)",
+    "artist": "KAYTRANADA",
+    "album": "TIMELESS",
+    "timestamp": "9/3/2025, 2:36:56 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2733d1996a2dc962e53e12cb7cb",
+    "spotifyUrl": "https://open.spotify.com/search/Snap%20My%20Finger%20(feat.%20PinkPantheress)%20KAYTRANADA",
+    "loggedAt": "2025-09-03T02:37:18.585Z"
+  },
+  {
+    "user": "444lila",
+    "song": "Perc Popper",
+    "artist": "Shoreline Mafia",
+    "album": "Mafia Bidness",
+    "timestamp": "9/3/2025, 2:41:16 AM",
+    "imageUrl": "https://i.scdn.co/image/ab67616d0000b2737925e88cf812671c79881a8f",
+    "spotifyUrl": "https://open.spotify.com/search/Perc%20Popper%20Shoreline%20Mafia",
+    "loggedAt": "2025-09-03T02:41:48.764Z"
   }
 ]

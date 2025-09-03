@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>444lila Spotify Analytics Dashboard</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="timeline-component.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
@@ -57,6 +58,9 @@
                 </li>
                 <li class="nav-item" data-tab="patterns">
                     <i class="fas fa-calendar-alt"></i> Listening Patterns
+                </li>
+                <li class="nav-item" data-tab="timeline">
+                    <i class="fas fa-chart-line"></i> Timeline Analysis
                 </li>
             </ul>
             <div class="sidebar-footer">
@@ -255,6 +259,46 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Timeline Analysis Tab -->
+                <div id="timeline-tab" class="tab-pane">
+                    <div class="content-header">
+                        <h2><i class="fas fa-chart-line"></i> Timeline Analysis</h2>
+                        <div class="timeline-header-actions">
+                            <button class="timeline-action-btn" onclick="dashboard.exportTimelineData()" title="Export Current View">
+                                <i class="fas fa-download"></i> Export
+                            </button>
+                            <button class="timeline-action-btn" onclick="dashboard.resetTimelineView()" title="Reset View">
+                                <i class="fas fa-refresh"></i> Reset
+                            </button>
+                        </div>
+                    </div>
+                    <div class="timeline-container" id="timeline-container">
+                        <div class="loading">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <p>Loading timeline data...</p>
+                        </div>
+                    </div>
+                    <div class="timeline-help">
+                        <div class="timeline-help-content">
+                            <h4><i class="fas fa-info-circle"></i> Timeline Controls</h4>
+                            <div class="timeline-help-grid">
+                                <div class="help-item">
+                                    <strong>Zoom:</strong> Mouse wheel or double-click
+                                </div>
+                                <div class="help-item">
+                                    <strong>Pan:</strong> Click and drag
+                                </div>
+                                <div class="help-item">
+                                    <strong>Select:</strong> Shift + click and drag
+                                </div>
+                                <div class="help-item">
+                                    <strong>Solo:</strong> Use Solo button after selection
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </main>
     </div>
@@ -313,6 +357,7 @@
         </div>
     </div>
 
+    <script src="timeline-component.js"></script>
     <script src="dashboard.js"></script>
 </body>
 </html>

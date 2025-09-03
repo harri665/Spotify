@@ -1,0 +1,386 @@
+/* Timeline Component Styles */
+.timeline-component {
+    background: var(--spotify-dark-gray);
+    border-radius: var(--border-radius);
+    padding: 20px;
+    margin: 20px 0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.timeline-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.timeline-controls-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.timeline-controls-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.timeline-sample-controls,
+.timeline-view-controls,
+.timeline-range-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.timeline-sample-controls label,
+.timeline-view-controls label,
+.timeline-range-controls label {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    white-space: nowrap;
+}
+
+.timeline-select {
+    padding: 6px 10px;
+    background: var(--spotify-gray);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    min-width: 120px;
+}
+
+.timeline-select:focus {
+    outline: none;
+    border-color: var(--spotify-green);
+    box-shadow: 0 0 0 2px rgba(29, 185, 84, 0.2);
+}
+
+.timeline-btn {
+    background: var(--spotify-gray);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 8px 10px;
+    font-size: 0.9rem;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    height: 36px;
+}
+
+.timeline-btn:hover {
+    background: var(--spotify-light-gray);
+    color: var(--text-primary);
+    border-color: var(--spotify-green);
+}
+
+.timeline-btn:active {
+    transform: translateY(1px);
+}
+
+.timeline-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.timeline-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+    font-size: 0.9rem;
+    border-left: 3px solid var(--spotify-green);
+}
+
+.timeline-info.recent-data {
+    border-left-color: #28a745;
+    background: rgba(40, 167, 69, 0.1);
+}
+
+.timeline-info.historical-data {
+    border-left-color: #ffc107;
+    background: rgba(255, 193, 7, 0.1);
+}
+
+.timeline-range-info,
+.timeline-selection-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.timeline-selection-info {
+    text-align: right;
+}
+
+.timeline-muted {
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+}
+
+.timeline-canvas-container {
+    position: relative;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.timeline-canvas {
+    display: block;
+    background: transparent;
+}
+
+.timeline-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    cursor: crosshair;
+    pointer-events: all;
+}
+
+.timeline-tooltip {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.9);
+    border: 1px solid var(--spotify-green);
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 0.8rem;
+    color: var(--text-primary);
+    pointer-events: none;
+    z-index: 1000;
+    max-width: 200px;
+    display: none;
+    backdrop-filter: blur(10px);
+}
+
+.tooltip-time {
+    font-weight: 600;
+    color: var(--spotify-green);
+    margin-bottom: 4px;
+}
+
+.tooltip-count {
+    margin-bottom: 4px;
+}
+
+.tooltip-moods {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.tooltip-mood {
+    font-size: 0.75rem;
+    padding: 2px 4px;
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.timeline-crosshair {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    background: var(--spotify-green);
+    pointer-events: none;
+    z-index: 999;
+    display: none;
+}
+
+.timeline-crosshair::before,
+.timeline-crosshair::after {
+    content: '';
+    position: absolute;
+    background: var(--spotify-green);
+    opacity: 0.6;
+}
+
+.timeline-crosshair::before {
+    width: 2000px;
+    height: 1px;
+    left: -1000px;
+    top: 0;
+}
+
+.timeline-crosshair::after {
+    width: 1px;
+    height: 2000px;
+    left: 0;
+    top: -1000px;
+}
+
+.timeline-selection-box {
+    position: absolute;
+    border: 2px dashed var(--spotify-green);
+    background: rgba(29, 185, 84, 0.1);
+    pointer-events: none;
+    z-index: 998;
+    display: none;
+}
+
+.timeline-legend {
+    margin-top: 15px;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+}
+
+.legend-title {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+}
+
+.legend-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.legend-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Mood-specific tooltip styling */
+.tooltip-mood.mood-energetic { border-left: 3px solid #ff4757; }
+.tooltip-mood.mood-sad { border-left: 3px solid #3742fa; }
+.tooltip-mood.mood-love { border-left: 3px solid #ff6b81; }
+.tooltip-mood.mood-chill { border-left: 3px solid #2ed573; }
+.tooltip-mood.mood-breakup { border-left: 3px solid #8c7ae6; }
+.tooltip-mood.mood-angry { border-left: 3px solid #ff3838; }
+.tooltip-mood.mood-nostalgic { border-left: 3px solid #ffa502; }
+.tooltip-mood.mood-confident { border-left: 3px solid #ff6348; }
+.tooltip-mood.mood-melodic { border-left: 3px solid #48CAE4; }
+.tooltip-mood.mood-experimental { border-left: 3px solid #9c88ff; }
+.tooltip-mood.mood-neutral { border-left: 3px solid #747d8c; }
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .timeline-component {
+        padding: 15px;
+    }
+    
+    .timeline-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .timeline-controls-left {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .timeline-sample-controls,
+    .timeline-view-controls,
+    .timeline-range-controls {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .timeline-controls-right {
+        justify-content: center;
+        margin-top: 10px;
+    }
+    
+    .timeline-info {
+        flex-direction: column;
+        gap: 10px;
+        text-align: left;
+    }
+    
+    .timeline-selection-info {
+        text-align: left;
+    }
+    
+    .timeline-select {
+        min-width: 100px;
+    }
+    
+    .legend-items {
+        gap: 8px;
+    }
+    
+    .timeline-tooltip {
+        max-width: 150px;
+        font-size: 0.75rem;
+    }
+}
+
+/* Performance monitoring styling themes */
+.timeline-component.performance-theme {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    border: 1px solid #0ea5e9;
+}
+
+.timeline-component.performance-theme .timeline-btn {
+    background: rgba(14, 165, 233, 0.1);
+    border-color: #0ea5e9;
+}
+
+.timeline-component.performance-theme .timeline-btn:hover {
+    background: rgba(14, 165, 233, 0.2);
+    box-shadow: 0 0 10px rgba(14, 165, 233, 0.3);
+}
+
+/* Animation for data loading */
+@keyframes pulse {
+    0% { opacity: 0.6; }
+    50% { opacity: 1; }
+    100% { opacity: 0.6; }
+}
+
+.timeline-loading {
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* Enhanced focus states for accessibility */
+.timeline-select:focus,
+.timeline-btn:focus {
+    outline: 2px solid var(--spotify-green);
+    outline-offset: 2px;
+}
+
+/* Custom scrollbar for legend */
+.legend-items::-webkit-scrollbar {
+    height: 4px;
+}
+
+.legend-items::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+}
+
+.legend-items::-webkit-scrollbar-thumb {
+    background: var(--spotify-green);
+    border-radius: 2px;
+}
+
+.legend-items::-webkit-scrollbar-thumb:hover {
+    background: #1ed760;
+}
