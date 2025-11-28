@@ -21,6 +21,7 @@
     "docker:logs": "docker-compose -f docker/docker-compose.yml logs -f"
   },
   "dependencies": {
+    "compression": "^1.7.4",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
     "openai": "^5.12.2",

@@ -1,1625 +1,1747 @@
-// Modern Spotify Dashboard JavaScript
-class SpotifyDashboard {
-    constructor() {
-        this.activities = [];
-        this.analytics = {};
-        this.diaryEntries = [];
-        this.currentTab = 'recent';
-        this.filteredActivities = [];
-        this.sessionId = localStorage.getItem('sessionId');
-        this.isAuthenticated = false;
-        this.timeline = null; // Timeline component instance
-        
-        this.init();
+(() => {
+    const state = {
+        token: null,
+        summary: null,
+        recent: [],
+        recentOffset: 0,
+        recentLimit: 50,
+        recentTotal: 0,
+        isLoadingRecent: false,
+        sessions: { items: [], total: 0, loaded: false },
+        search: {
+            selectedSongs: [],
+            results: [],
+            terms: '',
+            isLoading: false,
+            suggestions: [],
+            isLoadingSuggestions: false,
+            suggestionQuery: '',
+            suggestionRequestId: 0,
+        },
+        calendar: {
+            items: [],
+            months: 6,
+            isLoading: false,
+            day: {
+                date: null,
+                filteredItems: [],
+                filteredTotal: 0,
+                allItems: [],
+                allTotal: 0,
+                isLoading: false,
+                error: null,
+                requestId: 0,
+                statusMessage: '',
+            },
+        },
+        jsonEditor: {
+            activeFile: 'activity',
+            isDirty: false,
+            original: '',
+            loadedOnce: false,
+        },
+    };
+
+    const el = {
+        loginScreen: document.getElementById('login-screen'),
+        loginForm: document.getElementById('login-form'),
+        passwordInput: document.getElementById('password-input'),
+        loginError: document.getElementById('login-error'),
+        mainDashboard: document.getElementById('main-dashboard'),
+        totalSongs: document.getElementById('total-songs'),
+        uniqueArtists: document.getElementById('unique-artists'),
+        currentMood: document.getElementById('current-mood'),
+        songList: document.getElementById('song-list'),
+        recentLastUpdated: document.getElementById('recent-last-updated'),
+        refreshRecentBtn: document.getElementById('refresh-recent-btn'),
+        recentLoadMore: document.getElementById('recent-load-more'),
+        recentCount: document.getElementById('recent-count'),
+        sessionCount: document.getElementById('session-count'),
+        sessionsContainer: document.getElementById('sessions-container'),
+        searchInput: document.getElementById('search-input'),
+        searchAddBtn: document.getElementById('search-add-btn'),
+        searchClearBtn: document.getElementById('search-clear-btn'),
+        searchSelected: document.getElementById('search-selected'),
+        searchResults: document.getElementById('search-results'),
+        searchSuggestions: document.getElementById('search-suggestions'),
+        calendarMonths: document.getElementById('calendar-months'),
+        calendarGrid: document.getElementById('calendar-grid'),
+        calendarLegend: document.getElementById('calendar-legend'),
+        calendarSidebar: document.getElementById('calendar-sidebar'),
+        calendarSidebarTitle: document.getElementById('calendar-sidebar-title'),
+        calendarSidebarSubtitle: document.getElementById('calendar-sidebar-subtitle'),
+        calendarSidebarStatus: document.getElementById('calendar-sidebar-status'),
+        calendarSidebarList: document.getElementById('calendar-sidebar-list'),
+        calendarSidebarClose: document.getElementById('calendar-sidebar-close'),
+        navItems: Array.from(document.querySelectorAll('.nav-item')),
+        tabPanes: Array.from(document.querySelectorAll('.tab-pane')),
+        jsonFileSelect: document.getElementById('json-file-select'),
+        jsonLoadBtn: document.getElementById('json-load-btn'),
+        jsonFormatBtn: document.getElementById('json-format-btn'),
+        jsonValidateBtn: document.getElementById('json-validate-btn'),
+        jsonSaveBtn: document.getElementById('json-save-btn'),
+        jsonEditor: document.getElementById('json-editor'),
+        jsonLineNumbers: document.getElementById('json-line-numbers'),
+        jsonStatus: document.getElementById('json-status'),
+        jsonFileName: document.getElementById('json-file-name'),
+        jsonSizeMeta: document.getElementById('json-size-meta'),
+        jsonSizeStats: document.getElementById('json-size-stats'),
+        jsonLines: document.getElementById('json-lines'),
+        jsonChars: document.getElementById('json-chars'),
+    };
+
+    const SUGGESTION_DEBOUNCE_MS = 200;
+    let suggestionDebounceHandle = null;
+    let suggestionAbortController = null;
+
+    function setLoginVisible(visible) {
+        el.loginScreen.style.display = visible ? 'flex' : 'none';
+        el.mainDashboard.style.display = visible ? 'none' : 'flex';
+        if (visible) {
+            el.passwordInput.focus();
+        }
     }
 
-    async init() {
-        // Check authentication first
-        if (this.sessionId) {
-            const isValid = await this.verifySession();
-            if (isValid) {
-                this.showDashboard();
-                this.setupEventListeners();
-                await this.loadData();
-                this.startAutoRefresh();
-            } else {
-                this.showLogin();
-            }
+    function showLoginError(message) {
+        el.loginError.textContent = message;
+        el.loginError.style.display = 'block';
+    }
+
+    function clearLoginError() {
+        el.loginError.textContent = '';
+        el.loginError.style.display = 'none';
+    }
+
+    function storeToken(token) {
+        state.token = token;
+        if (token) {
+            localStorage.setItem('dashboardToken', token);
         } else {
-            this.showLogin();
-        }
-        
-        this.setupLoginHandlers();
-    }
-
-    showLogin() {
-        document.getElementById('login-screen').style.display = 'flex';
-        document.getElementById('main-dashboard').style.display = 'none';
-        this.isAuthenticated = false;
-    }
-
-    showDashboard() {
-        document.getElementById('login-screen').style.display = 'none';
-        document.getElementById('main-dashboard').style.display = 'flex';
-        this.isAuthenticated = true;
-    }
-
-    setupLoginHandlers() {
-        const loginForm = document.getElementById('login-form');
-        loginForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            await this.handleLogin();
-        });
-    }
-
-    async handleLogin() {
-        const passwordInput = document.getElementById('password-input');
-        const loginBtn = document.querySelector('.login-btn');
-        const errorDiv = document.getElementById('login-error');
-        
-        const password = passwordInput.value;
-        
-        if (!password) {
-            this.showLoginError('Please enter a password');
-            return;
-        }
-        
-        // Show loading state
-        loginBtn.disabled = true;
-        loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
-        errorDiv.style.display = 'none';
-        
-        try {
-            const response = await fetch('/api/auth/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ password })
-            });
-            
-            const data = await response.json();
-            
-            if (response.ok) {
-                this.sessionId = data.sessionId;
-                localStorage.setItem('sessionId', this.sessionId);
-                this.showDashboard();
-                this.setupEventListeners();
-                await this.loadData();
-                this.startAutoRefresh();
-            } else {
-                this.showLoginError(data.error || 'Login failed');
-            }
-        } catch (error) {
-            console.error('Login error:', error);
-            this.showLoginError('Connection error. Please try again.');
-        } finally {
-            loginBtn.disabled = false;
-            loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login';
+            localStorage.removeItem('dashboardToken');
         }
     }
 
-    showLoginError(message) {
-        const errorDiv = document.getElementById('login-error');
-        errorDiv.textContent = message;
-        errorDiv.style.display = 'block';
-    }
-
-    async verifySession() {
-        try {
-            const response = await fetch('/api/auth/verify', {
-                headers: {
-                    'X-Session-ID': this.sessionId
-                }
-            });
-            return response.ok;
-        } catch (error) {
-            console.error('Session verification error:', error);
-            return false;
+    async function rawFetch(url, options = {}, skipAuth = false) {
+        const config = { ...options };
+        config.headers = new Headers(options.headers || {});
+        if (config.body && !(config.body instanceof FormData) && typeof config.body === 'object') {
+            config.headers.set('Content-Type', 'application/json');
+            config.body = JSON.stringify(config.body);
         }
-    }
-
-    async logout() {
-        try {
-            await fetch('/api/auth/logout', {
-                method: 'POST',
-                headers: {
-                    'X-Session-ID': this.sessionId
-                }
-            });
-        } catch (error) {
-            console.error('Logout error:', error);
-        } finally {
-            localStorage.removeItem('sessionId');
-            this.sessionId = null;
-            this.showLogin();
+        if (!skipAuth && state.token && state.token !== 'dev-no-auth') {
+            config.headers.set('Authorization', `Bearer ${state.token}`);
         }
-    }
-
-    // Add session ID to all API requests
-    async authenticatedFetch(url, options = {}) {
-        if (!this.sessionId) {
-            throw new Error('No session ID');
-        }
-        
-        const headers = {
-            'X-Session-ID': this.sessionId,
-            ...options.headers
-        };
-        
-        const response = await fetch(url, {
-            ...options,
-            headers
-        });
-        
+        const response = await fetch(url, config);
         if (response.status === 401) {
-            this.logout();
-            throw new Error('Authentication failed');
+            handleUnauthorized();
+            throw new Error('Unauthorized');
         }
-        
-        return response;
-    }
-
-    setupEventListeners() {
-        // Tab navigation
-        document.querySelectorAll('.nav-item').forEach(item => {
-            item.addEventListener('click', (e) => {
-                const tab = e.currentTarget.dataset.tab;
-                this.switchTab(tab);
-            });
-        });
-
-        // Modal functionality
-        const modal = document.getElementById('song-modal');
-        const closeBtn = document.querySelector('.close');
-        
-        closeBtn.addEventListener('click', () => {
-            modal.style.display = 'none';
-        });
-
-        window.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                modal.style.display = 'none';
-            }
-        });
-
-        // Diary form
-        const diaryForm = document.getElementById('diary-form');
-        diaryForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            await this.saveDiaryEntry();
-        });
-
-        // Diary modal
-        const diaryModal = document.getElementById('diary-modal');
-        window.addEventListener('click', (e) => {
-            if (e.target === diaryModal) {
-                this.closeDiaryModal();
-            }
-        });
-    }
-
-    switchTab(tabName) {
-        // Update navigation
-        document.querySelectorAll('.nav-item').forEach(item => {
-            item.classList.remove('active');
-        });
-        document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
-
-        // Update content
-        document.querySelectorAll('.tab-pane').forEach(pane => {
-            pane.classList.remove('active');
-        });
-        document.getElementById(`${tabName}-tab`).classList.add('active');
-
-        this.currentTab = tabName;
-
-        // Load specific tab content
-        switch(tabName) {
-            case 'recent':
-                this.renderRecentSongs();
-                break;
-            case 'sessions':
-                this.renderSessions();
-                break;
-            case 'diary':
-                this.renderDiary();
-                break;
-            case 'analytics':
-                this.renderAnalytics();
-                break;
-            case 'moods':
-                this.renderMoodAnalysis();
-                break;
-            case 'patterns':
-                this.renderListeningPatterns();
-                break;
-            case 'timeline':
-                this.renderTimeline();
-                break;
-            case 'json-editor':
-                if (!this.jsonEditor) {
-                    this.initJsonEditor();
-                }
-                break;
+        if (!response.ok) {
+            const text = await response.text();
+            throw new Error(text || response.statusText);
         }
-    }
-
-    async loadData() {
-        try {
-            // Load activities and analytics in parallel
-            const [activitiesResponse, analyticsResponse] = await Promise.all([
-                this.authenticatedFetch('/api/lila-activity'),
-                this.authenticatedFetch('/api/analytics')
-            ]);
-
-            this.activities = await activitiesResponse.json();
-            this.analytics = await analyticsResponse.json();
-            this.filteredActivities = [...this.activities];
-
-            // Load diary entries if on diary tab
-            if (this.currentTab === 'diary') {
-                await this.loadDiaryEntries();
-            }
-
-            // Update timeline if it exists
-            if (this.timeline && this.currentTab === 'timeline') {
-                this.timeline.refreshData(this.activities);
-            }
-
-            this.updateQuickStats();
-            this.renderCurrentTab();
-        } catch (error) {
-            console.error('Error loading data:', error);
-            if (error.message !== 'Authentication failed') {
-                this.showError('Failed to load data');
-            }
+        if (response.status === 204) {
+            return null;
         }
-    }
-
-    updateQuickStats() {
-        document.getElementById('total-songs').textContent = this.analytics.totalSongs || 0;
-        document.getElementById('unique-artists').textContent = this.analytics.uniqueArtists || 0;
-        
-        const currentMood = this.activities.length > 0 ? 
-            this.activities[0].moodType || 'neutral' : 'neutral';
-        document.getElementById('current-mood').textContent = 
-            this.formatMoodName(currentMood);
-    }
-
-    formatMoodName(mood) {
-        return mood.charAt(0).toUpperCase() + mood.slice(1);
-    }
-
-    renderCurrentTab() {
-        switch(this.currentTab) {
-            case 'recent':
-                this.renderRecentSongs();
-                break;
-            case 'sessions':
-                this.renderSessions();
-                break;
-            case 'diary':
-                this.renderDiary();
-                break;
-            case 'analytics':
-                this.renderAnalytics();
-                break;
-            case 'moods':
-                this.renderMoodAnalysis();
-                break;
-            case 'patterns':
-                this.renderListeningPatterns();
-                break;
-            case 'timeline':
-                this.renderTimeline();
-                break;
+        const contentType = response.headers.get('content-type') || '';
+        if (contentType.includes('application/json')) {
+            return response.json();
         }
+        return response.text();
     }
 
-    renderRecentSongs() {
-        const container = document.getElementById('song-list');
-        
-        if (this.filteredActivities.length === 0) {
-            container.innerHTML = `
-                <div class="loading">
-                    <i class="fas fa-music"></i>
-                    <p>No songs found matching your filter</p>
-                </div>
-            `;
-            return;
-        }
-
-        const songsHTML = this.filteredActivities.map(activity => {
-            const timestamp = new Date(activity.loggedAt);
-            const timeString = this.formatRelativeTime(timestamp);
-            
-            return `
-                <div class="song-item" onclick="dashboard.showSongDetails('${activity.id}')">
-                    <img src="${activity.imageUrl || this.getPlaceholderImage()}" 
-                         alt="Album cover" 
-                         class="song-cover"
-                         onerror="this.src='${this.getPlaceholderImage()}'">
-                    <div class="song-info">
-                        <div class="song-title">${this.escapeHtml(activity.song)}</div>
-                        <div class="song-artist">${this.escapeHtml(activity.artist)}</div>
-                        <div class="song-album">${this.escapeHtml(activity.album)}</div>
-                    </div>
-                    <div class="song-metadata">
-                        <span class="mood-tag mood-${activity.moodType || 'neutral'}" id="mood-tag-${activity.id}">
-                            ${this.getMoodIcon(activity.moodType)} ${this.formatMoodName(activity.moodType || 'neutral')}
-                            ${activity.moodManuallySet ? '<span class="manual-mood-indicator" title="Manually set mood">✏️</span>' : ''}
-                        </span>
-                        <button class="quick-mood-edit-btn" onclick="event.stopPropagation(); dashboard.toggleQuickMoodEdit('${activity.id}')" title="Edit mood">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <div class="quick-mood-editor" id="quick-mood-editor-${activity.id}" style="display: none;">
-                            <select class="quick-mood-selector" id="quick-mood-selector-${activity.id}">
-                                <option value="energetic" ${(activity.moodType || 'neutral') === 'energetic' ? 'selected' : ''}>🔥 Energetic</option>
-                                <option value="sad" ${(activity.moodType || 'neutral') === 'sad' ? 'selected' : ''}>😢 Sad</option>
-                                <option value="love" ${(activity.moodType || 'neutral') === 'love' ? 'selected' : ''}>❤️ Love</option>
-                                <option value="chill" ${(activity.moodType || 'neutral') === 'chill' ? 'selected' : ''}>😌 Chill</option>
-                                <option value="breakup" ${(activity.moodType || 'neutral') === 'breakup' ? 'selected' : ''}>💔 Breakup</option>
-                                <option value="angry" ${(activity.moodType || 'neutral') === 'angry' ? 'selected' : ''}>😡 Angry</option>
-                                <option value="nostalgic" ${(activity.moodType || 'neutral') === 'nostalgic' ? 'selected' : ''}>🌅 Nostalgic</option>
-                                <option value="confident" ${(activity.moodType || 'neutral') === 'confident' ? 'selected' : ''}>😎 Confident</option>
-                                <option value="melodic" ${(activity.moodType || 'neutral') === 'melodic' ? 'selected' : ''}>🎵 Melodic</option>
-                                <option value="experimental" ${(activity.moodType || 'neutral') === 'experimental' ? 'selected' : ''}>🎨 Experimental</option>
-                                <option value="neutral" ${(activity.moodType || 'neutral') === 'neutral' ? 'selected' : ''}>🎶 Neutral</option>
-                            </select>
-                            <button class="quick-update-btn" onclick="event.stopPropagation(); dashboard.quickUpdateMood('${activity.id}')" title="Update">
-                                <i class="fas fa-check"></i>
-                            </button>
-                            <button class="quick-cancel-btn" onclick="event.stopPropagation(); dashboard.cancelQuickMoodEdit('${activity.id}')" title="Cancel">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
-                        <span class="song-timestamp">${timeString}</span>
-                        <a href="${activity.spotifyUrl}" target="_blank" class="spotify-link" onclick="event.stopPropagation()">
-                            <i class="fab fa-spotify"></i> Open
-                        </a>
-                    </div>
-                </div>
-            `;
-        }).join('');
-
-        container.innerHTML = songsHTML;
+    async function login(password) {
+        const data = await rawFetch('/api/login', { method: 'POST', body: { password } }, true);
+        return data.token;
     }
 
-    renderSessions() {
-        const container = document.getElementById('sessions-container');
-        const sessions = this.analytics.sessions || [];
-        
-        // Update session count
-        document.getElementById('session-count').textContent = 
-            `${sessions.length} Session${sessions.length !== 1 ? 's' : ''}`;
-        
-        if (sessions.length === 0) {
-            container.innerHTML = `
-                <div class="loading">
-                    <i class="fas fa-music"></i>
-                    <p>No listening sessions found</p>
-                </div>
-            `;
-            return;
+    function handleUnauthorized() {
+        storeToken(null);
+        setLoginVisible(true);
+        showLoginError('Session expired. Please log in again.');
+    }
+
+    function formatDateTime(value) {
+        if (!value) {
+            return 'Unknown time';
         }
-
-        const sessionsHTML = sessions.map(session => {
-            const startTime = new Date(session.startTime);
-            const endTime = new Date(session.endTime);
-            const duration = this.formatDuration(session.duration || 0);
-            const timeRange = `${startTime.toLocaleTimeString()} - ${endTime.toLocaleTimeString()}`;
-            const dateStr = startTime.toLocaleDateString();
-            
-            const songsHTML = session.songs.map(song => `
-                <div class="session-song">
-                    <img src="${song.imageUrl || this.getPlaceholderImage()}" 
-                         alt="Album cover" 
-                         class="session-song-cover"
-                         onerror="this.src='${this.getPlaceholderImage()}'">
-                    <div class="session-song-info">
-                        <div class="session-song-title">${this.escapeHtml(song.song)}</div>
-                        <div class="session-song-artist">${this.escapeHtml(song.artist)}</div>
-                    </div>
-                    <div class="session-song-mood mood-${song.mood || 'neutral'}"></div>
-                </div>
-            `).join('');
-            
-            return `
-                <div class="session-card" onclick="dashboard.toggleSession('${session.id}')">
-                    <div class="session-header">
-                        <div class="session-info">
-                            <h3>
-                                ${this.getSessionIcon(session.sessionMood)}
-                                ${this.formatSessionTitle(session.sessionMood)} Session
-                            </h3>
-                            <div class="session-meta">
-                                <span><i class="fas fa-calendar"></i> ${dateStr}</span>
-                                <span><i class="fas fa-clock"></i> ${timeRange}</span>
-                                <span class="session-duration">
-                                    <i class="fas fa-hourglass-half"></i> ${duration}
-                                </span>
-                                <span><i class="fas fa-music"></i> ${session.songs.length} songs</span>
-                            </div>
-                        </div>
-                        <div class="session-mood-indicator session-mood-${session.sessionMood}">
-                            ${this.getSessionMoodIcon(session.sessionMood)}
-                            ${this.formatSessionMood(session.sessionMood)}
-                        </div>
-                    </div>
-                    <div class="session-songs session-expandable" id="session-${session.id}">
-                        ${songsHTML}
-                    </div>
-                    ${session.songs.length > 6 ? `
-                        <div class="session-toggle">
-                            <button class="session-toggle-btn" onclick="event.stopPropagation(); dashboard.toggleSessionExpansion('${session.id}')">
-                                <i class="fas fa-chevron-down"></i>
-                                <span>Show all ${session.songs.length} songs</span>
-                            </button>
-                        </div>
-                    ` : ''}
-                </div>
-            `;
-        }).join('');
-
-        container.innerHTML = sessionsHTML;
-
-        // Initially collapse sessions with many songs
-        sessions.forEach(session => {
-            if (session.songs.length > 6) {
-                const element = document.getElementById(`session-${session.id}`);
-                if (element) {
-                    element.style.maxHeight = '200px';
-                }
-            }
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) {
+            return value;
+        }
+        return date.toLocaleString(undefined, {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
         });
     }
 
-    toggleSession(sessionId) {
-        // Handle session card click - could expand/collapse or show details
-        console.log('Session clicked:', sessionId);
-    }
-
-    toggleSessionExpansion(sessionId) {
-        const element = document.getElementById(`session-${sessionId}`);
-        const button = element.parentElement.querySelector('.session-toggle-btn');
-        
-        if (element.classList.contains('expanded')) {
-            element.classList.remove('expanded');
-            element.style.maxHeight = '200px';
-            button.innerHTML = '<i class="fas fa-chevron-down"></i><span>Show all songs</span>';
-        } else {
-            element.classList.add('expanded');
-            element.style.maxHeight = 'none';
-            button.innerHTML = '<i class="fas fa-chevron-up"></i><span>Show less</span>';
+    function formatDuration(minutes) {
+        if (!minutes || Number.isNaN(minutes)) {
+            return '1 min';
         }
-    }
-
-    formatDuration(milliseconds) {
-        const minutes = Math.floor(milliseconds / 60000);
+        if (minutes < 60) {
+            return `${minutes} min`;
+        }
         const hours = Math.floor(minutes / 60);
-        
-        if (hours > 0) {
-            const remainingMinutes = minutes % 60;
-            return `${hours}h ${remainingMinutes}m`;
+        const mins = minutes % 60;
+        return mins ? `${hours}h ${mins}m` : `${hours}h`;
+    }
+
+    function formatDateLabel(dateStr) {
+        if (!dateStr) {
+            return '';
         }
-        return `${minutes}m`;
+        const date = new Date(`${dateStr}T00:00:00Z`);
+        if (Number.isNaN(date.getTime())) {
+            return dateStr;
+        }
+        return date.toLocaleDateString(undefined, {
+            weekday: 'short',
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            timeZone: 'UTC',
+        });
     }
 
-    getSessionIcon(mood) {
-        const icons = {
-            intense: '🔥',
-            mixed: '🎭',
-            chill: '😌',
-            energetic: '⚡',
-            sad: '💙',
-            love: '💕',
-            breakup: '💔',
-            nostalgic: '🌅',
-            confident: '👑',
-            neutral: '🎵'
-        };
-        return icons[mood] || icons.neutral;
+    function formatTime(value) {
+        if (!value) {
+            return '';
+        }
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) {
+            return value;
+        }
+        return date.toLocaleTimeString(undefined, {
+            hour: '2-digit',
+            minute: '2-digit',
+        });
     }
 
-    getSessionMoodIcon(mood) {
-        const icons = {
-            intense: '🌶️',
-            mixed: '🎨',
-            chill: '🧊',
-            energetic: '⚡',
-            sad: '💧',
-            love: '💖',
-            breakup: '🖤',
-            nostalgic: '📸',
-            confident: '💎',
-            neutral: '➖'
-        };
-        return icons[mood] || icons.neutral;
+    function formatBytes(bytes) {
+        if (!Number.isFinite(bytes) || bytes <= 0) {
+            return '0 B';
+        }
+        const units = ['B', 'KB', 'MB', 'GB'];
+        let value = bytes;
+        let unitIndex = 0;
+        while (value >= 1024 && unitIndex < units.length - 1) {
+            value /= 1024;
+            unitIndex += 1;
+        }
+        const precision = value < 10 && unitIndex > 0 ? 1 : 0;
+        return `${value.toFixed(precision)} ${units[unitIndex]}`;
     }
 
-    formatSessionTitle(mood) {
-        const titles = {
-            intense: 'Emotional',
-            mixed: 'Mixed Vibes',
-            chill: 'Relaxing',
-            energetic: 'High Energy',
-            sad: 'Melancholy',
-            love: 'Romantic',
-            breakup: 'Heartbreak',
-            nostalgic: 'Nostalgic',
-            confident: 'Confidence Boost',
-            neutral: 'Casual Listening'
-        };
-        return titles[mood] || titles.neutral;
+    const SESSION_COLOR_CLASSES = [
+        'session-color-1',
+        'session-color-2',
+        'session-color-3',
+        'session-color-4',
+        'session-color-5',
+        'session-color-6',
+        'session-color-7',
+        'session-color-8',
+    ];
+
+    function parseDateValue(value) {
+        if (!value) {
+            return null;
+        }
+        const date = new Date(value);
+        return Number.isNaN(date.getTime()) ? null : date;
     }
 
-    formatSessionMood(mood) {
-        return mood.charAt(0).toUpperCase() + mood.slice(1);
+    function getSessionColorClass(sessionId) {
+        if (!SESSION_COLOR_CLASSES.length) {
+            return 'session-color-default';
+        }
+        const numericId = Number(sessionId);
+        if (!Number.isFinite(numericId)) {
+            return 'session-color-default';
+        }
+        const index = ((Math.abs(Math.trunc(numericId)) - 1) % SESSION_COLOR_CLASSES.length + SESSION_COLOR_CLASSES.length) % SESSION_COLOR_CLASSES.length;
+        return SESSION_COLOR_CLASSES[index];
     }
 
-    // Diary Methods
-    async loadDiaryEntries() {
-        try {
-            const response = await this.authenticatedFetch('/api/diary');
-            this.diaryEntries = await response.json();
-        } catch (error) {
-            console.error('Error loading diary entries:', error);
-            if (error.message !== 'Authentication failed') {
-                this.showError('Failed to load diary entries');
+    function groupItemsBySession(items) {
+        const groups = [];
+        let currentKey = null;
+        let currentGroup = null;
+        items.forEach((item, idx) => {
+            const hasSession = item && item.sessionId !== undefined && item.sessionId !== null;
+            const key = hasSession ? `session-${item.sessionId}` : `entry-${idx}`;
+            if (!currentGroup || currentKey !== key) {
+                currentGroup = {
+                    key,
+                    sessionId: hasSession ? item.sessionId : null,
+                    sessionStart: item ? item.sessionStart : null,
+                    items: [],
+                };
+                groups.push(currentGroup);
+                currentKey = key;
             }
-        }
+            currentGroup.items.push(item);
+        });
+        return groups;
     }
 
-    async renderDiary() {
-        const container = document.getElementById('diary-container');
-        
-        // Load diary entries if not loaded
-        if (this.diaryEntries.length === 0) {
-            await this.loadDiaryEntries();
-        }
-        
-        if (this.diaryEntries.length === 0) {
-            container.innerHTML = `
-                <div class="loading">
-                    <i class="fas fa-book-open"></i>
-                    <p>No diary entries yet. Start writing your thoughts!</p>
-                </div>
-            `;
-            return;
-        }
-
-        const entriesHTML = this.diaryEntries.map(entry => {
-            const createdDate = new Date(entry.createdAt);
-            const formattedDate = createdDate.toLocaleDateString();
-            const formattedTime = createdDate.toLocaleTimeString();
-            
-            const preview = entry.content.length > 200 ? 
-                entry.content.substring(0, 200) + '...' : entry.content;
-            
-            const tagsHTML = entry.tags && entry.tags.length > 0 ? 
-                entry.tags.map(tag => `<span class="diary-tag">${tag.trim()}</span>`).join('') : '';
-            
-            return `
-                <div class="diary-entry" onclick="dashboard.viewDiaryEntry('${entry.id}')">
-                    <div class="diary-entry-header">
-                        <div>
-                            <div class="diary-entry-title">${this.escapeHtml(entry.title)}</div>
-                            <div class="diary-entry-meta">
-                                <span><i class="fas fa-calendar"></i> ${formattedDate}</span>
-                                <span><i class="fas fa-clock"></i> ${formattedTime}</span>
-                                <span class="diary-entry-mood diary-mood-${entry.mood}">
-                                    ${this.getDiaryMoodIcon(entry.mood)} ${this.formatMoodName(entry.mood)}
-                                </span>
-                            </div>
-                        </div>
-                        <div class="diary-entry-actions">
-                            <button class="diary-action-btn" onclick="event.stopPropagation(); dashboard.editDiaryEntry('${entry.id}')" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="diary-action-btn delete" onclick="event.stopPropagation(); dashboard.deleteDiaryEntry('${entry.id}')" title="Delete">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="diary-entry-content preview">${this.escapeHtml(preview)}</div>
-                    ${tagsHTML ? `<div class="diary-entry-tags">${tagsHTML}</div>` : ''}
-                </div>
-            `;
-        }).join('');
-
-        container.innerHTML = entriesHTML;
-    }
-
-    async showNewEntryModal() {
-        this.resetDiaryForm();
-        document.getElementById('diary-modal-title').textContent = 'New Diary Entry';
-        document.getElementById('diary-modal').style.display = 'block';
-    }
-
-    async editDiaryEntry(entryId) {
-        const entry = this.diaryEntries.find(e => e.id === entryId);
-        if (!entry) return;
-
-        // Fill form with existing data
-        document.getElementById('diary-entry-id').value = entry.id;
-        document.getElementById('diary-title').value = entry.title;
-        document.getElementById('diary-content').value = entry.content;
-        document.getElementById('diary-mood').value = entry.mood;
-        document.getElementById('diary-tags').value = entry.tags ? entry.tags.join(', ') : '';
-        
-        document.getElementById('diary-modal-title').textContent = 'Edit Diary Entry';
-        document.getElementById('diary-modal').style.display = 'block';
-    }
-
-    async viewDiaryEntry(entryId) {
-        const entry = this.diaryEntries.find(e => e.id === entryId);
-        if (!entry) return;
-
-        // You could implement a read-only view modal here
-        // For now, just open in edit mode
-        this.editDiaryEntry(entryId);
-    }
-
-    async deleteDiaryEntry(entryId) {
-        if (!confirm('Are you sure you want to delete this diary entry? This action cannot be undone.')) {
-            return;
-        }
-
-        try {
-            const response = await this.authenticatedFetch(`/api/diary/${entryId}`, {
-                method: 'DELETE'
-            });
-
-            if (response.ok) {
-                await this.loadDiaryEntries();
-                this.renderDiary();
-            } else {
-                throw new Error('Failed to delete entry');
-            }
-        } catch (error) {
-            console.error('Error deleting diary entry:', error);
-            this.showError('Failed to delete diary entry');
-        }
-    }
-
-    async saveDiaryEntry() {
-        const entryId = document.getElementById('diary-entry-id').value;
-        const title = document.getElementById('diary-title').value.trim();
-        const content = document.getElementById('diary-content').value.trim();
-        const mood = document.getElementById('diary-mood').value;
-        const tagsInput = document.getElementById('diary-tags').value.trim();
-        
-        if (!title || !content) {
-            this.showError('Title and content are required');
-            return;
-        }
-
-        const tags = tagsInput ? tagsInput.split(',').map(tag => tag.trim()).filter(tag => tag) : [];
-
-        const entryData = { title, content, mood, tags };
-
-        try {
-            let response;
-            if (entryId) {
-                // Update existing entry
-                response = await this.authenticatedFetch(`/api/diary/${entryId}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(entryData)
-                });
-            } else {
-                // Create new entry
-                response = await this.authenticatedFetch('/api/diary', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(entryData)
-                });
-            }
-
-            if (response.ok) {
-                this.closeDiaryModal();
-                await this.loadDiaryEntries();
-                this.renderDiary();
-            } else {
-                const error = await response.json();
-                throw new Error(error.error || 'Failed to save entry');
-            }
-        } catch (error) {
-            console.error('Error saving diary entry:', error);
-            this.showError('Failed to save diary entry');
-        }
-    }
-
-    resetDiaryForm() {
-        document.getElementById('diary-entry-id').value = '';
-        document.getElementById('diary-title').value = '';
-        document.getElementById('diary-content').value = '';
-        document.getElementById('diary-mood').value = 'neutral';
-        document.getElementById('diary-tags').value = '';
-    }
-
-    closeDiaryModal() {
-        document.getElementById('diary-modal').style.display = 'none';
-        this.resetDiaryForm();
-    }
-
-    getDiaryMoodIcon(mood) {
-        const icons = {
-            happy: '😊',
-            sad: '😢',
-            excited: '🤩',
-            angry: '😡',
-            peaceful: '😌',
-            anxious: '😰',
-            love: '❤️',
-            grateful: '🙏',
-            confused: '😕',
-            neutral: '😐'
-        };
-        return icons[mood] || icons.neutral;
-    }
-
-    renderAnalytics() {
-        this.renderTopArtists();
-        this.renderListeningFrequency();
-    }
-
-    renderTopArtists() {
-        const container = document.getElementById('top-artists-chart');
-        const topArtists = this.analytics.topArtists || [];
-
-        if (topArtists.length === 0) {
-            container.innerHTML = '<div class="chart-loading">No artist data available</div>';
-            return;
-        }
-
-        const maxCount = Math.max(...topArtists.map(a => a.count));
-        
-        const artistsHTML = topArtists.map(artist => {
-            const percentage = (artist.count / maxCount) * 100;
-            return `
-                <div style="display: flex; align-items: center; margin-bottom: 15px;">
-                    <div style="flex: 1; margin-right: 15px;">
-                        <div style="color: #fff; font-weight: 600; margin-bottom: 5px;">
-                            ${this.escapeHtml(artist.artist)}
-                        </div>
-                        <div style="background: #2a2a2a; height: 8px; border-radius: 4px; overflow: hidden;">
-                            <div style="background: #1db954; height: 100%; width: ${percentage}%; transition: width 0.5s ease;"></div>
-                        </div>
-                    </div>
-                    <div style="color: #1db954; font-weight: bold; min-width: 40px; text-align: right;">
-                        ${artist.count}
-                    </div>
-                </div>
-            `;
-        }).join('');
-
-        container.innerHTML = artistsHTML;
-    }
-
-    renderListeningFrequency() {
-        const container = document.getElementById('listening-frequency');
-        const dailyCount = this.analytics.listeningPatterns?.daily || 0;
-        
-        container.innerHTML = `
-            <div style="text-align: center; padding: 40px;">
-                <div style="font-size: 3rem; color: #1db954; font-weight: bold; margin-bottom: 10px;">
-                    ${dailyCount}
-                </div>
-                <div style="color: #b3b3b3; font-size: 1.1rem;">
-                    Days with activity
-                </div>
-            </div>
-        `;
-    }
-
-    renderMoodAnalysis() {
-        const container = document.getElementById('mood-distribution');
-        const moodData = this.analytics.moodDistribution || {};
-
-        if (Object.keys(moodData).length === 0) {
-            container.innerHTML = '<div class="loading">No mood data available</div>';
-            return;
-        }
-
-        const moodCards = Object.entries(moodData).map(([mood, count]) => {
-            return `
-                <div class="mood-card">
-                    <div class="mood-icon">${this.getMoodIcon(mood)}</div>
-                    <div class="mood-count">${count}</div>
-                    <div class="mood-label">${this.formatMoodName(mood)}</div>
-                </div>
-            `;
-        }).join('');
-
-        container.innerHTML = moodCards;
-    }
-
-    renderListeningPatterns() {
-        const container = document.getElementById('hourly-pattern');
-        const hourlyData = this.analytics.listeningPatterns?.hourly || {};
-
-        if (Object.keys(hourlyData).length === 0) {
-            container.innerHTML = '<div class="chart-loading">No pattern data available</div>';
-            return;
-        }
-
-        const maxCount = Math.max(...Object.values(hourlyData));
-        const hours = Array.from({length: 24}, (_, i) => i);
-
-        const hourlyHTML = hours.map(hour => {
-            const count = hourlyData[hour] || 0;
-            const percentage = maxCount > 0 ? (count / maxCount) * 100 : 0;
-            const displayHour = hour === 0 ? '12 AM' : 
-                               hour < 12 ? `${hour} AM` : 
-                               hour === 12 ? '12 PM' : `${hour - 12} PM`;
-
-            return `
-                <div style="display: flex; align-items: center; margin-bottom: 10px;">
-                    <div style="width: 60px; font-size: 0.9rem; color: #b3b3b3;">
-                        ${displayHour}
-                    </div>
-                    <div style="flex: 1; margin: 0 10px;">
-                        <div style="background: #2a2a2a; height: 6px; border-radius: 3px; overflow: hidden;">
-                            <div style="background: #1db954; height: 100%; width: ${percentage}%; transition: width 0.5s ease;"></div>
-                        </div>
-                    </div>
-                    <div style="width: 30px; text-align: right; font-size: 0.9rem; color: #1db954;">
-                        ${count}
-                    </div>
-                </div>
-            `;
-        }).join('');
-
-        container.innerHTML = hourlyHTML;
-    }
-
-    renderTimeline() {
-        const container = document.getElementById('timeline-container');
-        
-        if (this.activities.length === 0) {
-            container.innerHTML = `
-                <div class="loading">
-                    <i class="fas fa-music"></i>
-                    <p>No timeline data available</p>
-                </div>
-            `;
-            return;
-        }
-
-        // Initialize timeline component if not already done
-        if (!this.timeline) {
-            container.innerHTML = ''; // Clear loading message
-            this.timeline = new TimelineComponent(container, {
-                height: 500,
-                viewMode: 'activity'
-            });
-        }
-
-        // Set data for timeline
-        this.timeline.setData(this.activities);
-    }
-
-    exportTimelineData() {
-        if (!this.timeline) {
-            this.showError('Timeline not initialized');
-            return;
-        }
-
-        const visibleData = this.timeline.getVisibleData();
-        const currentRange = this.timeline.getCurrentRange();
-        
-        const exportData = {
-            range: currentRange,
-            data: visibleData,
-            exportedAt: new Date().toISOString(),
-            totalPoints: visibleData.length
-        };
-
-        // Create and download JSON file
-        const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `timeline-export-${new Date().toISOString().slice(0, 10)}.json`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        
-        this.showSuccess('Timeline data exported successfully');
-    }
-
-    resetTimelineView() {
-        if (!this.timeline) {
-            this.showError('Timeline not initialized');
-            return;
-        }
-
-        this.timeline.resetZoom();
-        this.timeline.clearSelection();
-        this.showSuccess('Timeline view reset');
-    }
-
-    showSongDetails(songId) {
-        const song = this.activities.find(a => a.id === songId);
-        if (!song) return;
-
-        const modal = document.getElementById('song-modal');
-        const modalBody = document.getElementById('modal-body');
-
-        const timestamp = new Date(song.loggedAt);
-        
-        modalBody.innerHTML = `
-            <div style="text-align: center;">
-                <img src="${song.imageUrl || this.getPlaceholderImage()}" 
-                     alt="Album cover" 
-                     style="width: 200px; height: 200px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.3);">
-                <h2 style="color: #fff; margin-bottom: 10px;">${this.escapeHtml(song.song)}</h2>
-                <h3 style="color: #1db954; margin-bottom: 5px;">${this.escapeHtml(song.artist)}</h3>
-                <p style="color: #b3b3b3; margin-bottom: 20px;">${this.escapeHtml(song.album)}</p>
-                
-                <!-- Mood Editor Section -->
-                <div class="mood-editor" style="margin-bottom: 25px; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 12px;">
-                    <h4 style="color: #fff; margin-bottom: 15px; font-size: 1.1rem;">
-                        <i class="fas fa-heart"></i> Song Mood
-                    </h4>
-                    <div style="margin-bottom: 15px;">
-                        <span class="mood-tag mood-${song.moodType || 'neutral'}" id="current-mood-display-${songId}">
-                            ${this.getMoodIcon(song.moodType)} ${this.formatMoodName(song.moodType || 'neutral')}
-                        </span>
-                        <span style="color: #888; font-size: 0.9rem; margin-left: 10px;">
-                            (${song.moodManuallySet ? 'Manual' : 'Auto-detected'})
-                        </span>
-                    </div>
-                    <select id="mood-selector-${songId}" class="mood-selector" style="padding: 8px 12px; border: 1px solid #444; background: #2a2a2a; color: #fff; border-radius: 6px; margin-right: 10px;">
-                        <option value="energetic" ${(song.moodType || 'neutral') === 'energetic' ? 'selected' : ''}>🔥 Energetic</option>
-                        <option value="sad" ${(song.moodType || 'neutral') === 'sad' ? 'selected' : ''}>😢 Sad</option>
-                        <option value="love" ${(song.moodType || 'neutral') === 'love' ? 'selected' : ''}>❤️ Love</option>
-                        <option value="chill" ${(song.moodType || 'neutral') === 'chill' ? 'selected' : ''}>😌 Chill</option>
-                        <option value="breakup" ${(song.moodType || 'neutral') === 'breakup' ? 'selected' : ''}>💔 Breakup</option>
-                        <option value="angry" ${(song.moodType || 'neutral') === 'angry' ? 'selected' : ''}>😡 Angry</option>
-                        <option value="nostalgic" ${(song.moodType || 'neutral') === 'nostalgic' ? 'selected' : ''}>🌅 Nostalgic</option>
-                        <option value="confident" ${(song.moodType || 'neutral') === 'confident' ? 'selected' : ''}>😎 Confident</option>
-                        <option value="melodic" ${(song.moodType || 'neutral') === 'melodic' ? 'selected' : ''}>🎵 Melodic</option>
-                        <option value="experimental" ${(song.moodType || 'neutral') === 'experimental' ? 'selected' : ''}>🎨 Experimental</option>
-                        <option value="neutral" ${(song.moodType || 'neutral') === 'neutral' ? 'selected' : ''}>🎶 Neutral</option>
-                    </select>
-                    <button onclick="dashboard.updateSongMood('${songId}')" class="update-mood-btn" style="padding: 8px 16px; background: #1db954; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
-                        <i class="fas fa-save"></i> Update Mood
-                    </button>
-                </div>
-                
-                <p style="color: #b3b3b3; margin-bottom: 20px;">
-                    Played on ${timestamp.toLocaleDateString()} at ${timestamp.toLocaleTimeString()}
-                </p>
-                <a href="${song.spotifyUrl}" target="_blank" class="spotify-link" style="font-size: 1rem; padding: 12px 24px;">
-                    <i class="fab fa-spotify"></i> Open in Spotify
-                </a>
-            </div>
-        `;
-
-        modal.style.display = 'block';
-    }
-
-    async updateSongMood(songId) {
-        const selector = document.getElementById(`mood-selector-${songId}`);
-        const newMood = selector.value;
-        const updateBtn = document.querySelector('.update-mood-btn');
-        
-        if (!newMood) {
-            this.showError('Please select a mood');
-            return;
-        }
-
-        // Show loading state
-        const originalBtnText = updateBtn.innerHTML;
-        updateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
-        updateBtn.disabled = true;
-
-        try {
-            const response = await this.authenticatedFetch(`/api/song/${songId}/mood`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ mood: newMood })
-            });
-
-            if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.error || 'Failed to update mood');
-            }
-
-            // Update local data
-            const songIndex = this.activities.findIndex(a => a.id === songId);
-            if (songIndex !== -1) {
-                this.activities[songIndex].moodType = newMood;
-                this.activities[songIndex].moodManuallySet = true;
-                this.filteredActivities = [...this.activities]; // Refresh filtered activities
-            }
-
-            // Update the mood display
-            const moodDisplay = document.getElementById(`current-mood-display-${songId}`);
-            if (moodDisplay) {
-                moodDisplay.className = `mood-tag mood-${newMood}`;
-                moodDisplay.innerHTML = `${this.getMoodIcon(newMood)} ${this.formatMoodName(newMood)}`;
-                
-                // Update the manual indicator in the modal if it exists
-                const modalMoodDisplay = moodDisplay.parentElement;
-                if (modalMoodDisplay) {
-                    const manualIndicator = modalMoodDisplay.querySelector('span[style*="color: #888"]');
-                    if (manualIndicator) {
-                        manualIndicator.textContent = '(Manual)';
+    function getSessionBounds(items) {
+        let startValue = null;
+        let startMs = null;
+        let endValue = null;
+        let endMs = null;
+        items.forEach((item) => {
+            const startCandidate = item && (item.sessionStart || item.playedAt || item.loggedAt || item.timestamp);
+            const endCandidate = item && (item.playedAt || item.loggedAt || item.timestamp || item.sessionStart);
+            if (startCandidate) {
+                const parsed = parseDateValue(startCandidate);
+                if (parsed) {
+                    const ms = parsed.getTime();
+                    if (startMs === null || ms < startMs) {
+                        startMs = ms;
+                        startValue = parsed.toISOString();
                     }
                 }
             }
-
-            // Show success feedback
-            updateBtn.innerHTML = '<i class="fas fa-check"></i> Updated!';
-            updateBtn.style.background = '#28a745';
-            
-            // Refresh the current tab to show updated mood
-            this.renderCurrentTab();
-            
-            setTimeout(() => {
-                updateBtn.innerHTML = originalBtnText;
-                updateBtn.style.background = '#1db954';
-                updateBtn.disabled = false;
-            }, 1500);
-
-        } catch (error) {
-            console.error('Error updating song mood:', error);
-            this.showError(`Failed to update mood: ${error.message}`);
-            
-            updateBtn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Error';
-            updateBtn.style.background = '#dc3545';
-            
-            setTimeout(() => {
-                updateBtn.innerHTML = originalBtnText;
-                updateBtn.style.background = '#1db954';
-                updateBtn.disabled = false;
-            }, 2000);
-        }
-    }
-
-    toggleQuickMoodEdit(songId) {
-        // Hide any other open quick editors
-        document.querySelectorAll('.quick-mood-editor').forEach(editor => {
-            if (editor.id !== `quick-mood-editor-${songId}`) {
-                editor.style.display = 'none';
+            if (endCandidate) {
+                const parsedEnd = parseDateValue(endCandidate);
+                if (parsedEnd) {
+                    const ms = parsedEnd.getTime();
+                    if (endMs === null || ms > endMs) {
+                        endMs = ms;
+                        endValue = parsedEnd.toISOString();
+                    }
+                }
             }
         });
+        return { start: startValue, end: endValue };
+    }
 
-        const editor = document.getElementById(`quick-mood-editor-${songId}`);
-        const moodTag = document.getElementById(`mood-tag-${songId}`);
-        
-        if (editor.style.display === 'none' || !editor.style.display) {
-            editor.style.display = 'flex';
-            moodTag.style.display = 'none';
-        } else {
-            editor.style.display = 'none';
-            moodTag.style.display = 'inline-flex';
+    function createRecentSongRow(item) {
+        const row = document.createElement('article');
+        row.className = 'song-item';
+        row.dataset.index = item.__index;
+        if (item.sessionId !== undefined && item.sessionId !== null) {
+            row.dataset.sessionId = item.sessionId;
+        }
+
+        const img = document.createElement('img');
+        img.className = 'song-cover';
+        img.src = item.imageUrl || '';
+        img.alt = `${item.song || 'Song cover'}`;
+        img.addEventListener('error', () => {
+            img.classList.add('song-cover-placeholder');
+            img.src = '';
+        });
+
+        const info = document.createElement('div');
+        info.className = 'song-info';
+        const title = document.createElement('div');
+        title.className = 'song-title';
+        title.textContent = item.song || 'Unknown song';
+        const artist = document.createElement('div');
+        artist.className = 'song-artist';
+        artist.textContent = item.artist || 'Unknown artist';
+        const album = document.createElement('div');
+        album.className = 'song-album';
+        album.textContent = item.album || 'Unknown album';
+        info.appendChild(title);
+        info.appendChild(artist);
+        info.appendChild(album);
+
+        const meta = document.createElement('div');
+        meta.className = 'song-metadata';
+        const timestamp = document.createElement('div');
+        timestamp.className = 'song-timestamp';
+        timestamp.textContent = formatDateTime(item.playedAt || item.loggedAt || item.timestamp);
+        meta.appendChild(timestamp);
+        if (item.spotifyUrl) {
+            const link = document.createElement('a');
+            link.href = item.spotifyUrl;
+            link.target = '_blank';
+            link.rel = 'noopener';
+            link.className = 'spotify-link';
+            link.title = 'Open in Spotify';
+
+            const fallback = () => {
+                link.classList.remove('spotify-link--image');
+                link.innerHTML = '<i class="fab fa-spotify"></i> Play';
+            };
+
+            if (item.imageUrl) {
+                const cover = document.createElement('img');
+                cover.className = 'spotify-link-image';
+                cover.src = item.imageUrl;
+                cover.alt = item.song ? `Open ${item.song} in Spotify` : 'Open in Spotify';
+                cover.addEventListener('error', () => {
+                    cover.remove();
+                    fallback();
+                });
+                link.classList.add('spotify-link--image');
+                link.appendChild(cover);
+            } else {
+                fallback();
+            }
+            meta.appendChild(link);
+        }
+
+        row.appendChild(img);
+        row.appendChild(info);
+        row.appendChild(meta);
+        return row;
+    }
+
+    function createCalendarSidebarItem(item) {
+        const row = document.createElement('div');
+        row.className = 'calendar-sidebar-item';
+        row.dataset.index = item.__index;
+        if (item.sessionId !== undefined && item.sessionId !== null) {
+            row.dataset.sessionId = item.sessionId;
+        }
+
+        const time = document.createElement('span');
+        time.className = 'calendar-sidebar-time';
+        time.textContent = formatTime(item.playedAt || item.loggedAt || item.timestamp);
+        row.appendChild(time);
+
+        const details = document.createElement('div');
+        details.className = 'calendar-sidebar-details';
+
+        const title = document.createElement('div');
+        title.className = 'calendar-sidebar-song';
+        title.textContent = item.song || 'Unknown song';
+        details.appendChild(title);
+
+        const meta = document.createElement('div');
+        meta.className = 'calendar-sidebar-meta';
+        const metaParts = [];
+        if (item.artist) {
+            metaParts.push(item.artist);
+        }
+        if (item.album) {
+            metaParts.push(item.album);
+        }
+        meta.textContent = metaParts.join(' • ') || '—';
+        details.appendChild(meta);
+
+        row.appendChild(details);
+
+        if (item.spotifyUrl) {
+            const link = document.createElement('a');
+            link.className = 'calendar-sidebar-link';
+            link.href = item.spotifyUrl;
+            link.target = '_blank';
+            link.rel = 'noopener';
+            link.title = 'Open in Spotify';
+            const fallback = () => {
+                link.classList.remove('calendar-sidebar-link--image');
+                link.innerHTML = '<i class="fab fa-spotify"></i>';
+            };
+
+            if (item.imageUrl) {
+                const cover = document.createElement('img');
+                cover.className = 'calendar-sidebar-link-image';
+                cover.src = item.imageUrl;
+                cover.alt = item.song ? `Open ${item.song} in Spotify` : 'Open in Spotify';
+                cover.addEventListener('error', () => {
+                    cover.remove();
+                    fallback();
+                });
+                link.classList.add('calendar-sidebar-link--image');
+                link.appendChild(cover);
+            } else {
+                fallback();
+            }
+            row.appendChild(link);
+        }
+
+        return row;
+    }
+
+    function showPopup(kind, message) {
+        const div = document.createElement('div');
+        div.className = kind === 'error' ? 'json-error-popup' : 'json-success-popup';
+        div.textContent = message;
+        document.body.appendChild(div);
+        setTimeout(() => {
+            div.remove();
+        }, 4000);
+    }
+
+    function renderSummary() {
+        const summary = state.summary;
+        el.totalSongs.textContent = summary ? summary.totalSongs.toLocaleString() : '—';
+        el.uniqueArtists.textContent = summary ? summary.uniqueArtists.toLocaleString() : '—';
+        const latest = state.recent.length ? state.recent[0] : null;
+        el.currentMood.textContent = latest ? latest.song : '—';
+    }
+    async function loadSummary() {
+        try {
+            state.summary = await rawFetch('/api/activity/summary');
+            renderSummary();
+        } catch (error) {
+            showPopup('error', `Unable to load summary: ${error.message}`);
         }
     }
 
-    async quickUpdateMood(songId) {
-        const selector = document.getElementById(`quick-mood-selector-${songId}`);
-        const newMood = selector.value;
-        const updateBtn = document.querySelector(`#quick-mood-editor-${songId} .quick-update-btn`);
-        
-        if (!newMood) {
-            this.showError('Please select a mood');
+    function renderRecent() {
+        if (!el.songList) {
+            return;
+        }
+        el.songList.innerHTML = '';
+        if (!state.recent.length) {
+            el.songList.innerHTML = '<p class="empty-state">No songs found.</p>';
+        } else {
+            const fragment = document.createDocumentFragment();
+            const sessionGroups = groupItemsBySession(state.recent);
+            sessionGroups.forEach((group) => {
+                const wrapper = document.createElement('section');
+                wrapper.className = `song-session-group session-group ${getSessionColorClass(group.sessionId)}`;
+
+                const bounds = getSessionBounds(group.items);
+                const endDate = parseDateValue(bounds.end);
+
+                const header = document.createElement('div');
+                header.className = 'session-group-header';
+
+                const title = document.createElement('div');
+                title.className = 'session-group-title';
+                if (bounds.start) {
+                    title.textContent = formatDateTime(bounds.start);
+                } else {
+                    title.textContent = 'Listening session';
+                }
+                header.appendChild(title);
+
+                const meta = document.createElement('div');
+                meta.className = 'session-group-meta';
+                const metaParts = [`${group.items.length.toLocaleString()} play${group.items.length === 1 ? '' : 's'}`];
+                if (endDate) {
+                    metaParts.push(`ended ${endDate.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}`);
+                }
+                meta.textContent = metaParts.join(' · ');
+                header.appendChild(meta);
+
+                wrapper.appendChild(header);
+
+                const tracks = document.createElement('div');
+                tracks.className = 'session-group-tracks';
+                group.items.forEach((item) => {
+                    tracks.appendChild(createRecentSongRow(item));
+                });
+                wrapper.appendChild(tracks);
+
+                fragment.appendChild(wrapper);
+            });
+            el.songList.appendChild(fragment);
+        }
+
+        el.recentCount.textContent = state.recentTotal
+            ? `Showing ${state.recent.length.toLocaleString()} of ${state.recentTotal.toLocaleString()} plays`
+            : '';
+        el.recentLastUpdated.textContent = `Last updated ${formatDateTime(new Date().toISOString())}`;
+        el.recentLoadMore.style.display = state.recent.length < state.recentTotal ? 'inline-flex' : 'none';
+        applySearchHighlights();
+    }
+
+    async function loadRecent({ reset = false } = {}) {
+        if (state.isLoadingRecent) {
+            return;
+        }
+        state.isLoadingRecent = true;
+        if (reset) {
+            state.recent = [];
+            state.recentOffset = 0;
+            el.songList.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i><p>Loading recent songs...</p></div>';
+        }
+        try {
+            const params = new URLSearchParams({
+                offset: state.recentOffset.toString(),
+                limit: state.recentLimit.toString(),
+            });
+            const data = await rawFetch(`/api/activity/recent?${params.toString()}`);
+            if (reset) {
+                state.recent = data.items || [];
+            } else {
+                state.recent = state.recent.concat(data.items || []);
+            }
+            state.recentTotal = data.total || state.recent.length;
+            state.recentOffset = state.recent.length;
+            renderRecent();
+        } catch (error) {
+            showPopup('error', `Unable to load recent songs: ${error.message}`);
+        } finally {
+            state.isLoadingRecent = false;
+        }
+    }
+
+    function applySearchHighlights() {
+        if (!state.search.results.length) {
+            el.songList.querySelectorAll('.song-item--highlight').forEach((item) => {
+                item.classList.remove('song-item--highlight');
+            });
+            return;
+        }
+        const matchIndices = new Set(state.search.results.map((item) => item.__index));
+        el.songList.querySelectorAll('.song-item').forEach((row) => {
+            if (matchIndices.has(Number(row.dataset.index))) {
+                row.classList.add('song-item--highlight');
+            } else {
+                row.classList.remove('song-item--highlight');
+            }
+        });
+    }
+
+    function cancelSuggestionFetch() {
+        if (suggestionDebounceHandle) {
+            clearTimeout(suggestionDebounceHandle);
+            suggestionDebounceHandle = null;
+        }
+        if (suggestionAbortController) {
+            suggestionAbortController.abort();
+            suggestionAbortController = null;
+        }
+    }
+
+    function clearSearchSuggestions({ keepQuery = false } = {}) {
+        cancelSuggestionFetch();
+        if (!keepQuery) {
+            state.search.suggestionQuery = '';
+        }
+        state.search.suggestions = [];
+        state.search.isLoadingSuggestions = false;
+        state.search.suggestionRequestId = 0;
+        if (el.searchSuggestions) {
+            el.searchSuggestions.innerHTML = '';
+            el.searchSuggestions.classList.remove('visible');
+            el.searchSuggestions.setAttribute('aria-hidden', 'true');
+        }
+    }
+
+    function buildSongSuggestions(items) {
+        const counts = new Map();
+        items.forEach((item) => {
+            const songTitle = (item.song || '').trim();
+            if (!songTitle) {
+                return;
+            }
+            const key = songTitle.toLowerCase();
+            if (!counts.has(key)) {
+                counts.set(key, {
+                    song: songTitle,
+                    artist: item.artist || '',
+                    count: 0,
+                });
+            }
+            const entry = counts.get(key);
+            entry.count += 1;
+            if (!entry.artist && item.artist) {
+                entry.artist = item.artist;
+            }
+        });
+        return Array.from(counts.values())
+            .sort((a, b) => b.count - a.count || a.song.localeCompare(b.song))
+            .slice(0, 8);
+    }
+
+    function renderSearchSuggestions() {
+        if (!el.searchSuggestions) {
+            return;
+        }
+        const { suggestionQuery, isLoadingSuggestions, suggestions } = state.search;
+        if (!suggestionQuery) {
+            el.searchSuggestions.innerHTML = '';
+            el.searchSuggestions.classList.remove('visible');
+            el.searchSuggestions.setAttribute('aria-hidden', 'true');
             return;
         }
 
-        // Show loading state
-        const originalIcon = updateBtn.innerHTML;
-        updateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-        updateBtn.disabled = true;
+        el.searchSuggestions.innerHTML = '';
+        el.searchSuggestions.classList.add('visible');
+        el.searchSuggestions.setAttribute('aria-hidden', 'false');
+
+        if (isLoadingSuggestions) {
+            const loading = document.createElement('div');
+            loading.className = 'search-suggestions-loading';
+            loading.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Searching songs...</span>';
+            el.searchSuggestions.appendChild(loading);
+            return;
+        }
+
+        if (!suggestions.length) {
+            const empty = document.createElement('div');
+            empty.className = 'search-suggestions-empty';
+            empty.textContent = 'No matching songs found.';
+            el.searchSuggestions.appendChild(empty);
+            return;
+        }
+
+        const list = document.createElement('ul');
+        list.className = 'search-suggestions-list';
+        suggestions.forEach((suggestion) => {
+            const li = document.createElement('li');
+            li.className = 'search-suggestion-item';
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'search-suggestion-button';
+            button.dataset.song = suggestion.song;
+
+            const title = document.createElement('span');
+            title.className = 'search-suggestion-title';
+            title.textContent = suggestion.song;
+            button.appendChild(title);
+
+            const meta = document.createElement('span');
+            meta.className = 'search-suggestion-meta';
+            const parts = [];
+            if (suggestion.artist) {
+                parts.push(suggestion.artist);
+            }
+            if (suggestion.count) {
+                parts.push(`${suggestion.count.toLocaleString()} play${suggestion.count === 1 ? '' : 's'}`);
+            }
+            meta.textContent = parts.join(' · ');
+            button.appendChild(meta);
+
+            li.appendChild(button);
+            list.appendChild(li);
+        });
+
+        el.searchSuggestions.appendChild(list);
+    }
+
+    function addSelectedSongs(songs) {
+        let added = false;
+        songs.forEach((entry) => {
+            const song = entry.trim();
+            if (!song) {
+                return;
+            }
+            if (!state.search.selectedSongs.some((item) => item.toLowerCase() === song.toLowerCase())) {
+                state.search.selectedSongs.push(song);
+                added = true;
+            }
+        });
+        if (!added) {
+            return;
+        }
+        el.searchInput.value = '';
+        state.search.terms = '';
+        renderSelectedSongs();
+        clearSearchSuggestions();
+        executeSearch();
+    }
+
+    async function loadSearchSuggestions(query) {
+        cancelSuggestionFetch();
+        if (!query || query.length < 2) {
+            clearSearchSuggestions();
+            return;
+        }
+
+        state.search.suggestionQuery = query;
+        state.search.isLoadingSuggestions = true;
+        state.search.suggestions = [];
+        renderSearchSuggestions();
+
+        const requestId = Date.now();
+        state.search.suggestionRequestId = requestId;
+        suggestionAbortController = new AbortController();
 
         try {
-            const response = await this.authenticatedFetch(`/api/song/${songId}/mood`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ mood: newMood })
-            });
-
-            if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.error || 'Failed to update mood');
+            const params = new URLSearchParams({ q: query });
+            const data = await rawFetch(`/api/activity/search?${params.toString()}`, { signal: suggestionAbortController.signal });
+            if (state.search.suggestionRequestId !== requestId) {
+                return;
             }
-
-            // Update local data
-            const songIndex = this.activities.findIndex(a => a.id === songId);
-            if (songIndex !== -1) {
-                this.activities[songIndex].moodType = newMood;
-                this.activities[songIndex].moodManuallySet = true;
-                this.filteredActivities = [...this.activities];
-            }
-
-            // Update the mood display
-            const moodTag = document.getElementById(`mood-tag-${songId}`);
-            if (moodTag) {
-                moodTag.className = `mood-tag mood-${newMood}`;
-                moodTag.innerHTML = `${this.getMoodIcon(newMood)} ${this.formatMoodName(newMood)} <span class="manual-mood-indicator" title="Manually set mood">✏️</span>`;
-            }
-
-            // Hide the editor and show success
-            this.cancelQuickMoodEdit(songId);
-            
-            // Brief success indication
-            updateBtn.innerHTML = '<i class="fas fa-check"></i>';
-            updateBtn.style.color = '#28a745';
-            
-            setTimeout(() => {
-                updateBtn.innerHTML = originalIcon;
-                updateBtn.style.color = '';
-                updateBtn.disabled = false;
-            }, 1000);
-
+            const items = Array.isArray(data.items) ? data.items : [];
+            state.search.suggestions = buildSongSuggestions(items);
+            state.search.isLoadingSuggestions = false;
+            renderSearchSuggestions();
         } catch (error) {
-            console.error('Error updating song mood:', error);
-            this.showError(`Failed to update mood: ${error.message}`);
-            
-            updateBtn.innerHTML = '<i class="fas fa-exclamation-triangle"></i>';
-            updateBtn.style.color = '#dc3545';
-            
-            setTimeout(() => {
-                updateBtn.innerHTML = originalIcon;
-                updateBtn.style.color = '';
-                updateBtn.disabled = false;
-            }, 2000);
+            if (error.name === 'AbortError') {
+                return;
+            }
+            if (state.search.suggestionRequestId !== requestId) {
+                return;
+            }
+            state.search.suggestions = [];
+            state.search.isLoadingSuggestions = false;
+            renderSearchSuggestions();
+        } finally {
+            if (suggestionAbortController) {
+                suggestionAbortController = null;
+            }
         }
     }
 
-    cancelQuickMoodEdit(songId) {
-        const editor = document.getElementById(`quick-mood-editor-${songId}`);
-        const moodTag = document.getElementById(`mood-tag-${songId}`);
-        
-        editor.style.display = 'none';
-        moodTag.style.display = 'inline-flex';
-    }
-
-    filterByMood() {
-        const selectedMood = document.getElementById('mood-filter').value;
-        
-        if (!selectedMood) {
-            this.filteredActivities = [...this.activities];
-        } else {
-            this.filteredActivities = this.activities.filter(activity => 
-                (activity.moodType || 'neutral') === selectedMood
-            );
+    function handleSearchInputChange(event) {
+        const query = event.target.value.trim();
+        cancelSuggestionFetch();
+        if (!query) {
+            clearSearchSuggestions();
+            return;
         }
-        
-        this.renderRecentSongs();
+        if (query.length < 2) {
+            clearSearchSuggestions({ keepQuery: true });
+            state.search.suggestionQuery = query;
+            return;
+        }
+        state.search.suggestionQuery = query;
+        state.search.isLoadingSuggestions = true;
+        state.search.suggestions = [];
+        renderSearchSuggestions();
+        suggestionDebounceHandle = setTimeout(() => {
+            loadSearchSuggestions(query);
+        }, SUGGESTION_DEBOUNCE_MS);
     }
 
-    getMoodIcon(mood) {
-        const icons = {
-            energetic: '🔥',
-            sad: '😢',
-            love: '❤️',
-            chill: '😌',
-            breakup: '💔',
-            angry: '😡',
-            nostalgic: '🌅',
-            confident: '😎',
-            melodic: '🎵',
-            experimental: '🎨',
-            neutral: '🎶'
-        };
-        return icons[mood] || icons.neutral;
+    function handleSuggestionContainerClick(event) {
+        const button = event.target.closest('[data-song]');
+        if (!button) {
+            return;
+        }
+        event.preventDefault();
+        const song = button.dataset.song || '';
+        if (!song) {
+            return;
+        }
+        addSelectedSongs([song]);
     }
 
-    formatRelativeTime(date) {
-        const now = new Date();
-        const diffMs = now - date;
-        const diffMins = Math.floor(diffMs / 60000);
-        const diffHours = Math.floor(diffMs / 3600000);
-        const diffDays = Math.floor(diffMs / 86400000);
-
-        if (diffMins < 1) return 'Just now';
-        if (diffMins < 60) return `${diffMins}m ago`;
-        if (diffHours < 24) return `${diffHours}h ago`;
-        if (diffDays < 7) return `${diffDays}d ago`;
-        return date.toLocaleDateString();
+    function handleSuggestionOutsideClick(event) {
+        if (event.target.closest('.search-input-area')) {
+            return;
+        }
+        clearSearchSuggestions();
     }
 
-    getPlaceholderImage() {
-        return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjYwIiBoZWlnaHQ9IjYwIiBmaWxsPSIjMzMzIiByeD0iOCIvPgo8cGF0aCBkPSJNMjAgMjBIMjVWMjVIMjBWMjBaIiBmaWxsPSIjNjY2Ii8+CjxwYXRoIGQ9Ik0zMCAyMEgzNVYyNUgzMFYyMFoiIGZpbGw9IiM2NjYiLz4KPHA+</i>text IHg9IjMwIiB5PSI0NSIgZmlsbD0iIzY2NiIgZm9udC1zaXplPSI4IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5ObyBJbWFnZTwvdGV4dD4KPC9zdmc+';
+    function renderSelectedSongs() {
+        el.searchSelected.innerHTML = '';
+        if (!state.search.selectedSongs.length) {
+            el.searchSelected.innerHTML = '<span class="search-pill empty">No songs selected</span>';
+            return;
+        }
+        const fragment = document.createDocumentFragment();
+        state.search.selectedSongs.forEach((song) => {
+            const pill = document.createElement('button');
+            pill.className = 'search-pill';
+            pill.type = 'button';
+            pill.dataset.song = song;
+            pill.innerHTML = `<span>${song}</span><i class="fas fa-times"></i>`;
+            pill.addEventListener('click', () => {
+                removeSelectedSong(song);
+            });
+            fragment.appendChild(pill);
+        });
+        el.searchSelected.appendChild(fragment);
     }
 
-    escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
+    function removeSelectedSong(song) {
+        state.search.selectedSongs = state.search.selectedSongs.filter((item) => item.toLowerCase() !== song.toLowerCase());
+        renderSelectedSongs();
+        executeSearch();
     }
 
-    showError(message) {
-        console.error(message);
-        // Could implement a toast notification here
+    async function executeSearch() {
+        if (state.search.isLoading) {
+            return;
+        }
+        state.search.isLoading = true;
+        try {
+            if (!state.search.selectedSongs.length && !state.search.terms) {
+                state.search.results = [];
+                renderSearchResults();
+                applySearchHighlights();
+                await loadCalendar();
+                return;
+            }
+            el.searchResults.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i><p>Searching...</p></div>';
+            const params = new URLSearchParams();
+            if (state.search.terms) {
+                params.set('q', state.search.terms);
+            }
+            if (state.search.selectedSongs.length) {
+                params.set('songs', state.search.selectedSongs.join(','));
+            }
+            const data = await rawFetch(`/api/activity/search?${params.toString()}`);
+            state.search.results = data.items || [];
+            renderSearchResults();
+            applySearchHighlights();
+            await loadCalendar();
+        } catch (error) {
+            showPopup('error', `Search failed: ${error.message}`);
+            el.searchResults.innerHTML = '<p class="error-text">Unable to complete search.</p>';
+        } finally {
+            state.search.isLoading = false;
+        }
     }
 
-    showSuccess(message) {
-        console.log(message);
-        // Could implement a toast notification here
-        // For now, just show a brief visual feedback
-        const toast = document.createElement('div');
-        toast.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #28a745;
-            color: white;
-            padding: 12px 20px;
-            border-radius: 6px;
-            z-index: 10000;
-            font-size: 0.9rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    function renderSearchResults() {
+        el.searchResults.innerHTML = '';
+        const results = state.search.results;
+        if (!results.length) {
+            if (state.search.selectedSongs.length || state.search.terms) {
+                el.searchResults.innerHTML = '<p class="empty-state">No matching plays found for the current selection.</p>';
+            }
+            return;
+        }
+        const grouped = new Map();
+        results.forEach((item) => {
+            const key = item.song || 'Unknown song';
+            if (!grouped.has(key)) {
+                grouped.set(key, []);
+            }
+            grouped.get(key).push(item);
+        });
+        const wrapper = document.createElement('div');
+        wrapper.className = 'search-result-wrapper';
+        for (const [song, items] of grouped.entries()) {
+            const card = document.createElement('div');
+            card.className = 'search-result-card';
+            const header = document.createElement('header');
+            header.className = 'search-result-header';
+            header.innerHTML = `<h3>${song}</h3><span>${items.length} plays</span>`;
+            const list = document.createElement('ul');
+            list.className = 'search-result-list';
+            items.slice(0, 10).forEach((entry) => {
+                const li = document.createElement('li');
+                li.innerHTML = `<span>${formatDateTime(entry.playedAt || entry.loggedAt || entry.timestamp)}</span><span>${entry.artist || 'Unknown artist'}</span>`;
+                list.appendChild(li);
+            });
+            if (items.length > 10) {
+                const more = document.createElement('div');
+                more.className = 'search-result-more';
+                more.textContent = `+${items.length - 10} more plays`; 
+                card.appendChild(more);
+            }
+            card.appendChild(header);
+            card.appendChild(list);
+            wrapper.appendChild(card);
+        }
+        el.searchResults.appendChild(wrapper);
+    }
+
+    async function loadCalendar() {
+        if (state.calendar.isLoading) {
+            return;
+        }
+        state.calendar.isLoading = true;
+        el.calendarGrid.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i><p>Building calendar...</p></div>';
+        try {
+            const params = new URLSearchParams();
+            if (typeof state.calendar.months === 'number') {
+                params.set('months', state.calendar.months.toString());
+            }
+            if (state.search.selectedSongs.length) {
+                params.set('songs', state.search.selectedSongs.join(','));
+            }
+            const data = await rawFetch(`/api/activity/calendar?${params.toString()}`);
+            state.calendar.items = data.items || [];
+            renderCalendar();
+            const selectedDate = state.calendar.day.date;
+            if (selectedDate) {
+                const exists = state.calendar.items.some((item) => item.date === selectedDate);
+                if (!exists) {
+                    clearCalendarDaySelection({ message: 'Selected day is not included in this window.' });
+                } else {
+                    loadCalendarDay(selectedDate, { silent: true });
+                }
+            }
+        } catch (error) {
+            showPopup('error', `Unable to load calendar: ${error.message}`);
+            el.calendarGrid.innerHTML = '<p class="error-text">Calendar unavailable.</p>';
+            renderCalendarSidebar();
+        } finally {
+            state.calendar.isLoading = false;
+        }
+    }
+
+    function renderCalendar() {
+        el.calendarGrid.innerHTML = '';
+        el.calendarLegend.innerHTML = '';
+        const items = state.calendar.items;
+        if (!items.length) {
+            el.calendarGrid.innerHTML = '<p class="empty-state">No plays for the selected window.</p>';
+            renderCalendarSidebar();
+            return;
+        }
+        const dataMap = new Map(items.map((item) => [item.date, item]));
+        const maxCount = items.reduce((max, item) => Math.max(max, item.count), 0) || 1;
+        const selectedDate = state.calendar.day.date;
+        const monthKeys = new Set(items.map((item) => item.date.slice(0, 7)));
+        const sortedMonths = Array.from(monthKeys).sort();
+        const fragment = document.createDocumentFragment();
+        sortedMonths.forEach((monthKey) => {
+            const [yearStr, monthStr] = monthKey.split('-');
+            const year = Number(yearStr);
+            const month = Number(monthStr) - 1;
+            const monthStart = new Date(Date.UTC(year, month, 1));
+            const monthEnd = new Date(Date.UTC(year, month + 1, 0));
+
+            const monthCard = document.createElement('section');
+            monthCard.className = 'calendar-month';
+
+            const monthHeader = document.createElement('header');
+            monthHeader.className = 'calendar-month-header';
+            monthHeader.textContent = new Intl.DateTimeFormat(undefined, {
+                month: 'long',
+                year: 'numeric',
+                timeZone: 'UTC',
+            }).format(monthStart);
+            monthCard.appendChild(monthHeader);
+
+            const grid = document.createElement('div');
+            grid.className = 'calendar-month-grid';
+
+            const firstWeekday = (monthStart.getUTCDay() + 7) % 7;
+            for (let i = 0; i < firstWeekday; i += 1) {
+                const filler = document.createElement('div');
+                filler.className = 'calendar-day filler';
+                grid.appendChild(filler);
+            }
+
+            const daysInMonth = monthEnd.getUTCDate();
+            for (let day = 1; day <= daysInMonth; day += 1) {
+                const dateStr = new Date(Date.UTC(year, month, day)).toISOString().slice(0, 10);
+                const item = dataMap.get(dateStr);
+                const cell = document.createElement('div');
+                cell.className = 'calendar-day';
+                cell.dataset.date = dateStr;
+                const count = item ? item.count : 0;
+                const intensity = Math.ceil((count / maxCount) * 4);
+                if (count > 0) {
+                    cell.classList.add(`level-${intensity}`);
+                    const tooltipLines = [`${count} play${count === 1 ? '' : 's'} on ${formatDateLabel(dateStr)}`];
+                    if (item.songs && item.songs.length) {
+                        item.songs.slice(0, 3).forEach((songInfo) => {
+                            tooltipLines.push(`${songInfo.song}: ${songInfo.count}`);
+                        });
+                        if (item.songs.length > 3) {
+                            tooltipLines.push(`+${item.songs.length - 3} more songs`);
+                        }
+                    }
+                    cell.title = tooltipLines.join('\n');
+                } else {
+                    cell.classList.add('level-0');
+                    cell.title = `No plays on ${formatDateTime(dateStr)}`;
+                }
+                cell.innerHTML = `<span>${day}</span>`;
+                cell.setAttribute('role', 'button');
+                cell.setAttribute('tabindex', '0');
+                const accessibleLabel = `${formatDateLabel(dateStr)} • ${count.toLocaleString()} play${count === 1 ? '' : 's'}`;
+                cell.setAttribute('aria-label', accessibleLabel);
+                const isSelected = selectedDate === dateStr;
+                if (isSelected) {
+                    cell.classList.add('selected');
+                }
+                cell.setAttribute('aria-pressed', isSelected ? 'true' : 'false');
+                cell.addEventListener('click', () => {
+                    handleCalendarDaySelection(dateStr);
+                });
+                cell.addEventListener('keydown', (event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        handleCalendarDaySelection(dateStr);
+                    }
+                });
+                grid.appendChild(cell);
+            }
+
+            monthCard.appendChild(grid);
+            fragment.appendChild(monthCard);
+        });
+        el.calendarGrid.appendChild(fragment);
+
+        const legend = document.createElement('div');
+        legend.className = 'calendar-legend-scale';
+        legend.innerHTML = `
+            <span>Less</span>
+            <div class="legend-steps">
+                <span class="calendar-day level-0"></span>
+                <span class="calendar-day level-1"></span>
+                <span class="calendar-day level-2"></span>
+                <span class="calendar-day level-3"></span>
+                <span class="calendar-day level-4"></span>
+            </div>
+            <span>More</span>
         `;
-        toast.textContent = message;
-        document.body.appendChild(toast);
-        
-        setTimeout(() => {
-            toast.remove();
-        }, 3000);
+        el.calendarLegend.appendChild(legend);
+        highlightSelectedCalendarDay();
+        renderCalendarSidebar();
     }
 
-    async refreshData() {
-        const refreshBtn = document.querySelector('.refresh-btn');
-        const originalHTML = refreshBtn.innerHTML;
-        
-        refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Refreshing...';
-        refreshBtn.disabled = true;
-
-        try {
-            await this.loadData();
-            
-            // Brief success indication
-            refreshBtn.innerHTML = '<i class="fas fa-check"></i> Updated!';
-            setTimeout(() => {
-                refreshBtn.innerHTML = originalHTML;
-                refreshBtn.disabled = false;
-            }, 1000);
-        } catch (error) {
-            refreshBtn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Error';
-            setTimeout(() => {
-                refreshBtn.innerHTML = originalHTML;
-                refreshBtn.disabled = false;
-            }, 2000);
+    function highlightSelectedCalendarDay({ focus = false } = {}) {
+        if (!el.calendarGrid) {
+            return;
         }
-    }
-
-    startAutoRefresh() {
-        // Auto-refresh every 30 seconds
-        setInterval(() => {
-            this.loadData();
-        }, 30000);
-    }
-
-    // JSON Editor functionality
-    async initJsonEditor() {
-        const fileSelect = document.getElementById('json-file-select');
-        const loadBtn = document.getElementById('json-load-btn');
-        const saveBtn = document.getElementById('json-save-btn');
-        const formatBtn = document.getElementById('json-format-btn');
-        const validateBtn = document.getElementById('json-validate-btn');
-        const editor = document.getElementById('json-editor');
-
-        if (!editor) return; // JSON editor not available
-
-        this.jsonEditor = {
-            currentFile: 'activity',
-            originalContent: '',
-            isModified: false
-        };
-
-        // File selection
-        fileSelect.addEventListener('change', (e) => {
-            this.jsonEditor.currentFile = e.target.value;
-            this.loadJsonFile();
-        });
-
-        // Button events
-        loadBtn.addEventListener('click', () => this.loadJsonFile());
-        saveBtn.addEventListener('click', () => this.saveJsonFile());
-        formatBtn.addEventListener('click', () => this.formatJson());
-        validateBtn.addEventListener('click', () => this.validateJson());
-
-        // Editor events
-        editor.addEventListener('input', () => this.onJsonContentChange());
-        editor.addEventListener('scroll', () => this.updateJsonLineNumbers());
-        
-        // Keyboard shortcuts
-        editor.addEventListener('keydown', (e) => {
-            // Ctrl+S to save
-            if (e.ctrlKey && e.key === 's') {
-                e.preventDefault();
-                this.saveJsonFile();
+        const selected = state.calendar.day.date;
+        el.calendarGrid.querySelectorAll('.calendar-day').forEach((cell) => {
+            if (cell.classList.contains('filler')) {
+                return;
             }
-            // Ctrl+Shift+F to format
-            if (e.ctrlKey && e.shiftKey && e.key === 'F') {
-                e.preventDefault();
-                this.formatJson();
-            }
-            // Tab key for indentation
-            if (e.key === 'Tab') {
-                e.preventDefault();
-                const start = editor.selectionStart;
-                const end = editor.selectionEnd;
-                editor.value = editor.value.substring(0, start) + '  ' + editor.value.substring(end);
-                editor.selectionStart = editor.selectionEnd = start + 2;
-                this.onJsonContentChange();
+            const isSelected = cell.dataset.date === selected;
+            cell.classList.toggle('selected', isSelected);
+            cell.setAttribute('aria-pressed', isSelected ? 'true' : 'false');
+            if (isSelected && focus) {
+                cell.focus({ preventScroll: true });
             }
         });
-
-        // Load initial file
-        await this.loadJsonFile();
     }
 
-    async loadJsonFile() {
-        try {
-            const response = await this.authenticatedFetch(`/api/raw/${this.jsonEditor.currentFile}`);
+    function renderCalendarSidebar() {
+        if (!el.calendarSidebar || !el.calendarSidebarStatus || !el.calendarSidebarList || !el.calendarSidebarTitle || !el.calendarSidebarSubtitle) {
+            return;
+        }
+        const dayState = state.calendar.day;
+        if (!dayState.date) {
+            el.calendarSidebarTitle.textContent = 'Select a day';
+            el.calendarSidebarSubtitle.textContent = dayState.statusMessage || 'Click a day to see every song played.';
+            el.calendarSidebarStatus.innerHTML = `<p class="calendar-sidebar-placeholder">${dayState.statusMessage || 'Pick a day from the calendar to view details.'}</p>`;
+            el.calendarSidebarList.innerHTML = '';
+            if (el.calendarSidebarClose) {
+                el.calendarSidebarClose.disabled = true;
+                el.calendarSidebarClose.setAttribute('aria-disabled', 'true');
+            }
+            return;
+        }
 
-            if (!response.ok) {
-                throw new Error(`Failed to load ${this.jsonEditor.currentFile} data`);
+        if (el.calendarSidebarClose) {
+            el.calendarSidebarClose.disabled = false;
+            el.calendarSidebarClose.setAttribute('aria-disabled', 'false');
+        }
+
+        el.calendarSidebarTitle.textContent = formatDateLabel(dayState.date);
+
+        if (dayState.isLoading) {
+            el.calendarSidebarSubtitle.textContent = 'Loading plays...';
+            el.calendarSidebarStatus.innerHTML = '<div class="loading loading-inline"><i class="fas fa-spinner fa-spin"></i><p>Loading plays...</p></div>';
+            el.calendarSidebarList.innerHTML = '';
+            return;
+        }
+
+        if (dayState.error) {
+            el.calendarSidebarSubtitle.textContent = 'Unable to load day details';
+            el.calendarSidebarStatus.innerHTML = `<p class="calendar-sidebar-error">${dayState.error}</p>`;
+            el.calendarSidebarList.innerHTML = '';
+            return;
+        }
+
+        const filteredItems = Array.isArray(dayState.filteredItems) ? dayState.filteredItems : [];
+        const allItems = Array.isArray(dayState.allItems) ? dayState.allItems : [];
+        const filteredTotal = Number.isFinite(dayState.filteredTotal) ? dayState.filteredTotal : filteredItems.length;
+        const allTotal = Number.isFinite(dayState.allTotal) ? dayState.allTotal : allItems.length;
+        const hasFilter = state.search.selectedSongs.length > 0;
+
+        if (hasFilter) {
+            if (filteredTotal) {
+                const selectionLabel = `${filteredTotal.toLocaleString()} match${filteredTotal === 1 ? '' : 'es'} for selected song${state.search.selectedSongs.length === 1 ? '' : 's'}`;
+                el.calendarSidebarSubtitle.textContent = selectionLabel;
+            } else {
+                const noMatchLabel = state.search.selectedSongs.length === 1
+                    ? `No matches for "${state.search.selectedSongs[0]}"`
+                    : 'No matches for selected songs';
+                el.calendarSidebarSubtitle.textContent = noMatchLabel;
+            }
+        } else {
+            if (allTotal) {
+                const baseLabel = `${allTotal.toLocaleString()} play${allTotal === 1 ? '' : 's'} recorded`;
+                el.calendarSidebarSubtitle.textContent = baseLabel;
+            } else {
+                el.calendarSidebarSubtitle.textContent = 'No plays recorded for this day.';
+            }
+        }
+
+        if (!allTotal && !filteredTotal) {
+            el.calendarSidebarStatus.innerHTML = '<p class="calendar-sidebar-placeholder">No plays recorded for this day.</p>';
+            el.calendarSidebarList.innerHTML = '';
+            return;
+        }
+
+        el.calendarSidebarStatus.innerHTML = '';
+        el.calendarSidebarList.innerHTML = '';
+
+        const buildSection = ({ title, count, description, items, emptyMessage }) => {
+            const section = document.createElement('li');
+            section.className = 'calendar-sidebar-section';
+
+            const header = document.createElement('div');
+            header.className = 'calendar-sidebar-section-header';
+
+            const heading = document.createElement('div');
+            heading.className = 'calendar-sidebar-section-title';
+            heading.textContent = title;
+            header.appendChild(heading);
+
+            const metaParts = [];
+            if (Number.isFinite(count)) {
+                metaParts.push(`${count.toLocaleString()} play${count === 1 ? '' : 's'}`);
+            }
+            if (description) {
+                metaParts.push(description);
+            }
+            if (metaParts.length) {
+                const meta = document.createElement('div');
+                meta.className = 'calendar-sidebar-section-meta';
+                meta.textContent = metaParts.join(' · ');
+                header.appendChild(meta);
             }
 
-            const data = await response.json();
-            // Format the JSON content for editing (pretty-printed)
-            this.jsonEditor.originalContent = JSON.stringify(data, null, 2);
-            
-            const editor = document.getElementById('json-editor');
-            editor.value = this.jsonEditor.originalContent;
-            
-            this.jsonEditor.isModified = false;
-            this.updateJsonUI();
-            this.updateJsonLineNumbers();
-            this.updateJsonStats();
+            section.appendChild(header);
 
-            this.showJsonSuccess(`Loaded ${this.jsonEditor.currentFile} content successfully`);
-        } catch (error) {
-            console.error('Error loading file:', error);
-            this.showJsonError(`Failed to load ${this.jsonEditor.currentFile} data: ${error.message}`);
-        }
-    }
+            if (!items.length) {
+                const placeholder = document.createElement('p');
+                placeholder.className = 'calendar-sidebar-placeholder';
+                placeholder.textContent = emptyMessage;
+                section.appendChild(placeholder);
+                return section;
+            }
 
-    async saveJsonFile() {
-        try {
-            const editor = document.getElementById('json-editor');
-            const content = editor.value;
+            const sessions = groupItemsBySession(items);
+            sessions.forEach((group) => {
+                const wrapper = document.createElement('div');
+                wrapper.className = `calendar-session-group session-group ${getSessionColorClass(group.sessionId)}`;
 
-            // Validate JSON before saving
-            const parsedData = JSON.parse(content);
+                const bounds = getSessionBounds(group.items);
+                const startTime = bounds.start ? formatTime(bounds.start) : '';
+                const endTime = bounds.end ? formatTime(bounds.end) : '';
 
-            const response = await this.authenticatedFetch(`/api/raw/${this.jsonEditor.currentFile}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ data: parsedData })
+                const sessionHeader = document.createElement('div');
+                sessionHeader.className = 'session-group-header';
+
+                const titleEl = document.createElement('div');
+                titleEl.className = 'session-group-title';
+                if (startTime) {
+                    titleEl.textContent = endTime && endTime !== startTime ? `${startTime} – ${endTime}` : startTime;
+                } else {
+                    titleEl.textContent = 'Session';
+                }
+                sessionHeader.appendChild(titleEl);
+
+                const meta = document.createElement('div');
+                meta.className = 'session-group-meta';
+                meta.textContent = `${group.items.length.toLocaleString()} play${group.items.length === 1 ? '' : 's'}`;
+                sessionHeader.appendChild(meta);
+
+                wrapper.appendChild(sessionHeader);
+
+                const tracks = document.createElement('div');
+                tracks.className = 'session-group-tracks';
+                group.items.forEach((item) => {
+                    tracks.appendChild(createCalendarSidebarItem(item));
+                });
+                wrapper.appendChild(tracks);
+
+                section.appendChild(wrapper);
             });
 
-            if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.error || 'Failed to save file');
-            }
+            return section;
+        };
 
-            this.jsonEditor.originalContent = content;
-            this.jsonEditor.isModified = false;
-            this.updateJsonUI();
-
-            this.showJsonSuccess(`Saved ${this.jsonEditor.currentFile} content successfully`);
-            
-            // Refresh the dashboard data if we edited the activity log
-            if (this.jsonEditor.currentFile === 'activity') {
-                await this.loadData();
-                this.renderRecentSongs();
-            }
-        } catch (error) {
-            console.error('Error saving file:', error);
-            if (error instanceof SyntaxError) {
-                this.showJsonError('Invalid JSON format. Please fix syntax errors before saving.');
-            } else {
-                this.showJsonError(`Failed to save ${this.jsonEditor.currentFile} data: ${error.message}`);
-            }
+        const fragment = document.createDocumentFragment();
+        if (hasFilter) {
+            fragment.appendChild(buildSection({
+                title: 'Matches',
+                count: filteredTotal,
+                description: state.search.selectedSongs.length === 1
+                    ? `Filtered by "${state.search.selectedSongs[0]}"`
+                    : `Filtered by ${state.search.selectedSongs.length} selected songs`,
+                items: filteredItems,
+                emptyMessage: 'No matches for the selected songs on this day.',
+            }));
         }
+
+        fragment.appendChild(buildSection({
+            title: hasFilter ? 'Entire Day' : 'All Plays',
+            count: allTotal,
+            description: hasFilter ? 'Full play history' : '',
+            items: allItems,
+            emptyMessage: 'No plays recorded for this day.',
+        }));
+
+        el.calendarSidebarList.appendChild(fragment);
     }
 
-    formatJson() {
+    function clearCalendarDaySelection({ message = '' } = {}) {
+        const dayState = state.calendar.day;
+        dayState.date = null;
+        dayState.filteredItems = [];
+        dayState.filteredTotal = 0;
+        dayState.allItems = [];
+        dayState.allTotal = 0;
+        dayState.isLoading = false;
+        dayState.error = null;
+        dayState.requestId = 0;
+        dayState.statusMessage = message;
+        highlightSelectedCalendarDay();
+        renderCalendarSidebar();
+    }
+
+    function handleCalendarDaySelection(date) {
+        if (!date) {
+            return;
+        }
+        state.calendar.day.statusMessage = '';
+        state.calendar.day.date = date;
+        highlightSelectedCalendarDay();
+        loadCalendarDay(date);
+    }
+
+    async function loadCalendarDay(date, { silent = false } = {}) {
+        if (!date) {
+            return;
+        }
+        const dayState = state.calendar.day;
+        const requestId = Date.now();
+        dayState.requestId = requestId;
+        dayState.date = date;
+        dayState.error = null;
+        dayState.statusMessage = '';
+        dayState.isLoading = true;
+        if (!silent) {
+            dayState.filteredItems = [];
+            dayState.filteredTotal = 0;
+            dayState.allItems = [];
+            dayState.allTotal = 0;
+        }
+        renderCalendarSidebar();
+
         try {
-            const editor = document.getElementById('json-editor');
-            const parsed = JSON.parse(editor.value);
-            editor.value = JSON.stringify(parsed, null, 2);
-            
-            this.onJsonContentChange();
-            this.updateJsonLineNumbers();
-            this.updateJsonStats();
-            
-            this.showJsonSuccess('JSON formatted successfully');
+            const params = new URLSearchParams({ date });
+            if (state.search.selectedSongs.length) {
+                params.set('songs', state.search.selectedSongs.join(','));
+            }
+            const data = await rawFetch(`/api/activity/day?${params.toString()}`);
+            if (dayState.requestId !== requestId) {
+                return;
+            }
+            const filtered = data.filtered || {};
+            const all = data.all || {};
+            dayState.filteredItems = Array.isArray(filtered.items) ? filtered.items : [];
+            dayState.filteredTotal = Number.isFinite(filtered.total) ? filtered.total : dayState.filteredItems.length;
+            dayState.allItems = Array.isArray(all.items) ? all.items : [];
+            dayState.allTotal = Number.isFinite(all.total) ? all.total : dayState.allItems.length;
+            dayState.isLoading = false;
+            dayState.error = null;
+            renderCalendarSidebar();
         } catch (error) {
-            this.showJsonError('Invalid JSON format. Cannot format.');
+            if (dayState.requestId !== requestId) {
+                return;
+            }
+            dayState.filteredItems = [];
+            dayState.filteredTotal = 0;
+            dayState.allItems = [];
+            dayState.allTotal = 0;
+            dayState.isLoading = false;
+            dayState.error = error.message;
+            renderCalendarSidebar();
         }
     }
 
-    validateJson() {
+    async function loadSessions({ force = false } = {}) {
+        if (state.sessions.loaded && !force) {
+            return;
+        }
+        el.sessionsContainer.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i><p>Loading listening sessions...</p></div>';
         try {
-            const editor = document.getElementById('json-editor');
-            JSON.parse(editor.value);
-            
-            const status = document.getElementById('json-status');
-            status.className = 'json-editor-status text-success';
-            status.innerHTML = '✓ Valid JSON';
-            
-            this.showJsonSuccess('JSON is valid');
+            const data = await rawFetch('/api/activity/sessions?limit=50');
+            state.sessions.items = data.items || [];
+            state.sessions.total = data.total || state.sessions.items.length;
+            state.sessions.loaded = true;
+            renderSessions();
         } catch (error) {
-            const status = document.getElementById('json-status');
-            status.className = 'json-editor-status text-danger';
-            status.innerHTML = '✗ Invalid JSON';
-            
-            this.showJsonError(`JSON Error: ${error.message}`);
+            el.sessionsContainer.innerHTML = '<p class="error-text">Unable to load sessions.</p>';
+            showPopup('error', `Unable to load sessions: ${error.message}`);
         }
     }
 
-    onJsonContentChange() {
-        const editor = document.getElementById('json-editor');
-        this.jsonEditor.isModified = editor.value !== this.jsonEditor.originalContent;
-        this.updateJsonUI();
-        this.updateJsonStats();
-        
-        // Auto-validate
+    function renderSessions() {
+        el.sessionsContainer.innerHTML = '';
+        if (!state.sessions.items.length) {
+            el.sessionsContainer.innerHTML = '<p class="empty-state">No sessions detected yet.</p>';
+            el.sessionCount.textContent = '0 Sessions';
+            return;
+        }
+        const fragment = document.createDocumentFragment();
+        state.sessions.items.forEach((session, index) => {
+            const card = document.createElement('article');
+            card.className = 'session-card';
+            const header = document.createElement('div');
+            header.className = 'session-header';
+            const info = document.createElement('div');
+            info.className = 'session-info';
+            info.innerHTML = `<h3>Session ${state.sessions.total - index}</h3>
+                <div class="session-meta">
+                    <span>${formatDateTime(session.start)}</span>
+                    <span>${formatDateTime(session.end)}</span>
+                    <span>${formatDuration(session.durationMinutes)}</span>
+                </div>`;
+            header.appendChild(info);
+            const mood = document.createElement('div');
+            mood.className = 'session-mood-indicator session-mood-neutral';
+            mood.textContent = `${session.trackCount} tracks`;
+            header.appendChild(mood);
+            card.appendChild(header);
+
+            const list = document.createElement('div');
+            list.className = 'session-songs';
+            const tracksToShow = session.tracks.slice(0, 12);
+            tracksToShow.forEach((track) => {
+                const item = document.createElement('div');
+                item.className = 'session-song';
+                const cover = document.createElement('img');
+                cover.className = 'session-song-cover';
+                cover.src = track.imageUrl || '';
+                cover.alt = track.song || 'Track cover';
+                cover.addEventListener('error', () => {
+                    cover.classList.add('session-song-cover-placeholder');
+                    cover.src = '';
+                });
+                const text = document.createElement('div');
+                text.className = 'session-song-info';
+                text.innerHTML = `<div class="session-song-title">${track.song || 'Unknown song'}</div>
+                    <div class="session-song-artist">${track.artist || 'Unknown artist'}</div>`;
+                item.appendChild(cover);
+                item.appendChild(text);
+                list.appendChild(item);
+            });
+            card.appendChild(list);
+            if (session.tracks.length > tracksToShow.length) {
+                const more = document.createElement('div');
+                more.className = 'session-toggle';
+                const btn = document.createElement('button');
+                btn.className = 'session-toggle-btn';
+                btn.innerHTML = `<i class="fas fa-list"></i> View all ${session.tracks.length} tracks`;
+                btn.addEventListener('click', () => {
+                    list.innerHTML = '';
+                    session.tracks.forEach((track) => {
+                        const item = document.createElement('div');
+                        item.className = 'session-song';
+                        const cover = document.createElement('img');
+                        cover.className = 'session-song-cover';
+                        cover.src = track.imageUrl || '';
+                        cover.alt = track.song || 'Track cover';
+                        cover.addEventListener('error', () => {
+                            cover.classList.add('session-song-cover-placeholder');
+                            cover.src = '';
+                        });
+                        const text = document.createElement('div');
+                        text.className = 'session-song-info';
+                        text.innerHTML = `<div class="session-song-title">${track.song || 'Unknown song'}</div>
+                            <div class="session-song-artist">${track.artist || 'Unknown artist'}</div>`;
+                        item.appendChild(cover);
+                        item.appendChild(text);
+                        list.appendChild(item);
+                    });
+                    btn.remove();
+                });
+                more.appendChild(btn);
+                card.appendChild(more);
+            }
+            fragment.appendChild(card);
+        });
+        el.sessionsContainer.appendChild(fragment);
+        el.sessionCount.textContent = `${state.sessions.total.toLocaleString()} Sessions`;
+    }
+
+    function updateJsonMeta(filename, size) {
+        el.jsonFileName.textContent = filename === 'activity' ? 'Activity Log' : 'Diary Log';
+        el.jsonSizeMeta.textContent = formatBytes(size || 0);
+    }
+
+    function updateJsonStats() {
+        const content = el.jsonEditor.value;
+        const lines = content.split('\n');
+        el.jsonLines.textContent = lines.length.toLocaleString();
+        el.jsonChars.textContent = content.length.toLocaleString();
+        const byteSize = new Blob([content]).size;
+        el.jsonSizeStats.textContent = formatBytes(byteSize);
+        renderLineNumbers(lines.length);
+    }
+
+    function renderLineNumbers(count) {
+        const numbers = [];
+        for (let i = 1; i <= count; i += 1) {
+            numbers.push(i);
+        }
+        el.jsonLineNumbers.textContent = numbers.join('\n');
+    }
+
+    async function loadJsonEditor() {
+        el.jsonStatus.textContent = 'Loading...';
         try {
-            JSON.parse(editor.value);
-            const status = document.getElementById('json-status');
-            status.className = 'json-editor-status text-success';
-            status.innerHTML = '✓ Valid JSON';
+            const file = state.jsonEditor.activeFile;
+            const data = await rawFetch(`/api/json?file=${file}`);
+            el.jsonEditor.value = data.content || '';
+            state.jsonEditor.original = data.content || '';
+            state.jsonEditor.isDirty = false;
+            state.jsonEditor.loadedOnce = true;
+            updateJsonMeta(file, data.size || 0);
+            updateJsonStats();
+            el.jsonStatus.textContent = '✓ Ready';
         } catch (error) {
-            const status = document.getElementById('json-status');
-            status.className = 'json-editor-status text-warning';
-            status.innerHTML = '⚠ Syntax Error';
+            el.jsonStatus.textContent = '⚠️ Unable to load file';
+            showPopup('error', `Unable to load JSON: ${error.message}`);
         }
     }
 
-    updateJsonUI() {
-        const saveBtn = document.getElementById('json-save-btn');
-        const fileName = document.getElementById('json-file-name');
-        
-        if (saveBtn) {
-            saveBtn.disabled = !this.jsonEditor.isModified;
-            saveBtn.textContent = this.jsonEditor.isModified ? '💾 Save Changes' : '💾 Saved';
-        }
-        
-        if (fileName) {
-            const fileNames = {
-                'activity': 'Activity Data (Song History)',
-                'diary': 'Diary Data (Personal Entries)'
-            };
-            const displayName = fileNames[this.jsonEditor.currentFile] || this.jsonEditor.currentFile;
-            fileName.textContent = `${displayName}${this.jsonEditor.isModified ? ' (modified)' : ''}`;
+    function formatJsonContent() {
+        try {
+            const parsed = JSON.parse(el.jsonEditor.value);
+            el.jsonEditor.value = JSON.stringify(parsed, null, 2);
+            updateJsonStats();
+            el.jsonStatus.textContent = '✓ Formatted';
+        } catch (error) {
+            el.jsonStatus.textContent = '⚠️ Invalid JSON';
+            showPopup('error', `Cannot format invalid JSON: ${error.message}`);
         }
     }
 
-    updateJsonLineNumbers() {
-        const editor = document.getElementById('json-editor');
-        const lineNumbers = document.getElementById('json-line-numbers');
-        
-        if (!editor || !lineNumbers) return;
-        
-        const lines = editor.value.split('\n').length;
-        const numbers = Array.from({ length: lines }, (_, i) => i + 1).join('\n');
-        lineNumbers.textContent = numbers;
-        
-        // Sync scroll
-        lineNumbers.scrollTop = editor.scrollTop;
+    function validateJsonContent() {
+        try {
+            JSON.parse(el.jsonEditor.value);
+            el.jsonStatus.textContent = '✓ JSON is valid';
+            showPopup('success', 'JSON is valid');
+        } catch (error) {
+            el.jsonStatus.textContent = '⚠️ Invalid JSON';
+            showPopup('error', `JSON invalid: ${error.message}`);
+        }
     }
 
-    updateJsonStats() {
-        const editor = document.getElementById('json-editor');
-        if (!editor) return;
-        
-        const content = editor.value;
-        const lines = content.split('\n').length;
-        const chars = content.length;
-        const size = new Blob([content]).size;
-        
-        const linesSpan = document.getElementById('json-lines');
-        const charsSpan = document.getElementById('json-chars');
-        const sizeSpan = document.getElementById('json-size');
-        
-        if (linesSpan) linesSpan.textContent = lines;
-        if (charsSpan) charsSpan.textContent = chars;
-        if (sizeSpan) sizeSpan.textContent = this.formatBytes(size);
+    async function saveJsonContent() {
+        const content = el.jsonEditor.value;
+        try {
+            JSON.parse(content);
+        } catch (error) {
+            el.jsonStatus.textContent = '⚠️ Invalid JSON';
+            showPopup('error', 'Fix JSON errors before saving.');
+            return;
+        }
+        try {
+            await rawFetch('/api/json', {
+                method: 'PUT',
+                body: {
+                    file: state.jsonEditor.activeFile,
+                    content,
+                },
+            });
+            el.jsonStatus.textContent = '✓ Saved';
+            state.jsonEditor.original = content;
+            if (state.jsonEditor.activeFile === 'activity') {
+                await loadSummary();
+                await loadRecent({ reset: true });
+                await executeSearch();
+            }
+            showPopup('success', 'Changes saved successfully');
+        } catch (error) {
+            el.jsonStatus.textContent = '⚠️ Save failed';
+            showPopup('error', `Unable to save: ${error.message}`);
+        }
     }
 
-    formatBytes(bytes) {
-        if (bytes === 0) return '0 B';
-        const k = 1024;
-        const sizes = ['B', 'KB', 'MB', 'GB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-    }
+    function attachEventListeners() {
+        if (el.loginForm) {
+            el.loginForm.addEventListener('submit', async (event) => {
+                event.preventDefault();
+                clearLoginError();
+                const password = el.passwordInput.value.trim();
+                if (!password && state.token !== 'dev-no-auth') {
+                    showLoginError('Password required');
+                    return;
+                }
+                try {
+                    const token = await login(password);
+                    storeToken(token);
+                    setLoginVisible(false);
+                    await bootstrapAfterLogin();
+                } catch (error) {
+                    showLoginError('Invalid password, please try again.');
+                }
+            });
+        }
 
-    showJsonError(message) {
-        this.showJsonPopup(message, 'error');
-    }
-
-    showJsonSuccess(message) {
-        this.showJsonPopup(message, 'success');
-    }
-
-    showJsonPopup(message, type) {
-        // Remove existing popups
-        document.querySelectorAll('.json-error-popup, .json-success-popup').forEach(popup => {
-            popup.remove();
+        el.refreshRecentBtn.addEventListener('click', () => {
+            loadRecent({ reset: true });
         });
 
-        const popup = document.createElement('div');
-        popup.className = type === 'error' ? 'json-error-popup' : 'json-success-popup';
-        popup.textContent = message;
-        
-        document.body.appendChild(popup);
-        
-        // Auto remove after 4 seconds
-        setTimeout(() => {
-            popup.remove();
-        }, 4000);
+        el.recentLoadMore.addEventListener('click', () => {
+            loadRecent();
+        });
+
+        el.searchAddBtn.addEventListener('click', () => {
+            addSongsFromInput();
+        });
+
+        el.searchClearBtn.addEventListener('click', () => {
+            state.search.selectedSongs = [];
+            state.search.terms = '';
+            el.searchInput.value = '';
+            renderSelectedSongs();
+            executeSearch();
+            clearSearchSuggestions();
+        });
+
+        el.searchInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                addSongsFromInput();
+            }
+        });
+
+        el.searchInput.addEventListener('input', handleSearchInputChange);
+
+        if (el.searchSuggestions) {
+            el.searchSuggestions.addEventListener('mousedown', handleSuggestionContainerClick);
+        }
+
+        document.addEventListener('click', handleSuggestionOutsideClick);
+
+        el.calendarMonths.addEventListener('change', () => {
+            state.calendar.months = Number(el.calendarMonths.value);
+            loadCalendar();
+        });
+
+        if (el.calendarSidebarClose) {
+            el.calendarSidebarClose.addEventListener('click', () => {
+                if (el.calendarSidebarClose.disabled) {
+                    return;
+                }
+                clearCalendarDaySelection();
+            });
+        }
+
+        el.jsonFileSelect.addEventListener('change', () => {
+            state.jsonEditor.activeFile = el.jsonFileSelect.value;
+            loadJsonEditor();
+        });
+        el.jsonLoadBtn.addEventListener('click', () => loadJsonEditor());
+        el.jsonFormatBtn.addEventListener('click', () => formatJsonContent());
+        el.jsonValidateBtn.addEventListener('click', () => validateJsonContent());
+        el.jsonSaveBtn.addEventListener('click', () => saveJsonContent());
+        el.jsonEditor.addEventListener('input', () => {
+            state.jsonEditor.isDirty = el.jsonEditor.value !== state.jsonEditor.original;
+            updateJsonStats();
+        });
+
+        el.navItems.forEach((item) => {
+            item.addEventListener('click', () => {
+                const tab = item.dataset.tab;
+                setActiveTab(tab);
+            });
+        });
     }
-}
 
-// Global functions for inline event handlers
-window.filterByMood = function() {
-    dashboard.filterByMood();
-};
+    function addSongsFromInput() {
+        const rawValue = el.searchInput.value.trim();
+        if (!rawValue) {
+            return;
+        }
+        const entries = rawValue.split(',').map((item) => item.trim()).filter(Boolean);
+        addSelectedSongs(entries);
+    }
 
-window.refreshData = function() {
-    dashboard.refreshData();
-};
+    function setActiveTab(tabId) {
+        el.navItems.forEach((item) => {
+            item.classList.toggle('active', item.dataset.tab === tabId);
+        });
+        el.tabPanes.forEach((pane) => {
+            pane.classList.toggle('active', pane.id === `${tabId}-tab`);
+        });
+        if (tabId === 'sessions') {
+            loadSessions();
+        }
+        if (tabId === 'json-editor') {
+            if (!state.jsonEditor.loadedOnce) {
+                loadJsonEditor();
+                state.jsonEditor.loadedOnce = true;
+            }
+        }
+    }
 
-window.toggleSessionExpansion = function(sessionId) {
-    dashboard.toggleSessionExpansion(sessionId);
-};
+    async function bootstrapAfterLogin() {
+        await Promise.all([
+            loadSummary(),
+            loadRecent({ reset: true }),
+        ]);
+        renderSelectedSongs();
+        await Promise.all([
+            executeSearch(),
+            loadSessions(),
+            loadJsonEditor(),
+        ]);
+    }
 
-window.logout = function() {
-    dashboard.logout();
-};
+    async function attemptAutoLogin() {
+        const stored = localStorage.getItem('dashboardToken');
+        if (!stored) {
+            setLoginVisible(true);
+            return;
+        }
+        storeToken(stored);
+        try {
+            await loadSummary();
+            setLoginVisible(false);
+            await bootstrapAfterLogin();
+        } catch (error) {
+            storeToken(null);
+            setLoginVisible(true);
+        }
+    }
 
-window.showNewEntryModal = function() {
-    dashboard.showNewEntryModal();
-};
+    const controller = {
+        async refreshAll() {
+            await loadSummary();
+            await loadRecent({ reset: true });
+            await executeSearch();
+            await loadSessions({ force: true });
+        },
+        logout() {
+            storeToken(null);
+            state.recent = [];
+            state.sessions = { items: [], total: 0, loaded: false };
+            setLoginVisible(true);
+            clearSearchSuggestions();
+        },
+        exportTimelineData() {
+            if (!state.search.results.length) {
+                showPopup('error', 'Run a search before exporting.');
+                return;
+            }
+            const blob = new Blob([JSON.stringify(state.search.results, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const anchor = document.createElement('a');
+            anchor.href = url;
+            anchor.download = 'timeline-export.json';
+            anchor.click();
+            URL.revokeObjectURL(url);
+        },
+        resetTimelineView() {
+            state.search.selectedSongs = [];
+            state.search.terms = '';
+            el.searchInput.value = '';
+            renderSelectedSongs();
+            executeSearch();
+        },
+    };
 
-window.closeDiaryModal = function() {
-    dashboard.closeDiaryModal();
-};
+    window.refreshData = () => controller.refreshAll();
+    window.logout = () => controller.logout();
+    window.dashboard = {
+        exportTimelineData: () => controller.exportTimelineData(),
+        resetTimelineView: () => controller.resetTimelineView(),
+    };
+    window.showNewEntryModal = window.showNewEntryModal || (() => showPopup('error', 'Diary editing is not yet configured.'));
+    window.closeDiaryModal = window.closeDiaryModal || (() => {});
 
-window.updateSongMood = function(songId) {
-    dashboard.updateSongMood(songId);
-};
+    function init() {
+        attachEventListeners();
+        renderCalendarSidebar();
+        attemptAutoLogin();
+    }
 
-window.toggleQuickMoodEdit = function(songId) {
-    dashboard.toggleQuickMoodEdit(songId);
-};
-
-window.quickUpdateMood = function(songId) {
-    dashboard.quickUpdateMood(songId);
-};
-
-window.cancelQuickMoodEdit = function(songId) {
-    dashboard.cancelQuickMoodEdit(songId);
-};
-
-window.exportTimelineData = function() {
-    dashboard.exportTimelineData();
-};
-
-window.resetTimelineView = function() {
-    dashboard.resetTimelineView();
-};
-
-// Initialize dashboard when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    window.dashboard = new SpotifyDashboard();
-});
+    init();
+})();

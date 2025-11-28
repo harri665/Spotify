@@ -1,1002 +1,493 @@
-// Modern Web Dashboard for Lila's Spotify Activity with Analytics
-require('dotenv').config();
-const express = require('express');
-const fs = require('fs').promises;
 const path = require('path');
+const fs = require('fs');
+const fsp = require('fs').promises;
+const express = require('express');
+const compression = require('compression');
 const crypto = require('crypto');
-const OpenAI = require('openai');
+
+const PORT = parseInt(process.env.PORT, 10) || 3000;
+const ACTIVITY_LOG_PATH = process.env.ACTIVITY_LOG_PATH
+    ? path.resolve(process.env.ACTIVITY_LOG_PATH)
+    : path.join(__dirname, '..', 'lila-activity-log.json');
+const DIARY_LOG_PATH = process.env.DIARY_LOG_PATH
+    ? path.resolve(process.env.DIARY_LOG_PATH)
+    : path.join(__dirname, '..', 'manual-classifications.json');
+
+const PASSWORD = process.env.DASHBOARD_PASSWORD;
+const TOKEN_TTL_MINUTES = 12 * 60;
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+app.use(express.json({ limit: '5mb' }));
+app.use(compression());
 
-// Initialize OpenAI client
-let openai = null;
-if (process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY !== 'your_openai_api_key_here') {
-    openai = new OpenAI({
-        apiKey: process.env.OPENAI_API_KEY,
-    });
-    console.log('✅ OpenAI client initialized');
-} else {
-    console.log('⚠️  OPENAI_API_KEY not configured - using fallback classification');
+function safeDateValue(value) {
+    if (!value) {
+        return null;
+    }
+    const parsed = new Date(value);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
 }
 
-// Cache for OpenAI classifications to avoid repeated API calls and save costs
-const classificationCache = new Map();
-const CACHE_DURATION = 7 * 24 * 60 * 60 * 1000; // 7 days
-
-// Dashboard password (you can change this)
-const DASHBOARD_PASSWORD = process.env.DASHBOARD_PASSWORD || 'lila2025';
-
-// Session store (in production, use Redis or database)
-const sessions = new Map();
-
-// Middleware
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.json());
-
-// Authentication middleware
-const requireAuth = (req, res, next) => {
-    const sessionId = req.headers['x-session-id'];
-    
-    if (!sessionId || !sessions.has(sessionId)) {
-        return res.status(401).json({ error: 'Authentication required' });
+class ActivityStore {
+    constructor(filePath) {
+        this.filePath = filePath;
+        this.cache = null;
+        this.cacheKey = 0;
+        this.sessionsCache = null;
+        this.calendarCache = new Map();
+        this.summaryCache = null;
+        this.watchHandle = null;
     }
-    
-    const session = sessions.get(sessionId);
-    if (Date.now() > session.expiresAt) {
-        sessions.delete(sessionId);
-        return res.status(401).json({ error: 'Session expired' });
-    }
-    
-    // Extend session
-    session.expiresAt = Date.now() + (24 * 60 * 60 * 1000); // 24 hours
-    next();
-};
 
-// Authentication endpoints
-app.post('/api/auth/login', (req, res) => {
-    const { password } = req.body;
-    
-    if (password !== DASHBOARD_PASSWORD) {
-        return res.status(401).json({ error: 'Invalid password' });
-    }
-    
-    // Generate session
-    const sessionId = crypto.randomUUID();
-    const expiresAt = Date.now() + (24 * 60 * 60 * 1000); // 24 hours
-    
-    sessions.set(sessionId, {
-        createdAt: Date.now(),
-        expiresAt: expiresAt
-    });
-    
-    res.json({ 
-        sessionId: sessionId,
-        expiresAt: expiresAt
-    });
-});
-
-app.post('/api/auth/logout', (req, res) => {
-    const sessionId = req.headers['x-session-id'];
-    if (sessionId) {
-        sessions.delete(sessionId);
-    }
-    res.json({ success: true });
-});
-
-app.get('/api/auth/verify', requireAuth, (req, res) => {
-    res.json({ authenticated: true });
-});
-
-// Advanced song classification using OpenAI ChatGPT
-const classifySongWithOpenAI = async (song, artist, album) => {
-    try {
-        if (!openai) {
-            return classifySongTypeFallback(song, artist, album);
+    async ensureCache() {
+        const stats = await fsp.stat(this.filePath).catch(() => null);
+        if (!stats) {
+            this.cache = [];
+            this.cacheKey = Date.now();
+            this.sessionsCache = null;
+            this.calendarCache.clear();
+            this.summaryCache = null;
+            return this.cache;
         }
 
-        // Create cache key
-        const cacheKey = `${song}-${artist}-${album}`.toLowerCase();
-        
-        // Check cache first
-        if (classificationCache.has(cacheKey)) {
-            const cached = classificationCache.get(cacheKey);
-            if (Date.now() - cached.timestamp < CACHE_DURATION) {
-                return cached.mood;
+        if (this.cache && stats.mtimeMs === this.cacheKey) {
+            return this.cache;
+        }
+
+        const raw = await fsp.readFile(this.filePath, 'utf8');
+        let parsed;
+        try {
+            parsed = JSON.parse(raw);
+        } catch (error) {
+            console.error('Failed to parse activity log:', error.message);
+            parsed = [];
+        }
+
+        const enriched = parsed.map((entry, index) => {
+            const playedAt = safeDateValue(entry.loggedAt) || safeDateValue(entry.timestamp) || new Date(0);
+            return {
+                ...entry,
+                __index: index,
+                playedAt: playedAt.toISOString(),
+                playedAtMs: playedAt.getTime(),
+            };
+        }).sort((a, b) => a.playedAtMs - b.playedAtMs);
+
+        const sessionThresholdMs = 10 * 60 * 1000;
+        let currentSessionId = 0;
+        let previousPlayedAtMs = null;
+        let currentSessionStart = null;
+        let currentSessionStartMs = null;
+        enriched.forEach((entry) => {
+            if (previousPlayedAtMs === null || entry.playedAtMs - previousPlayedAtMs > sessionThresholdMs) {
+                currentSessionId += 1;
+                currentSessionStart = entry.playedAt;
+                currentSessionStartMs = entry.playedAtMs;
             }
-        }
-
-        // Prepare prompt for ChatGPT
-        const prompt = `Classify the mood/genre of this song based on the title, artist, and album. 
-
-Song: "${song}"
-Artist: "${artist}"
-Album: "${album}"
-
-Choose ONE of these categories that best fits:
-- energetic (high energy, pump-up, workout music)
-- sad (melancholy, depressing, emotional pain)
-- breakup (relationship endings, moving on, heartbreak)
-- love (romantic, affectionate, relationship happiness)
-- chill (relaxed, laid-back, easy listening)
-- angry (aggressive, frustrated, intense)
-- nostalgic (reminiscent, memories, past-focused)
-- confident (empowering, self-assured, boss vibes)
-- melodic (beautiful vocals, harmony-focused, musical)
-- party (celebration, dancing, nightlife)
-
-Only respond with the single word category, nothing else.`;
-
-        const completion = await openai.chat.completions.create({
-            model: "gpt-3.5-turbo",
-            messages: [
-                {
-                    role: "system",
-                    content: "You are a music expert that classifies songs into mood categories. You always respond with exactly one word from the provided categories."
-                },
-                {
-                    role: "user",
-                    content: prompt
-                }
-            ],
-            max_tokens: 10,
-            temperature: 0.3
+            entry.sessionId = currentSessionId;
+            entry.sessionStart = currentSessionStart;
+            entry.sessionStartMs = currentSessionStartMs;
+            previousPlayedAtMs = entry.playedAtMs;
         });
 
-        const classification = completion.choices[0]?.message?.content?.trim().toLowerCase();
-        
-        // Validate the response
-        const validMoods = ['energetic', 'sad', 'breakup', 'love', 'chill', 'angry', 'nostalgic', 'confident', 'melodic', 'party'];
-        const finalMood = validMoods.includes(classification) ? classification : 'melodic';
-        
-        // Cache the result
-        classificationCache.set(cacheKey, {
-            mood: finalMood,
-            timestamp: Date.now()
-        });
-
-        console.log(`[OpenAI] "${song}" by ${artist} → ${finalMood}`);
-        return finalMood;
-
-    } catch (error) {
-        console.warn(`[OpenAI] Error classifying "${song}" by ${artist}:`, error.message);
-        return classifySongTypeFallback(song, artist, album);
+        this.cache = enriched;
+        this.cacheKey = stats.mtimeMs;
+        this.sessionsCache = null;
+        this.calendarCache.clear();
+        this.summaryCache = null;
+        return this.cache;
     }
-};
 
-// Batch classification for multiple songs (more efficient)
-const classifyMultipleSongsWithOpenAI = async (songs) => {
-    try {
-        if (!openai || songs.length === 0) {
-            return songs.map(song => ({
-                ...song,
-                mood: classifySongTypeFallback(song.song, song.artist, song.album)
-            }));
+    getSummary(data) {
+        if (this.summaryCache) {
+            return this.summaryCache;
         }
-
-        // Check cache for all songs first
-        const results = [];
-        const uncachedSongs = [];
-        
-        for (const song of songs) {
-            const cacheKey = `${song.song}-${song.artist}-${song.album}`.toLowerCase();
-            if (classificationCache.has(cacheKey)) {
-                const cached = classificationCache.get(cacheKey);
-                if (Date.now() - cached.timestamp < CACHE_DURATION) {
-                    results.push({ ...song, mood: cached.mood });
-                    continue;
-                }
+        const totalSongs = data.length;
+        const artists = new Set();
+        data.forEach((item) => {
+            if (item.artist) {
+                artists.add(item.artist.toLowerCase());
             }
-            uncachedSongs.push(song);
+        });
+        const summary = {
+            totalSongs,
+            uniqueArtists: artists.size,
+            firstEntry: totalSongs ? data[0].playedAt : null,
+            latestEntry: totalSongs ? data[totalSongs - 1].playedAt : null,
+        };
+        this.summaryCache = summary;
+        return summary;
+    }
+
+    getRecent(data, offset, limit) {
+        const start = Math.max(data.length - offset - limit, 0);
+        const end = Math.max(data.length - offset, 0);
+        const items = data.slice(start, end).reverse();
+        return { items, total: data.length };
+    }
+
+    search(data, queryTerms, songTitles) {
+        if ((!queryTerms || !queryTerms.length) && (!songTitles || !songTitles.length)) {
+            return [];
         }
-
-        // Process uncached songs in batches of 5 to save API calls
-        if (uncachedSongs.length > 0) {
-            const batchSize = 5;
-            for (let i = 0; i < uncachedSongs.length; i += batchSize) {
-                const batch = uncachedSongs.slice(i, i + batchSize);
-                
-                const songList = batch.map((song, index) => 
-                    `${index + 1}. "${song.song}" by ${song.artist} (Album: ${song.album})`
-                ).join('\n');
-
-                const prompt = `Classify the mood/genre of these songs. For each song, choose ONE category:
-
-Songs:
-${songList}
-
-Categories:
-- energetic (high energy, pump-up, workout music)
-- sad (melancholy, depressing, emotional pain)
-- breakup (relationship endings, moving on, heartbreak)
-- love (romantic, affectionate, relationship happiness)
-- chill (relaxed, laid-back, easy listening)
-- angry (aggressive, frustrated, intense)
-- nostalgic (reminiscent, memories, past-focused)
-- confident (empowering, self-assured, boss vibes)
-- melodic (beautiful vocals, harmony-focused, musical)
-- party (celebration, dancing, nightlife)
-
-Respond with only the numbers and categories, like:
-1. energetic
-2. sad
-3. love
-etc.`;
-
-                const completion = await openai.chat.completions.create({
-                    model: "gpt-3.5-turbo",
-                    messages: [
-                        {
-                            role: "system",
-                            content: "You are a music expert that classifies songs into mood categories. Always respond in the exact format requested."
-                        },
-                        {
-                            role: "user",
-                            content: prompt
-                        }
-                    ],
-                    max_tokens: 100,
-                    temperature: 0.3
-                });
-
-                const response = completion.choices[0]?.message?.content?.trim();
-                const lines = response.split('\n');
-                
-                // Parse results and cache them
-                const validMoods = ['energetic', 'sad', 'breakup', 'love', 'chill', 'angry', 'nostalgic', 'confident', 'melodic', 'party'];
-                
-                batch.forEach((song, index) => {
-                    let mood = 'melodic'; // default
-                    
-                    if (lines[index]) {
-                        const match = lines[index].match(/\d+\.\s*(\w+)/);
-                        if (match && validMoods.includes(match[1].toLowerCase())) {
-                            mood = match[1].toLowerCase();
-                        }
-                    }
-                    
-                    // Cache the result
-                    const cacheKey = `${song.song}-${song.artist}-${song.album}`.toLowerCase();
-                    classificationCache.set(cacheKey, {
-                        mood: mood,
-                        timestamp: Date.now()
-                    });
-                    
-                    results.push({ ...song, mood });
-                });
-
-                // Small delay to respect rate limits
-                await new Promise(resolve => setTimeout(resolve, 100));
+        const terms = (queryTerms || []).map((term) => term.toLowerCase());
+        const songTargets = (songTitles || []).map((title) => title.toLowerCase());
+        return data.filter((entry) => {
+            const songMatch = songTargets.length
+                ? songTargets.some((target) => entry.song && entry.song.toLowerCase().includes(target))
+                : true;
+            if (!songMatch) {
+                return false;
             }
-        }
-
-        console.log(`[OpenAI] Batch classified ${results.length} songs`);
-        return results;
-
-    } catch (error) {
-        console.warn('[OpenAI] Error in batch classification:', error.message);
-        return songs.map(song => ({
-            ...song,
-            mood: classifySongTypeFallback(song.song, song.artist, song.album)
+            if (!terms.length) {
+                return true;
+            }
+            const haystack = [entry.song, entry.artist, entry.album].filter(Boolean).join(' ').toLowerCase();
+            return terms.every((term) => haystack.includes(term));
+        }).map((entry) => ({
+            song: entry.song,
+            artist: entry.artist,
+            album: entry.album,
+            timestamp: entry.timestamp,
+            playedAt: entry.playedAt,
+            spotifyUrl: entry.spotifyUrl,
+            imageUrl: entry.imageUrl,
+            loggedAt: entry.loggedAt,
+            __index: entry.__index,
         }));
     }
-};
 
-// Keep the original fallback method
-const classifySongTypeFallback = (song, artist, album) => {
-    const text = `${song} ${artist} ${album}`.toLowerCase();
-    
-    // Simple classification keywords
-    const classifications = {
-        'energetic': ['pump', 'energy', 'fire', 'hype', 'party', 'dance', 'club', 'bounce'],
-        'sad': ['sad', 'cry', 'tear', 'hurt', 'pain', 'broken', 'lonely', 'miss', 'gone'],
-        'breakup': ['ex', 'over', 'leave', 'goodbye', 'forget', 'move on', 'done', 'through'],
-        'love': ['love', 'heart', 'baby', 'honey', 'forever', 'together', 'kiss', 'romance'],
-        'chill': ['chill', 'vibe', 'calm', 'smooth', 'relax', 'easy', 'soft', 'mellow'],
-        'angry': ['mad', 'hate', 'fight', 'rage', 'angry', 'fuck', 'kill', 'destroy'],
-        'nostalgic': ['remember', 'old', 'back', 'time', 'past', 'memories', 'used to'],
-        'confident': ['boss', 'king', 'queen', 'winner', 'rich', 'money', 'success']
-    };
-    
-    for (const [type, keywords] of Object.entries(classifications)) {
-        if (keywords.some(keyword => text.includes(keyword))) {
-            return type;
+    async getSessions(data) {
+        if (this.sessionsCache) {
+            return this.sessionsCache;
         }
+        const grouped = new Map();
+        data.forEach((entry) => {
+            if (!entry.sessionId) {
+                return;
+            }
+            if (!grouped.has(entry.sessionId)) {
+                grouped.set(entry.sessionId, []);
+            }
+            grouped.get(entry.sessionId).push(entry);
+        });
+
+        const sessions = Array.from(grouped.entries()).map(([sessionId, entries]) => {
+            const sorted = entries.slice().sort((a, b) => a.playedAtMs - b.playedAtMs);
+            const first = sorted[0];
+            const last = sorted[sorted.length - 1];
+            const durationMinutes = first && last
+                ? Math.max(1, Math.round((last.playedAtMs - first.playedAtMs) / 60000))
+                : 0;
+            return {
+                sessionId,
+                start: first ? first.playedAt : null,
+                end: last ? last.playedAt : null,
+                durationMinutes,
+                trackCount: sorted.length,
+                tracks: sorted.map((track) => ({
+                    song: track.song,
+                    artist: track.artist,
+                    album: track.album,
+                    playedAt: track.playedAt,
+                    playedAtMs: track.playedAtMs,
+                    spotifyUrl: track.spotifyUrl,
+                    imageUrl: track.imageUrl,
+                    loggedAt: track.loggedAt,
+                    sessionId: track.sessionId,
+                })),
+            };
+        }).sort((a, b) => {
+            if (!a.start || !b.start) {
+                return 0;
+            }
+            return new Date(b.start) - new Date(a.start);
+        });
+
+        this.sessionsCache = sessions;
+        return sessions;
     }
-    
-    return 'melodic'; // Default to melodic instead of neutral
-};
 
-
-// Manual classification override (loads from JSON file)
-let manualClassifications = null;
-const manualClassificationsPath = path.join(__dirname, '..', 'manual-classifications.json');
-
-async function loadManualClassifications() {
-    if (manualClassifications !== null) return manualClassifications;
-    try {
-        const data = await fs.readFile(manualClassificationsPath, 'utf8');
-        const parsed = JSON.parse(data);
-        // Convert to a lookup map for fast access
-        manualClassifications = new Map();
-        Object.values(parsed).forEach(entry => {
-            if (entry.song && entry.artist && entry.mood) {
-                const key = `${entry.song.toLowerCase()}|${entry.artist.toLowerCase()}|${(entry.album||'').toLowerCase()}`;
-                manualClassifications.set(key, entry.mood.toLowerCase());
+    async getCalendar(data, months, songFilter) {
+        const cacheKey = `${months || 'all'}::${(songFilter || []).join('|').toLowerCase()}`;
+        if (this.calendarCache.has(cacheKey)) {
+            return this.calendarCache.get(cacheKey);
+        }
+        const result = new Map();
+        const cutoffDate = months ? new Date() : null;
+        if (cutoffDate && months) {
+            cutoffDate.setUTCMonth(cutoffDate.getUTCMonth() - months);
+            cutoffDate.setUTCHours(0, 0, 0, 0);
+        }
+        const songTargets = (songFilter || []).map((title) => title.toLowerCase());
+        data.forEach((entry) => {
+            if (songTargets.length && !songTargets.some((target) => entry.song && entry.song.toLowerCase().includes(target))) {
+                return;
+            }
+            const playedAt = safeDateValue(entry.playedAt);
+            if (!playedAt) {
+                return;
+            }
+            if (cutoffDate && playedAt < cutoffDate) {
+                return;
+            }
+            const key = playedAt.toISOString().slice(0, 10);
+            if (!result.has(key)) {
+                result.set(key, { date: key, count: 0, songs: new Map() });
+            }
+            const dayInfo = result.get(key);
+            dayInfo.count += 1;
+            if (songFilter && songFilter.length) {
+                const songKey = entry.song || 'Unknown';
+                const current = dayInfo.songs.get(songKey) || 0;
+                dayInfo.songs.set(songKey, current + 1);
             }
         });
-        return manualClassifications;
-    } catch (e) {
-        manualClassifications = new Map();
-        return manualClassifications;
+        const payload = Array.from(result.values()).map((item) => ({
+            date: item.date,
+            count: item.count,
+            songs: item.songs.size ? Array.from(item.songs.entries()).map(([song, count]) => ({ song, count })) : undefined,
+        })).sort((a, b) => a.date.localeCompare(b.date));
+        this.calendarCache.set(cacheKey, payload);
+        return payload;
+    }
+
+    getDayEntries(data, date, songFilter) {
+        if (!date) {
+            return [];
+        }
+        const normalized = date.toString().slice(0, 10);
+        const songTargets = (songFilter || []).map((title) => title.toLowerCase());
+        const matches = data.filter((entry) => {
+            const entryDate = entry.playedAt ? entry.playedAt.slice(0, 10) : null;
+            if (entryDate !== normalized) {
+                return false;
+            }
+            if (!songTargets.length) {
+                return true;
+            }
+            if (!entry.song) {
+                return false;
+            }
+            const lower = entry.song.toLowerCase();
+            return songTargets.some((target) => lower.includes(target));
+        }).sort((a, b) => b.playedAtMs - a.playedAtMs);
+
+        return matches.map((entry) => ({
+            song: entry.song,
+            artist: entry.artist,
+            album: entry.album,
+            playedAt: entry.playedAt,
+            loggedAt: entry.loggedAt,
+            timestamp: entry.timestamp,
+            spotifyUrl: entry.spotifyUrl,
+            imageUrl: entry.imageUrl,
+            moodType: entry.moodType,
+            durationMs: entry.durationMs,
+            __index: entry.__index,
+            sessionId: entry.sessionId,
+            sessionStart: entry.sessionStart,
+            playedAtMs: entry.playedAtMs,
+        }));
     }
 }
 
-// Main classification function using manual override, OpenAI, or fallback
-const classifySongType = async (song, artist, album, timestamp = null, context = {}) => {
-    // 1. Check manual override first
-    const manualMap = await loadManualClassifications();
-    const key = `${(song||'').toLowerCase()}|${(artist||'').toLowerCase()}|${(album||'').toLowerCase()}`;
-    if (manualMap.has(key)) {
-        return manualMap.get(key);
-    }
-    // 2. Try OpenAI classification if available
-    if (openai) {
-        return await classifySongWithOpenAI(song, artist, album);
-    }
-    // 3. Fallback to pattern recognition if OpenAI is not available
-    return classifySongTypeFallback(song, artist, album);
-};
+const activityStore = new ActivityStore(ACTIVITY_LOG_PATH);
 
-// API endpoint to get Lila's activity data with enhanced analytics
-app.get('/api/lila-activity', requireAuth, async (req, res) => {
+function startWatcher(store) {
+    if (!fs.existsSync(store.filePath)) {
+        return;
+    }
+    if (store.watchHandle) {
+        return;
+    }
     try {
-        // Use shared directory in Docker, parent directory otherwise
-        const logPath = process.env.NODE_ENV === 'production' 
-            ? '/app/shared/lila-activity-log.json'
-            : path.join(__dirname, '..', 'lila-activity-log.json');
-        
-        // Check if file exists and is actually a file
-        try {
-            const stats = await fs.stat(logPath);
-            if (stats.isDirectory()) {
-                console.log('Warning: Log path is a directory, not a file');
-                return res.json([]);
-            }
-        } catch (statError) {
-            if (statError.code === 'ENOENT') {
-                // File doesn't exist yet, return empty array
-                return res.json([]);
-            }
-            throw statError;
-        }
-        
-        const data = await fs.readFile(logPath, 'utf8');
-        const activities = JSON.parse(data);
-        
-        // Enhance each activity with mood classification using OpenAI
-        let enhancedActivities = [];
-        
-        // Process in batches for better performance with OpenAI
-        if (openai && activities.length > 10) {
-            // Use batch processing for large datasets
-            const classified = await classifyMultipleSongsWithOpenAI(activities);
-            
-            enhancedActivities = classified.map(activity => ({
-                ...activity,
-                moodType: activity.mood,
-                id: `${activity.song}-${activity.artist}-${activity.loggedAt}`.replace(/[^a-zA-Z0-9]/g, '-')
-            }));
-        } else {
-            // Process individually for smaller datasets or fallback
-            for (let i = 0; i < activities.length; i++) {
-                const activity = activities[i];
-                const moodType = await classifySongType(
-                    activity.song, 
-                    activity.artist, 
-                    activity.album, 
-                    activity.loggedAt
-                );
-                
-                enhancedActivities.push({
-                    ...activity,
-                    moodType,
-                    id: `${activity.song}-${activity.artist}-${activity.loggedAt}`.replace(/[^a-zA-Z0-9]/g, '-')
-                });
-            }
-        }
-        
-        // Sort by timestamp (newest first)
-        enhancedActivities.sort((a, b) => new Date(b.loggedAt) - new Date(a.loggedAt));
-        
-        res.json(enhancedActivities);
-    } catch (error) {
-        console.error('Error reading activity log:', error.message);
-        res.status(500).json({ error: 'Failed to read activity log' });
-    }
-});
-
-// API endpoint for analytics data
-app.get('/api/analytics', requireAuth, async (req, res) => {
-    try {
-        const logPath = process.env.NODE_ENV === 'production' 
-            ? '/app/shared/lila-activity-log.json'
-            : path.join(__dirname, '..', 'lila-activity-log.json');
-        
-        try {
-            await fs.stat(logPath);
-        } catch (statError) {
-            if (statError.code === 'ENOENT') {
-                return res.json({
-                    totalSongs: 0,
-                    uniqueArtists: 0,
-                    moodDistribution: {},
-                    topArtists: [],
-                    listeningPatterns: {}
-                });
-            }
-            throw statError;
-        }
-        
-        const data = await fs.readFile(logPath, 'utf8');
-        const activities = JSON.parse(data);
-        
-        // Generate analytics
-        const analytics = await generateAnalytics(activities);
-        res.json(analytics);
-    } catch (error) {
-        console.error('Error generating analytics:', error.message);
-        res.status(500).json({ error: 'Failed to generate analytics' });
-    }
-});
-
-// Generate comprehensive analytics
-const generateAnalytics = async (activities) => {
-    const moodCounts = {};
-    const artistCounts = {};
-    const hourlyListening = {};
-    const dailyListening = {};
-    
-    // Process all activities with mood classification using OpenAI
-    let activitiesWithMood = [];
-    
-    // Use batch processing for better performance with OpenAI
-    if (openai && activities.length > 10) {
-        activitiesWithMood = await classifyMultipleSongsWithOpenAI(activities);
-    } else {
-        // Process individually for smaller datasets or fallback
-        for (let i = 0; i < activities.length; i++) {
-            const activity = activities[i];
-            const mood = await classifySongType(
-                activity.song, 
-                activity.artist, 
-                activity.album, 
-                activity.loggedAt
-            );
-            
-            activitiesWithMood.push({
-                ...activity,
-                mood
-            });
-        }
-    }
-    
-    activitiesWithMood.forEach(activity => {
-        // Mood distribution
-        moodCounts[activity.mood] = (moodCounts[activity.mood] || 0) + 1;
-        
-        // Artist frequency
-        artistCounts[activity.artist] = (artistCounts[activity.artist] || 0) + 1;
-        
-        // Listening patterns
-        const date = new Date(activity.loggedAt);
-        const hour = date.getHours();
-        const day = date.toDateString();
-        
-        hourlyListening[hour] = (hourlyListening[hour] || 0) + 1;
-        dailyListening[day] = (dailyListening[day] || 0) + 1;
-    });
-    
-    // Top artists (limit to top 10)
-    const topArtists = Object.entries(artistCounts)
-        .sort(([,a], [,b]) => b - a)
-        .slice(0, 10)
-        .map(([artist, count]) => ({ artist, count }));
-    
-    // Generate listening sessions
-    const sessions = generateListeningSessions(activitiesWithMood);
-    
-    return {
-        totalSongs: activities.length,
-        uniqueArtists: Object.keys(artistCounts).length,
-        moodDistribution: moodCounts,
-        topArtists,
-        listeningPatterns: {
-            hourly: hourlyListening,
-            daily: Object.keys(dailyListening).length
-        },
-        recentActivity: activitiesWithMood.slice(0, 5).map(a => ({
-            song: a.song,
-            artist: a.artist,
-            timestamp: a.loggedAt,
-            mood: a.mood
-        })),
-        sessions: sessions
-    };
-};
-
-// Diary endpoints
-app.get('/api/diary', requireAuth, async (req, res) => {
-    try {
-        const diaryPath = process.env.NODE_ENV === 'production' 
-            ? '/app/shared/diary-entries.json'
-            : path.join(__dirname, '..', 'diary-entries.json');
-        
-        try {
-            const data = await fs.readFile(diaryPath, 'utf8');
-            const entries = JSON.parse(data);
-            
-            // Sort by date (newest first)
-            entries.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-            
-            res.json(entries);
-        } catch (error) {
-            if (error.code === 'ENOENT') {
-                res.json([]);
-            } else {
-                throw error;
-            }
-        }
-    } catch (error) {
-        console.error('Error reading diary entries:', error.message);
-        res.status(500).json({ error: 'Failed to read diary entries' });
-    }
-});
-
-app.post('/api/diary', requireAuth, async (req, res) => {
-    try {
-        const { title, content, mood, tags } = req.body;
-        
-        if (!title || !content) {
-            return res.status(400).json({ error: 'Title and content are required' });
-        }
-        
-        const diaryPath = process.env.NODE_ENV === 'production' 
-            ? '/app/shared/diary-entries.json'
-            : path.join(__dirname, '..', 'diary-entries.json');
-        
-        // Read existing entries
-        let entries = [];
-        try {
-            const data = await fs.readFile(diaryPath, 'utf8');
-            entries = JSON.parse(data);
-        } catch (error) {
-            if (error.code !== 'ENOENT') {
-                throw error;
-            }
-        }
-        
-        // Create new entry
-        const newEntry = {
-            id: crypto.randomUUID(),
-            title: title.trim(),
-            content: content.trim(),
-            mood: mood || 'neutral',
-            tags: tags || [],
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
-        };
-        
-        entries.unshift(newEntry);
-        
-        // Save entries
-        await fs.writeFile(diaryPath, JSON.stringify(entries, null, 2));
-        
-        res.json(newEntry);
-    } catch (error) {
-        console.error('Error creating diary entry:', error.message);
-        res.status(500).json({ error: 'Failed to create diary entry' });
-    }
-});
-
-app.put('/api/diary/:id', requireAuth, async (req, res) => {
-    try {
-        const { id } = req.params;
-        const { title, content, mood, tags } = req.body;
-        
-        const diaryPath = process.env.NODE_ENV === 'production' 
-            ? '/app/shared/diary-entries.json'
-            : path.join(__dirname, '..', 'diary-entries.json');
-        
-        const data = await fs.readFile(diaryPath, 'utf8');
-        const entries = JSON.parse(data);
-        
-        const entryIndex = entries.findIndex(entry => entry.id === id);
-        if (entryIndex === -1) {
-            return res.status(404).json({ error: 'Entry not found' });
-        }
-        
-        // Update entry
-        entries[entryIndex] = {
-            ...entries[entryIndex],
-            title: title?.trim() || entries[entryIndex].title,
-            content: content?.trim() || entries[entryIndex].content,
-            mood: mood || entries[entryIndex].mood,
-            tags: tags || entries[entryIndex].tags,
-            updatedAt: new Date().toISOString()
-        };
-        
-        await fs.writeFile(diaryPath, JSON.stringify(entries, null, 2));
-        
-        res.json(entries[entryIndex]);
-    } catch (error) {
-        console.error('Error updating diary entry:', error.message);
-        res.status(500).json({ error: 'Failed to update diary entry' });
-    }
-});
-
-app.delete('/api/diary/:id', requireAuth, async (req, res) => {
-    try {
-        const { id } = req.params;
-        
-        const diaryPath = process.env.NODE_ENV === 'production' 
-            ? '/app/shared/diary-entries.json'
-            : path.join(__dirname, '..', 'diary-entries.json');
-        
-        const data = await fs.readFile(diaryPath, 'utf8');
-        const entries = JSON.parse(data);
-        
-        const filteredEntries = entries.filter(entry => entry.id !== id);
-        
-        if (filteredEntries.length === entries.length) {
-            return res.status(404).json({ error: 'Entry not found' });
-        }
-        
-        await fs.writeFile(diaryPath, JSON.stringify(filteredEntries, null, 2));
-        
-        res.json({ success: true });
-    } catch (error) {
-        console.error('Error deleting diary entry:', error.message);
-        res.status(500).json({ error: 'Failed to delete diary entry' });
-    }
-});
-
-// API endpoint to update song mood
-app.put('/api/song/:id/mood', requireAuth, async (req, res) => {
-    try {
-        const { id } = req.params;
-        const { mood } = req.body;
-        
-        if (!mood) {
-            return res.status(400).json({ error: 'Mood is required' });
-        }
-        
-        // Validate mood
-        const validMoods = ['energetic', 'sad', 'breakup', 'love', 'chill', 'angry', 'nostalgic', 'confident', 'melodic', 'experimental', 'neutral'];
-        if (!validMoods.includes(mood)) {
-            return res.status(400).json({ error: 'Invalid mood value' });
-        }
-        
-        const logPath = process.env.NODE_ENV === 'production' 
-            ? '/app/shared/lila-activity-log.json'
-            : path.join(__dirname, '..', 'lila-activity-log.json');
-        
-        // Read current data
-        const data = await fs.readFile(logPath, 'utf8');
-        const activities = JSON.parse(data);
-        
-        // Find the activity by constructing the same ID format used in the frontend
-        let activityIndex = -1;
-        
-        // Try to find by ID (constructed in frontend)
-        for (let i = 0; i < activities.length; i++) {
-            const activity = activities[i];
-            const constructedId = `${activity.song}-${activity.artist}-${activity.loggedAt}`.replace(/[^a-zA-Z0-9]/g, '-');
-            if (constructedId === id) {
-                activityIndex = i;
-                break;
-            }
-        }
-        
-        if (activityIndex === -1) {
-            return res.status(404).json({ error: 'Song not found' });
-        }
-        
-        // Update the mood
-        activities[activityIndex].moodType = mood;
-        activities[activityIndex].moodManuallySet = true; // Flag to indicate manual override
-        activities[activityIndex].moodUpdatedAt = new Date().toISOString();
-        
-        // Create backup before saving
-        const backupPath = logPath + '.backup.' + Date.now();
-        try {
-            await fs.copyFile(logPath, backupPath);
-        } catch (error) {
-            console.warn('Failed to create backup:', error.message);
-        }
-        
-        // Save updated data
-        await fs.writeFile(logPath, JSON.stringify(activities, null, 2));
-        
-        res.json({ 
-            success: true, 
-            message: 'Song mood updated successfully',
-            song: activities[activityIndex]
+        store.watchHandle = fs.watch(store.filePath, { persistent: false }, () => {
+            store.cache = null;
+            store.sessionsCache = null;
+            store.calendarCache.clear();
+            store.summaryCache = null;
         });
-        
     } catch (error) {
-        console.error('Error updating song mood:', error.message);
-        res.status(500).json({ error: 'Failed to update song mood' });
+        console.warn('File watcher not available:', error.message);
     }
+}
+
+startWatcher(activityStore);
+
+function requireAuth(req, res, next) {
+    if (!PASSWORD) {
+        return next();
+    }
+    const header = req.headers.authorization;
+    if (!header || !header.startsWith('Bearer ')) {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
+    const token = header.slice(7);
+    const record = authTokens.get(token);
+    if (!record) {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
+    if (record.expiresAt < Date.now()) {
+        authTokens.delete(token);
+        return res.status(401).json({ error: 'Session expired' });
+    }
+    record.expiresAt = Date.now() + TOKEN_TTL_MINUTES * 60 * 1000;
+    return next();
+}
+
+const authTokens = new Map();
+
+app.post('/api/login', async (req, res) => {
+    if (!PASSWORD) {
+        return res.json({ token: 'dev-no-auth' });
+    }
+    const { password } = req.body || {};
+    if (!password || typeof password !== 'string') {
+        return res.status(400).json({ error: 'Password required' });
+    }
+    if (password !== PASSWORD) {
+        return res.status(401).json({ error: 'Invalid password' });
+    }
+    const token = crypto.randomUUID();
+    authTokens.set(token, { expiresAt: Date.now() + TOKEN_TTL_MINUTES * 60 * 1000 });
+    return res.json({ token });
 });
 
-// Raw JSON editing endpoints
-app.get('/api/raw/activity', requireAuth, async (req, res) => {
-    try {
-        const logPath = process.env.NODE_ENV === 'production' 
-            ? '/app/shared/lila-activity-log.json'
-            : path.join(__dirname, '..', 'lila-activity-log.json');
-        
-        const rawContent = req.query.raw === 'true'; // Query param to get raw content
-        
-        try {
-            const data = await fs.readFile(logPath, 'utf8');
-            
-            if (rawContent) {
-                // Return raw file content as string
-                res.json({ content: data, path: logPath, type: 'raw' });
-            } else {
-                // Return parsed JSON content for editing
-                const parsed = JSON.parse(data || '[]');
-                res.json(parsed);
-            }
-        } catch (error) {
-            if (error.code === 'ENOENT') {
-                if (rawContent) {
-                    res.json({ content: '[]', path: logPath, type: 'raw' });
-                } else {
-                    res.json([]);
-                }
-            } else {
-                throw error;
-            }
-        }
-    } catch (error) {
-        console.error('Error reading raw activity data:', error.message);
-        res.status(500).json({ error: 'Failed to read raw activity data' });
-    }
+app.use('/api', requireAuth);
+
+app.get('/api/ping', (req, res) => {
+    res.json({ ok: true, time: new Date().toISOString() });
 });
 
-app.get('/api/raw/diary', requireAuth, async (req, res) => {
-    try {
-        const diaryPath = process.env.NODE_ENV === 'production' 
-            ? '/app/shared/diary-entries.json'
-            : path.join(__dirname, '..', 'diary-entries.json');
-        
-        const rawContent = req.query.raw === 'true'; // Query param to get raw content
-        
-        try {
-            const data = await fs.readFile(diaryPath, 'utf8');
-            
-            if (rawContent) {
-                // Return raw file content as string
-                res.json({ content: data, path: diaryPath, type: 'raw' });
-            } else {
-                // Return parsed JSON content for editing
-                const parsed = JSON.parse(data || '[]');
-                res.json(parsed);
-            }
-        } catch (error) {
-            if (error.code === 'ENOENT') {
-                if (rawContent) {
-                    res.json({ content: '[]', path: diaryPath, type: 'raw' });
-                } else {
-                    res.json([]);
-                }
-            } else {
-                throw error;
-            }
-        }
-    } catch (error) {
-        console.error('Error reading raw diary data:', error.message);
-        res.status(500).json({ error: 'Failed to read raw diary data' });
-    }
+app.get('/api/activity/summary', async (req, res) => {
+    const data = await activityStore.ensureCache();
+    const summary = activityStore.getSummary(data);
+    res.json(summary);
 });
 
-app.put('/api/raw/activity', requireAuth, async (req, res) => {
-    try {
-        const { data } = req.body; // Expect structured data instead of raw content
-        
-        if (!data) {
-            return res.status(400).json({ error: 'Data is required' });
-        }
-        
-        // Convert to JSON string
-        const content = JSON.stringify(data, null, 2);
-        
-        const logPath = process.env.NODE_ENV === 'production' 
-            ? '/app/shared/lila-activity-log.json'
-            : path.join(__dirname, '..', 'lila-activity-log.json');
-        
-        // Create backup before overwriting
-        const backupPath = logPath + '.backup.' + Date.now();
-        try {
-            await fs.copyFile(logPath, backupPath);
-        } catch (error) {
-            // Backup failed, but continue if original file doesn't exist
-            if (error.code !== 'ENOENT') {
-                console.warn('Failed to create backup:', error.message);
-            }
-        }
-        
-        await fs.writeFile(logPath, content);
-        
-        res.json({ success: true, message: 'Activity data updated successfully' });
-    } catch (error) {
-        console.error('Error updating raw activity data:', error.message);
-        res.status(500).json({ error: 'Failed to update raw activity data' });
-    }
+app.get('/api/activity/recent', async (req, res) => {
+    const data = await activityStore.ensureCache();
+    const offset = Math.max(parseInt(req.query.offset, 10) || 0, 0);
+    const limit = Math.min(Math.max(parseInt(req.query.limit, 10) || 50, 1), 200);
+    const { items, total } = activityStore.getRecent(data, offset, limit);
+    res.json({ items, total, offset, limit });
 });
 
-app.put('/api/raw/diary', requireAuth, async (req, res) => {
-    try {
-        const { data } = req.body; // Expect structured data instead of raw content
-        
-        if (!data) {
-            return res.status(400).json({ error: 'Data is required' });
-        }
-        
-        // Convert to JSON string
-        const content = JSON.stringify(data, null, 2);
-        
-        
-        const diaryPath = process.env.NODE_ENV === 'production' 
-            ? '/app/shared/diary-entries.json'
-            : path.join(__dirname, '..', 'diary-entries.json');
-        
-        // Create backup before overwriting
-        const backupPath = diaryPath + '.backup.' + Date.now();
-        try {
-            await fs.copyFile(diaryPath, backupPath);
-        } catch (error) {
-            // Backup failed, but continue if original file doesn't exist
-            if (error.code !== 'ENOENT') {
-                console.warn('Failed to create backup:', error.message);
-            }
-        }
-        
-        await fs.writeFile(diaryPath, content);
-        
-        res.json({ success: true, message: 'Diary data updated successfully' });
-    } catch (error) {
-        console.error('Error updating raw diary data:', error.message);
-        res.status(500).json({ error: 'Failed to update raw diary data' });
-    }
+app.get('/api/activity/sessions', async (req, res) => {
+    const data = await activityStore.ensureCache();
+    const sessions = await activityStore.getSessions(data);
+    const offset = Math.max(parseInt(req.query.offset, 10) || 0, 0);
+    const limit = Math.min(Math.max(parseInt(req.query.limit, 10) || 25, 1), 100);
+    const sliced = sessions.slice(offset, offset + limit);
+    res.json({ items: sliced, total: sessions.length, offset, limit });
 });
 
-// Generate listening sessions with mood classification
-const generateListeningSessions = (activitiesWithMood) => {
-    if (activitiesWithMood.length === 0) return [];
-    
-    const sessions = [];
-    let currentSession = null;
-    const SESSION_GAP_MINUTES = 30; // If gap > 30 minutes, start new session
-    
-    // Sort activities by timestamp (oldest first for session building)
-    const sortedActivities = [...activitiesWithMood].sort((a, b) => 
-        new Date(a.loggedAt) - new Date(b.loggedAt)
-    );
-    
-    sortedActivities.forEach((activity, index) => {
-        const timestamp = new Date(activity.loggedAt);
-        
-        // Check if we should start a new session
-        if (!currentSession || 
-            (timestamp - new Date(currentSession.endTime)) > SESSION_GAP_MINUTES * 60 * 1000) {
-            
-            // Finalize previous session
-            if (currentSession) {
-                currentSession.sessionMood = determineSessionMood(currentSession.songs);
-                sessions.push(currentSession);
-            }
-            
-            // Start new session
-            currentSession = {
-                id: `session-${timestamp.getTime()}`,
-                startTime: activity.loggedAt,
-                endTime: activity.loggedAt,
-                songs: [{ ...activity, mood: activity.mood }],
-                duration: 0
-            };
-        } else {
-            // Add to current session
-            currentSession.songs.push({ ...activity, mood: activity.mood });
-            currentSession.endTime = activity.loggedAt;
-            currentSession.duration = new Date(currentSession.endTime) - new Date(currentSession.startTime);
-        }
+app.get('/api/activity/calendar', async (req, res) => {
+    const data = await activityStore.ensureCache();
+    const months = req.query.months ? Math.max(parseInt(req.query.months, 10) || 0, 0) : null;
+    const songs = req.query.songs
+        ? req.query.songs.split(',').map((item) => item.trim()).filter(Boolean)
+        : [];
+    const calendar = await activityStore.getCalendar(data, months, songs);
+    res.json({ items: calendar, songs });
+});
+
+app.get('/api/activity/day', async (req, res) => {
+    const date = (req.query.date || '').toString();
+    if (!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(date)) {
+        return res.status(400).json({ error: 'Valid date (YYYY-MM-DD) required' });
+    }
+    const data = await activityStore.ensureCache();
+    const songs = req.query.songs
+        ? req.query.songs.split(',').map((item) => item.trim()).filter(Boolean)
+        : [];
+    const filteredItems = activityStore.getDayEntries(data, date, songs);
+    const allItems = activityStore.getDayEntries(data, date, []);
+    return res.json({
+        date,
+        filtered: { items: filteredItems, total: filteredItems.length },
+        all: { items: allItems, total: allItems.length },
     });
-    
-    // Finalize last session
-    if (currentSession) {
-        currentSession.sessionMood = determineSessionMood(currentSession.songs);
-        sessions.push(currentSession);
-    }
-    
-    // Return sessions sorted by start time (newest first)
-    return sessions.sort((a, b) => new Date(b.startTime) - new Date(a.startTime));
-};
+});
 
-// Determine the overall mood of a listening session
-const determineSessionMood = (songs) => {
-    if (songs.length === 0) return 'neutral';
-    
-    // Count mood occurrences
-    const moodCounts = {};
-    songs.forEach(song => {
-        const mood = song.mood || 'neutral';
-        moodCounts[mood] = (moodCounts[mood] || 0) + 1;
-    });
-    
-    // Find the most common mood
-    const sortedMoods = Object.entries(moodCounts)
-        .sort(([,a], [,b]) => b - a);
-    
-    const dominantMood = sortedMoods[0][0];
-    const dominantCount = sortedMoods[0][1];
-    const totalSongs = songs.length;
-    
-    // If a mood represents more than 40% of the session, use it
-    if (dominantCount / totalSongs >= 0.4) {
-        return dominantMood;
-    }
-    
-    // If no clear dominant mood, check for emotional patterns
-    const emotionalWeight = {
-        'sad': 2,
-        'breakup': 2,
-        'angry': 2,
-        'love': 1.5,
-        'nostalgic': 1.5,
-        'energetic': 1,
-        'confident': 1,
-        'chill': 0.5,
-        'melodic': 0.5,
-        'experimental': 0.5,
-        'neutral': 0
-    };
-    
-    let weightedScore = 0;
-    let totalWeight = 0;
-    
-    Object.entries(moodCounts).forEach(([mood, count]) => {
-        const weight = emotionalWeight[mood] || 0;
-        weightedScore += weight * count;
-        totalWeight += count;
-    });
-    
-    const averageWeight = weightedScore / totalWeight;
-    
-    if (averageWeight >= 1.5) return 'intense'; // Emotional session
-    if (averageWeight >= 1) return 'mixed'; // Mixed emotional session
-    return 'chill'; // Relaxed session
-};
+app.get('/api/activity/search', async (req, res) => {
+    const data = await activityStore.ensureCache();
+    const q = (req.query.q || '').toString().trim();
+    const songs = req.query.songs
+        ? req.query.songs.split(',').map((item) => item.trim()).filter(Boolean)
+        : [];
+    const terms = q ? q.split(/\s+/).filter(Boolean) : [];
+    const matches = activityStore.search(data, terms, songs);
+    res.json({ items: matches, total: matches.length });
+});
 
-// Serve the main dashboard page
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+function resolveEditableFile(key) {
+    if (key === 'activity') {
+        return ACTIVITY_LOG_PATH;
+    }
+    if (key === 'diary') {
+        return DIARY_LOG_PATH;
+    }
+    return null;
+}
+
+app.get('/api/json', async (req, res) => {
+    const key = (req.query.file || '').toString();
+    const filePath = resolveEditableFile(key);
+    if (!filePath) {
+        return res.status(400).json({ error: 'Unsupported file' });
+    }
+    try {
+        const raw = await fsp.readFile(filePath, 'utf8');
+        res.json({ file: key, content: raw, size: Buffer.byteLength(raw, 'utf8') });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.put('/api/json', async (req, res) => {
+    const { file, content } = req.body || {};
+    const filePath = resolveEditableFile(file);
+    if (!filePath) {
+        return res.status(400).json({ error: 'Unsupported file' });
+    }
+    if (typeof content !== 'string') {
+        return res.status(400).json({ error: 'Content must be a string' });
+    }
+    try {
+        JSON.parse(content);
+    } catch (error) {
+        return res.status(400).json({ error: 'Invalid JSON payload' });
+    }
+    const backupPath = `${filePath}.${Date.now()}.bak`;
+    try {
+        if (fs.existsSync(filePath)) {
+            await fsp.copyFile(filePath, backupPath);
+        }
+        await fsp.writeFile(filePath, content, 'utf8');
+        if (file === 'activity') {
+            activityStore.cache = null;
+            activityStore.sessionsCache = null;
+            activityStore.calendarCache.clear();
+            activityStore.summaryCache = null;
+        }
+        res.json({ ok: true });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+const publicDir = path.join(__dirname, 'public');
+app.use(express.static(publicDir, { maxAge: '1h', etag: true }));
+
+app.use((req, res, next) => {
+    if (req.method === 'GET' && !req.path.startsWith('/api')) {
+        return res.sendFile(path.join(publicDir, 'index.html'));
+    }
+    return next();
 });
 
 app.listen(PORT, () => {
-    console.log(`🎵 Lila Tracker Dashboard running at http://localhost:${PORT}`);
-    console.log('📊 Enhanced dashboard with mood analysis and analytics tools!');
-    console.log('🤖 Advanced song classification using pattern recognition');
-    console.log('🧠 Multi-factor analysis: title structure, artist patterns, temporal context');
-    console.log('📈 Behavioral learning from listening sequences');
-    console.log('🔍 Available endpoints:');
-    console.log('  - GET / (Dashboard)');
-    console.log('  - GET /api/lila-activity (Enhanced activity data)');
-    console.log('  - GET /api/analytics (Analytics data)');
-    console.log('  - Authentication required for all API endpoints');
-    
-    console.log('✅ Pattern recognition system ready - No external dependencies');
+    console.log(`Dashboard running on http://localhost:${PORT}`);
 });

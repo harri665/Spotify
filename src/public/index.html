@@ -105,30 +105,86 @@
                 <!-- Recent Songs Tab -->
                 <div id="recent-tab" class="tab-pane active">
                     <div class="content-header">
-                        <h2><i class="fas fa-clock"></i> Recent Songs</h2>
+                        <div class="content-header-titles">
+                            <h2><i class="fas fa-clock"></i> Recent Songs</h2>
+                            <p id="recent-last-updated" class="content-subtitle"></p>
+                        </div>
                         <div class="filters">
-                            <select id="mood-filter" onchange="filterByMood()">
-                                <option value="">All Moods</option>
-                                <option value="energetic">Energetic</option>
-                                <option value="sad">Sad</option>
-                                <option value="breakup">Breakup</option>
-                                <option value="love">Love</option>
-                                <option value="chill">Chill</option>
-                                <option value="angry">Angry</option>
-                                <option value="nostalgic">Nostalgic</option>
-                                <option value="confident">Confident</option>
-                                <option value="melodic">Melodic</option>
-                                <option value="experimental">Experimental</option>
-                                <option value="neutral">Neutral</option>
-                            </select>
+                            <button id="refresh-recent-btn" class="refresh-btn compact" title="Refresh recent songs">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
                         </div>
                     </div>
+                    <section class="search-panel" aria-label="Song search">
+                        <div class="search-panel-row">
+                            <div class="search-input-area">
+                                <div class="search-input-group">
+                                    <i class="fas fa-search"></i>
+                                    <input type="text" id="search-input" placeholder="Search song, artist or album" autocomplete="off">
+                                    <button id="search-add-btn" class="btn-inline">
+                                        <i class="fas fa-plus"></i> Add Song
+                                    </button>
+                                </div>
+                                <div id="search-suggestions" class="search-suggestions" aria-live="polite" aria-hidden="true"></div>
+                            </div>
+                            <button id="search-clear-btn" class="btn-inline secondary">
+                                <i class="fas fa-times"></i> Clear
+                            </button>
+                        </div>
+                        <div class="search-selected" id="search-selected" aria-live="polite"></div>
+                        <p class="search-helper">Add multiple songs to highlight them across recent plays and calendar activity.</p>
+                    </section>
                     <div class="song-list" id="song-list">
                         <div class="loading">
                             <i class="fas fa-spinner fa-spin"></i>
                             <p>Loading recent songs...</p>
                         </div>
                     </div>
+                    <div class="song-list-actions">
+                        <button id="recent-load-more" class="btn-inline tertiary">
+                            <i class="fas fa-angle-down"></i> Load More
+                        </button>
+                        <span id="recent-count" class="song-count"></span>
+                    </div>
+                    <section class="search-results" id="search-results" aria-live="polite"></section>
+                    <section class="calendar-section" aria-label="Listening calendar">
+                        <div class="calendar-header">
+                            <h3><i class="fas fa-calendar-alt"></i> Listening Calendar</h3>
+                            <div class="calendar-controls">
+                                <label for="calendar-months">Window</label>
+                                <select id="calendar-months">
+                                    <option value="3">Last 3 months</option>
+                                    <option value="6" selected>Last 6 months</option>
+                                    <option value="12">Last year</option>
+                                    <option value="0">All time</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="calendar-body">
+                            <div id="calendar-grid" class="calendar-grid">
+                                <div class="loading">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                    <p>Building calendar...</p>
+                                </div>
+                            </div>
+                            <aside id="calendar-sidebar" class="calendar-sidebar" aria-live="polite">
+                                <div class="calendar-sidebar-header">
+                                    <div>
+                                        <h4 id="calendar-sidebar-title">Select a day</h4>
+                                        <p id="calendar-sidebar-subtitle">Click a day to see every song played.</p>
+                                    </div>
+                                    <button id="calendar-sidebar-close" class="calendar-sidebar-close" type="button" aria-label="Clear selected day" aria-disabled="true" disabled>
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                                <div id="calendar-sidebar-status" class="calendar-sidebar-status">
+                                    <p class="calendar-sidebar-placeholder">Pick a day from the calendar to view details.</p>
+                                </div>
+                                <ul id="calendar-sidebar-list" class="calendar-sidebar-list"></ul>
+                            </aside>
+                        </div>
+                        <div id="calendar-legend" class="calendar-legend"></div>
+                    </section>
                 </div>
 
                 <!-- Diary Tab -->
@@ -173,7 +229,7 @@
                         <div class="json-editor-info">
                             <div class="json-file-info">
                                 <span id="json-file-name">Loading content...</span>
-                                <span id="json-size"></span>
+                                <span id="json-size-meta"></span>
                             </div>
                             <div id="json-status" class="json-editor-status text-success">
                                 ✓ Ready
@@ -187,7 +243,7 @@
                             <div class="json-stats">
                                 <span>Lines: <span id="json-lines">0</span></span>
                                 <span>Characters: <span id="json-chars">0</span></span>
-                                <span>Size: <span id="json-size">0 B</span></span>
+                                <span>Size: <span id="json-size-stats">0 B</span></span>
                             </div>
                             <div class="json-help">
                                 <span><i class="fas fa-info-circle"></i> Editing structured JSON content - changes are applied to the live data</span>
