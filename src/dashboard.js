@@ -6,9 +6,25 @@ const compression = require('compression');
 const crypto = require('crypto');
 
 const PORT = parseInt(process.env.PORT, 10) || 3000;
-const ACTIVITY_LOG_PATH = process.env.ACTIVITY_LOG_PATH
-    ? path.resolve(process.env.ACTIVITY_LOG_PATH)
-    : path.join(__dirname, '..', 'lila-activity-log.json');
+
+const SHARED_DATA_DIR = process.env.SHARED_DATA_DIR
+    ? path.resolve(process.env.SHARED_DATA_DIR)
+    : path.join(__dirname, '..', 'shared');
+
+function resolveActivityLogPath() {
+    if (process.env.ACTIVITY_LOG_PATH) {
+        return path.resolve(process.env.ACTIVITY_LOG_PATH);
+    }
+    try {
+        fs.mkdirSync(SHARED_DATA_DIR, { recursive: true });
+        return path.join(SHARED_DATA_DIR, 'lila-activity-log.json');
+    } catch (error) {
+        console.warn('Unable to access shared data directory, falling back to local file:', error.message);
+        return path.join(__dirname, '..', 'lila-activity-log.json');
+    }
+}
+
+const ACTIVITY_LOG_PATH = resolveActivityLogPath();
 const DIARY_LOG_PATH = process.env.DIARY_LOG_PATH
     ? path.resolve(process.env.DIARY_LOG_PATH)
     : path.join(__dirname, '..', 'manual-classifications.json');
@@ -360,6 +376,7 @@ class ActivityStore {
 }
 
 ensureJsonFile(ACTIVITY_LOG_PATH);
+console.log(`Activity log path: ${ACTIVITY_LOG_PATH}`);
 console.log(`Activity data timezone set to ${DEFAULT_TIMEZONE}`);
 const activityStore = new ActivityStore(ACTIVITY_LOG_PATH);
 
