@@ -20,6 +20,71 @@ const app = express();
 app.use(express.json({ limit: '5mb' }));
 app.use(compression());
 
+function ensureJsonFile(filePath, initialContent = '[]\n') {
+    try {
+        const directory = path.dirname(filePath);
+        if (!fs.existsSync(directory)) {
+            fs.mkdirSync(directory, { recursive: true });
+        }
+        if (!fs.existsSync(filePath)) {
+            fs.writeFileSync(filePath, initialContent, 'utf8');
+            console.log(`Created missing data file at ${filePath}`);
+        }
+    } catch (error) {
+        console.error(`Unable to prepare data file at ${filePath}:`, error.message);
+        throw error;
+    }
+}
+
+function isValidTimeZone(tz) {
+    if (!tz || typeof tz !== 'string') {
+        return false;
+    }
+    try {
+        new Intl.DateTimeFormat('en-US', { timeZone: tz });
+        return true;
+    } catch (error) {
+        return false;
+    }
+}
+
+const SYSTEM_TIMEZONE = (() => {
+    try {
+        return Intl.DateTimeFormat().resolvedOptions().timeZone;
+    } catch (error) {
+        return null;
+    }
+})();
+
+const CONFIGURED_TIMEZONE = process.env.ACTIVITY_TIMEZONE;
+const DEFAULT_TIMEZONE = isValidTimeZone(CONFIGURED_TIMEZONE)
+    ? CONFIGURED_TIMEZONE
+    : (isValidTimeZone(SYSTEM_TIMEZONE) ? SYSTEM_TIMEZONE : 'UTC');
+
+const dateKeyFormatters = new Map();
+
+function resolveTimeZone(tz) {
+    if (tz && isValidTimeZone(tz)) {
+        return tz;
+    }
+    return DEFAULT_TIMEZONE;
+}
+
+function getDateKey(date, requestedTimeZone) {
+    const timeZone = resolveTimeZone(requestedTimeZone);
+    let formatter = dateKeyFormatters.get(timeZone);
+    if (!formatter) {
+        formatter = new Intl.DateTimeFormat('en-CA', {
+            timeZone,
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+        });
+        dateKeyFormatters.set(timeZone, formatter);
+    }
+    return formatter.format(date);
+}
+
 function safeDateValue(value) {
     if (!value) {
         return null;
@@ -208,8 +273,9 @@ class ActivityStore {
         return sessions;
     }
 
-    async getCalendar(data, months, songFilter) {
-        const cacheKey = `${months || 'all'}::${(songFilter || []).join('|').toLowerCase()}`;
+    async getCalendar(data, months, songFilter, requestedTimeZone) {
+        const timeZone = resolveTimeZone(requestedTimeZone);
+        const cacheKey = `${timeZone}::${months || 'all'}::${(songFilter || []).join('|').toLowerCase()}`;
         if (this.calendarCache.has(cacheKey)) {
             return this.calendarCache.get(cacheKey);
         }
@@ -224,14 +290,14 @@ class ActivityStore {
             if (songTargets.length && !songTargets.some((target) => entry.song && entry.song.toLowerCase().includes(target))) {
                 return;
             }
-            const playedAt = safeDateValue(entry.playedAt);
+            const playedAt = new Date(entry.playedAtMs);
             if (!playedAt) {
                 return;
             }
             if (cutoffDate && playedAt < cutoffDate) {
                 return;
             }
-            const key = playedAt.toISOString().slice(0, 10);
+            const key = getDateKey(playedAt, timeZone);
             if (!result.has(key)) {
                 result.set(key, { date: key, count: 0, songs: new Map() });
             }
@@ -252,14 +318,15 @@ class ActivityStore {
         return payload;
     }
 
-    getDayEntries(data, date, songFilter) {
+    getDayEntries(data, date, songFilter, requestedTimeZone) {
         if (!date) {
             return [];
         }
         const normalized = date.toString().slice(0, 10);
         const songTargets = (songFilter || []).map((title) => title.toLowerCase());
+        const timeZone = resolveTimeZone(requestedTimeZone);
         const matches = data.filter((entry) => {
-            const entryDate = entry.playedAt ? entry.playedAt.slice(0, 10) : null;
+            const entryDate = getDateKey(new Date(entry.playedAtMs), timeZone);
             if (entryDate !== normalized) {
                 return false;
             }
@@ -292,6 +359,8 @@ class ActivityStore {
     }
 }
 
+ensureJsonFile(ACTIVITY_LOG_PATH);
+console.log(`Activity data timezone set to ${DEFAULT_TIMEZONE}`);
 const activityStore = new ActivityStore(ACTIVITY_LOG_PATH);
 
 function startWatcher(store) {
@@ -389,8 +458,9 @@ app.get('/api/activity/calendar', async (req, res) => {
     const songs = req.query.songs
         ? req.query.songs.split(',').map((item) => item.trim()).filter(Boolean)
         : [];
-    const calendar = await activityStore.getCalendar(data, months, songs);
-    res.json({ items: calendar, songs });
+    const timeZone = resolveTimeZone(req.query.tz);
+    const calendar = await activityStore.getCalendar(data, months, songs, timeZone);
+    res.json({ items: calendar, songs, timeZone });
 });
 
 app.get('/api/activity/day', async (req, res) => {
@@ -402,10 +472,12 @@ app.get('/api/activity/day', async (req, res) => {
     const songs = req.query.songs
         ? req.query.songs.split(',').map((item) => item.trim()).filter(Boolean)
         : [];
-    const filteredItems = activityStore.getDayEntries(data, date, songs);
-    const allItems = activityStore.getDayEntries(data, date, []);
+    const timeZone = resolveTimeZone(req.query.tz);
+    const filteredItems = activityStore.getDayEntries(data, date, songs, timeZone);
+    const allItems = activityStore.getDayEntries(data, date, [], timeZone);
     return res.json({
         date,
+        timeZone,
         filtered: { items: filteredItems, total: filteredItems.length },
         all: { items: allItems, total: allItems.length },
     });

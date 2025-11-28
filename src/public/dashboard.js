@@ -22,6 +22,7 @@
             items: [],
             months: 6,
             isLoading: false,
+            timeZone: null,
             day: {
                 date: null,
                 filteredItems: [],
@@ -91,14 +92,44 @@
     };
 
     const SUGGESTION_DEBOUNCE_MS = 200;
+    const CLIENT_TIMEZONE = (() => {
+        try {
+            return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+        } catch (error) {
+            return 'UTC';
+        }
+    })();
+    const AUTO_REFRESH_INTERVAL_MS = 60 * 1000; // Poll backend periodically for fresh activity
     let suggestionDebounceHandle = null;
     let suggestionAbortController = null;
+    let autoRefreshTimer = null;
+    let refreshPromise = null;
+
+    function stopAutoRefresh() {
+        if (autoRefreshTimer) {
+            clearInterval(autoRefreshTimer);
+            autoRefreshTimer = null;
+        }
+    }
+
+    function startAutoRefresh() {
+        if (AUTO_REFRESH_INTERVAL_MS <= 0) {
+            return;
+        }
+        stopAutoRefresh();
+        autoRefreshTimer = setInterval(() => {
+            runRefreshSequence({ forceSessions: true }).catch((error) => {
+                console.warn('Auto refresh failed:', error);
+            });
+        }, AUTO_REFRESH_INTERVAL_MS);
+    }
 
     function setLoginVisible(visible) {
         el.loginScreen.style.display = visible ? 'flex' : 'none';
         el.mainDashboard.style.display = visible ? 'none' : 'flex';
         if (visible) {
             el.passwordInput.focus();
+            stopAutoRefresh();
         }
     }
 
@@ -194,17 +225,20 @@
         if (!dateStr) {
             return '';
         }
-        const date = new Date(`${dateStr}T00:00:00Z`);
-        if (Number.isNaN(date.getTime())) {
+        const parts = dateStr.split('-').map((part) => Number.parseInt(part, 10));
+        if (parts.length !== 3 || parts.some((part) => Number.isNaN(part))) {
             return dateStr;
         }
-        return date.toLocaleDateString(undefined, {
+        const [year, month, day] = parts;
+        const baseDate = new Date(Date.UTC(year, month - 1, day, 12));
+        const timeZone = state.calendar.timeZone || CLIENT_TIMEZONE;
+        return new Intl.DateTimeFormat(undefined, {
             weekday: 'short',
             year: 'numeric',
             month: 'short',
             day: 'numeric',
-            timeZone: 'UTC',
-        });
+            timeZone,
+        }).format(baseDate);
     }
 
     function formatTime(value) {
@@ -940,8 +974,13 @@
             if (state.search.selectedSongs.length) {
                 params.set('songs', state.search.selectedSongs.join(','));
             }
+            const requestTimeZone = state.calendar.timeZone || CLIENT_TIMEZONE;
+            if (requestTimeZone) {
+                params.set('tz', requestTimeZone);
+            }
             const data = await rawFetch(`/api/activity/calendar?${params.toString()}`);
             state.calendar.items = data.items || [];
+            state.calendar.timeZone = data.timeZone || requestTimeZone;
             renderCalendar();
             const selectedDate = state.calendar.day.date;
             if (selectedDate) {
@@ -1315,12 +1354,17 @@
             if (state.search.selectedSongs.length) {
                 params.set('songs', state.search.selectedSongs.join(','));
             }
+            const requestTimeZone = state.calendar.timeZone || CLIENT_TIMEZONE;
+            if (requestTimeZone) {
+                params.set('tz', requestTimeZone);
+            }
             const data = await rawFetch(`/api/activity/day?${params.toString()}`);
             if (dayState.requestId !== requestId) {
                 return;
             }
             const filtered = data.filtered || {};
             const all = data.all || {};
+            state.calendar.timeZone = data.timeZone || requestTimeZone;
             dayState.filteredItems = Array.isArray(filtered.items) ? filtered.items : [];
             dayState.filteredTotal = Number.isFinite(filtered.total) ? filtered.total : dayState.filteredItems.length;
             dayState.allItems = Array.isArray(all.items) ? all.items : [];
@@ -1448,6 +1492,23 @@
         el.sessionCount.textContent = `${state.sessions.total.toLocaleString()} Sessions`;
     }
 
+    async function runRefreshSequence({ forceSessions = false } = {}) {
+        if (refreshPromise) {
+            return refreshPromise;
+        }
+        refreshPromise = (async () => {
+            try {
+                await loadSummary();
+                await loadRecent({ reset: true });
+                await executeSearch();
+                await loadSessions({ force: forceSessions });
+            } finally {
+                refreshPromise = null;
+            }
+        })();
+        return refreshPromise;
+    }
+
     function updateJsonMeta(filename, size) {
         el.jsonFileName.textContent = filename === 'activity' ? 'Activity Log' : 'Diary Log';
         el.jsonSizeMeta.textContent = formatBytes(size || 0);
@@ -1532,9 +1593,7 @@
             el.jsonStatus.textContent = '✓ Saved';
             state.jsonEditor.original = content;
             if (state.jsonEditor.activeFile === 'activity') {
-                await loadSummary();
-                await loadRecent({ reset: true });
-                await executeSearch();
+                await runRefreshSequence({ forceSessions: true });
             }
             showPopup('success', 'Changes saved successfully');
         } catch (error) {
@@ -1663,16 +1722,10 @@
     }
 
     async function bootstrapAfterLogin() {
-        await Promise.all([
-            loadSummary(),
-            loadRecent({ reset: true }),
-        ]);
         renderSelectedSongs();
-        await Promise.all([
-            executeSearch(),
-            loadSessions(),
-            loadJsonEditor(),
-        ]);
+        await runRefreshSequence({ forceSessions: true });
+        await loadJsonEditor();
+        startAutoRefresh();
     }
 
     async function attemptAutoLogin() {
@@ -1683,7 +1736,6 @@
         }
         storeToken(stored);
         try {
-            await loadSummary();
             setLoginVisible(false);
             await bootstrapAfterLogin();
         } catch (error) {
@@ -1694,10 +1746,7 @@
 
     const controller = {
         async refreshAll() {
-            await loadSummary();
-            await loadRecent({ reset: true });
-            await executeSearch();
-            await loadSessions({ force: true });
+            await runRefreshSequence({ forceSessions: true });
         },
         logout() {
             storeToken(null);
@@ -1705,6 +1754,7 @@
             state.sessions = { items: [], total: 0, loaded: false };
             setLoginVisible(true);
             clearSearchSuggestions();
+            stopAutoRefresh();
         },
         exportTimelineData() {
             if (!state.search.results.length) {
@@ -1744,4 +1794,7 @@
     }
 
     init();
+    window.addEventListener('beforeunload', () => {
+        stopAutoRefresh();
+    });
 })();
