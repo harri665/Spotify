@@ -441,13 +441,16 @@
         title.textContent = item.song || 'Unknown song';
         const artist = document.createElement('div');
         artist.className = 'song-artist';
-        artist.textContent = item.artist || 'Unknown artist';
-        const album = document.createElement('div');
-        album.className = 'song-album';
-        album.textContent = item.album || 'Unknown album';
+        const subtitleParts = [];
+        if (item.artist) {
+            subtitleParts.push(item.artist);
+        }
+        if (item.album) {
+            subtitleParts.push(item.album);
+        }
+        artist.textContent = subtitleParts.length ? subtitleParts.join(' • ') : 'Unknown artist';
         info.appendChild(title);
         info.appendChild(artist);
-        info.appendChild(album);
 
         const meta = document.createElement('div');
         meta.className = 'song-metadata';
