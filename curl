@@ -1,0 +1,5 @@
+curl -s \
+  -H "Authorization: Bearer ${TOKEN}" \
+  -H "Accept: application/json" \
+  -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64)" \
+  https://guc-spclient.spotify.com/presence-view/v1/buddylist

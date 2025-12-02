@@ -49,6 +49,10 @@
         passwordInput: document.getElementById('password-input'),
         loginError: document.getElementById('login-error'),
         mainDashboard: document.getElementById('main-dashboard'),
+        sidebar: document.getElementById('dashboard-sidebar'),
+        sidebarToggle: document.getElementById('sidebar-toggle'),
+        sidebarClose: document.getElementById('sidebar-close'),
+        sidebarOverlay: document.getElementById('sidebar-overlay'),
         totalSongs: document.getElementById('total-songs'),
         uniqueArtists: document.getElementById('unique-artists'),
         currentMood: document.getElementById('current-mood'),
@@ -100,10 +104,15 @@
         }
     })();
     const AUTO_REFRESH_INTERVAL_MS = 60 * 1000; // Poll backend periodically for fresh activity
+    const MOBILE_BREAKPOINT = '(max-width: 1024px)';
+    const mobileMediaQuery = typeof window !== 'undefined' && window.matchMedia
+        ? window.matchMedia(MOBILE_BREAKPOINT)
+        : null;
     let suggestionDebounceHandle = null;
     let suggestionAbortController = null;
     let autoRefreshTimer = null;
     let refreshPromise = null;
+    let viewportListenerAttached = false;
 
     function stopAutoRefresh() {
         if (autoRefreshTimer) {
@@ -124,12 +133,65 @@
         }, AUTO_REFRESH_INTERVAL_MS);
     }
 
+    function isMobileViewport() {
+        if (mobileMediaQuery) {
+            return mobileMediaQuery.matches;
+        }
+        return window.innerWidth <= 1024;
+    }
+
+    function openSidebar() {
+        if (!isMobileViewport()) {
+            return;
+        }
+        document.body.classList.add('sidebar-open');
+        syncSidebarAccessibility();
+    }
+
+    function closeSidebar() {
+        document.body.classList.remove('sidebar-open');
+        syncSidebarAccessibility();
+    }
+
+    function toggleSidebar() {
+        if (document.body.classList.contains('sidebar-open')) {
+            closeSidebar();
+        } else {
+            openSidebar();
+        }
+    }
+
+    function handleViewportChange() {
+        if (!isMobileViewport()) {
+            closeSidebar();
+        } else {
+            syncSidebarAccessibility();
+        }
+    }
+
+    function syncSidebarAccessibility() {
+        const isOpen = document.body.classList.contains('sidebar-open');
+        if (el.sidebarToggle) {
+            el.sidebarToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        }
+        if (el.sidebar) {
+            const hidden = isMobileViewport() && !isOpen;
+            el.sidebar.setAttribute('aria-hidden', hidden ? 'true' : 'false');
+        }
+        if (el.sidebarOverlay) {
+            el.sidebarOverlay.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
+        }
+    }
+
     function setLoginVisible(visible) {
         el.loginScreen.style.display = visible ? 'flex' : 'none';
         el.mainDashboard.style.display = visible ? 'none' : 'flex';
         if (visible) {
             el.passwordInput.focus();
             stopAutoRefresh();
+            closeSidebar();
+        } else {
+            handleViewportChange();
         }
     }
 
@@ -1659,6 +1721,12 @@
 
         document.addEventListener('click', handleSuggestionOutsideClick);
 
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                closeSidebar();
+            }
+        });
+
         el.calendarMonths.addEventListener('change', () => {
             state.calendar.months = Number(el.calendarMonths.value);
             loadCalendar();
@@ -1690,8 +1758,44 @@
             item.addEventListener('click', () => {
                 const tab = item.dataset.tab;
                 setActiveTab(tab);
+                if (isMobileViewport()) {
+                    closeSidebar();
+                }
             });
         });
+
+        if (!viewportListenerAttached) {
+            const listener = () => handleViewportChange();
+            if (mobileMediaQuery) {
+                if (typeof mobileMediaQuery.addEventListener === 'function') {
+                    mobileMediaQuery.addEventListener('change', listener);
+                } else if (typeof mobileMediaQuery.addListener === 'function') {
+                    mobileMediaQuery.addListener(listener);
+                }
+            }
+            window.addEventListener('resize', listener);
+            viewportListenerAttached = true;
+        }
+
+        if (el.sidebarToggle) {
+            el.sidebarToggle.addEventListener('click', () => {
+                toggleSidebar();
+            });
+        }
+
+        if (el.sidebarOverlay) {
+            el.sidebarOverlay.addEventListener('click', () => {
+                closeSidebar();
+            });
+        }
+
+        if (el.sidebarClose) {
+            el.sidebarClose.addEventListener('click', () => {
+                closeSidebar();
+            });
+        }
+
+        handleViewportChange();
     }
 
     function addSongsFromInput() {
