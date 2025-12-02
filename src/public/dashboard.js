@@ -23,6 +23,7 @@
             months: 6,
             isLoading: false,
             timeZone: null,
+            dayCache: new Map(),
             day: {
                 date: null,
                 filteredItems: [],
@@ -104,6 +105,7 @@
         }
     })();
     const AUTO_REFRESH_INTERVAL_MS = 60 * 1000; // Poll backend periodically for fresh activity
+    const CALENDAR_DAY_CACHE_LIMIT = 32;
     const MOBILE_BREAKPOINT = '(max-width: 1024px)';
     const mobileMediaQuery = typeof window !== 'undefined' && window.matchMedia
         ? window.matchMedia(MOBILE_BREAKPOINT)
@@ -113,6 +115,62 @@
     let autoRefreshTimer = null;
     let refreshPromise = null;
     let viewportListenerAttached = false;
+
+    function getSelectedSongsCacheKey() {
+        if (!state.search.selectedSongs.length) {
+            return '';
+        }
+        return state.search.selectedSongs
+            .map((song) => (song || '').toLowerCase().trim())
+            .filter(Boolean)
+            .sort()
+            .join('||');
+    }
+
+    function buildCalendarDayCacheKey(date, timeZone, songsKey) {
+        return [date || '', timeZone || '', songsKey || ''].join('::');
+    }
+
+    function applyCalendarDayPayload(payload) {
+        const dayState = state.calendar.day;
+        dayState.filteredItems = Array.isArray(payload.filteredItems) ? payload.filteredItems.slice() : [];
+        dayState.filteredTotal = Number.isFinite(payload.filteredTotal)
+            ? payload.filteredTotal
+            : dayState.filteredItems.length;
+        dayState.allItems = Array.isArray(payload.allItems) ? payload.allItems.slice() : [];
+        dayState.allTotal = Number.isFinite(payload.allTotal)
+            ? payload.allTotal
+            : dayState.allItems.length;
+        dayState.statusMessage = '';
+        dayState.error = null;
+        dayState.isLoading = false;
+        if (payload.timeZone) {
+            state.calendar.timeZone = payload.timeZone;
+        }
+    }
+
+    function cacheCalendarDayResult(cacheKey, payload) {
+        if (!cacheKey) {
+            return;
+        }
+        const cache = state.calendar.dayCache;
+        if (!cache) {
+            return;
+        }
+        if (cache.size >= CALENDAR_DAY_CACHE_LIMIT) {
+            const firstKey = cache.keys().next().value;
+            if (firstKey !== undefined) {
+                cache.delete(firstKey);
+            }
+        }
+        cache.set(cacheKey, payload);
+    }
+
+    function clearCalendarDayCache() {
+        if (state.calendar.dayCache) {
+            state.calendar.dayCache.clear();
+        }
+    }
 
     function stopAutoRefresh() {
         if (autoRefreshTimer) {
@@ -670,6 +728,9 @@
             }
             state.recentTotal = data.total || state.recent.length;
             state.recentOffset = state.recent.length;
+            if (reset) {
+                clearCalendarDayCache();
+            }
             renderRecent();
         } catch (error) {
             showPopup('error', `Unable to load recent songs: ${error.message}`);
@@ -1400,6 +1461,20 @@
             return;
         }
         const dayState = state.calendar.day;
+        const songsCacheKey = getSelectedSongsCacheKey();
+        const effectiveTimeZone = state.calendar.timeZone || CLIENT_TIMEZONE;
+        const cacheKey = buildCalendarDayCacheKey(date, effectiveTimeZone, songsCacheKey);
+        const cached = state.calendar.dayCache.get(cacheKey);
+
+        if (cached) {
+            dayState.date = date;
+            dayState.requestId = 0;
+            applyCalendarDayPayload(cached);
+            highlightSelectedCalendarDay();
+            renderCalendarSidebar();
+            return;
+        }
+
         const requestId = Date.now();
         dayState.requestId = requestId;
         dayState.date = date;
@@ -1412,6 +1487,7 @@
             dayState.allItems = [];
             dayState.allTotal = 0;
         }
+        highlightSelectedCalendarDay();
         renderCalendarSidebar();
 
         try {
@@ -1419,7 +1495,7 @@
             if (state.search.selectedSongs.length) {
                 params.set('songs', state.search.selectedSongs.join(','));
             }
-            const requestTimeZone = state.calendar.timeZone || CLIENT_TIMEZONE;
+            const requestTimeZone = effectiveTimeZone;
             if (requestTimeZone) {
                 params.set('tz', requestTimeZone);
             }
@@ -1429,14 +1505,29 @@
             }
             const filtered = data.filtered || {};
             const all = data.all || {};
-            state.calendar.timeZone = data.timeZone || requestTimeZone;
-            dayState.filteredItems = Array.isArray(filtered.items) ? filtered.items : [];
-            dayState.filteredTotal = Number.isFinite(filtered.total) ? filtered.total : dayState.filteredItems.length;
-            dayState.allItems = Array.isArray(all.items) ? all.items : [];
-            dayState.allTotal = Number.isFinite(all.total) ? all.total : dayState.allItems.length;
+            const filteredItems = Array.isArray(filtered.items) ? filtered.items : [];
+            const filteredTotal = Number.isFinite(filtered.total) ? filtered.total : filteredItems.length;
+            const allItems = Array.isArray(all.items) ? all.items : [];
+            const allTotal = Number.isFinite(all.total) ? all.total : allItems.length;
+            const resolvedTimeZone = data.timeZone || requestTimeZone;
+
+            dayState.filteredItems = filteredItems;
+            dayState.filteredTotal = filteredTotal;
+            dayState.allItems = allItems;
+            dayState.allTotal = allTotal;
             dayState.isLoading = false;
             dayState.error = null;
+            state.calendar.timeZone = resolvedTimeZone;
             renderCalendarSidebar();
+
+            const resolvedKey = buildCalendarDayCacheKey(date, resolvedTimeZone, songsCacheKey);
+            cacheCalendarDayResult(resolvedKey, {
+                filteredItems,
+                filteredTotal,
+                allItems,
+                allTotal,
+                timeZone: resolvedTimeZone,
+            });
         } catch (error) {
             if (dayState.requestId !== requestId) {
                 return;
@@ -1862,6 +1953,7 @@
             setLoginVisible(true);
             clearSearchSuggestions();
             stopAutoRefresh();
+            clearCalendarDayCache();
         },
         exportTimelineData() {
             if (!state.search.results.length) {
